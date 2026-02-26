@@ -43,7 +43,7 @@ export default function ProductsPage() {
         {/* 🔎 Indicador de búsqueda activa */}
         {searchQuery && (
           <p className="text-gray-500 mb-6">
-            Resultados para: <span className="font-semibold">"{searchQuery}"</span>
+            Resultados para: <span className="font-semibold">{`"${searchQuery}"`}</span>
           </p>
         )}
 
