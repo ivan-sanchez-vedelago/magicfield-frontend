@@ -13,11 +13,12 @@ type Product = {
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>
 }) {
 
+  const { id } = await params
   const res = await fetch(
-    `http://localhost:8080/api/products/${params.id}`,
+    `http://localhost:8080/api/products/${id}`,
     {
       cache: "no-store", // opcional → evita cache si querés datos en tiempo real
     }
