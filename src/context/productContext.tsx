@@ -26,7 +26,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const loadProducts = () => {
     setLoading(true);
 
-    fetch('http://localhost:8080/api/products')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
       .then(r => r.json())
       .then(setProducts)
       .catch(console.error)

@@ -18,7 +18,7 @@ export default async function ProductDetailPage({
 
   const { id } = await params
   const res = await fetch(
-    `http://localhost:8080/api/products/${id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
     {
       cache: "no-store", // opcional → evita cache si querés datos en tiempo real
     }
