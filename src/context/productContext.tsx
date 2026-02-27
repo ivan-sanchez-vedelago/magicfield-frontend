@@ -24,6 +24,8 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadProducts = () => {
+    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+
     setLoading(true);
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
@@ -33,7 +35,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false));
   };
 
-  useEffect(loadProducts, []);
+  useEffect(() => {
+    console.log("Loading products...");
+    loadProducts();
+  }, []);
 
   return (
     <ProductContext.Provider
