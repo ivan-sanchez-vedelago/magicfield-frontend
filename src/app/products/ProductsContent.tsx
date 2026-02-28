@@ -23,6 +23,7 @@ export default function ProductsContent() {
 
   const { products, loading } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  console.log("RENDER products:", products);
 
   const filteredProducts = useMemo(() => {
     if (!searchQuery) return products;
