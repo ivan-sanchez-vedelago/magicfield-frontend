@@ -1,7 +1,7 @@
 'use client';
 
 import { useCart } from '../../../context/cartContext';
-import Link from "next/link";
+import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
 
@@ -79,9 +79,9 @@ export default function ProductDetailClient({ product } : { product: Product }) 
     <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
 
       <div className="normal_text box_border">
-        <Link className="underline" href="/">Home</Link>
+        <LoadingLink className="underline" href="/">Home</LoadingLink>
         <span> / </span>
-        <Link className="underline" href="/products">Productos</Link>
+        <LoadingLink className="underline" href="/products">Productos</LoadingLink>
         <span> / </span>
         <span className="">{product.name}</span>
       </div>
@@ -199,7 +199,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
                 transform: `translateX(-${currentIndex * STEP}px)`
               }}>
               {relatedProducts.map(p => (
-                <Link
+                <LoadingLink
                   key={p.id}
                   href={`/products/${p.id}`}
                   className="border rounded p-3 w-48 flex-shrink-0"
@@ -211,7 +211,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
                   />
                   <p className="text-sm mt-2">{p.name}</p>
                   <p className="font-semibold">${p.price}</p>
-                </Link>
+                </LoadingLink>
               ))}
             </div>
             <button

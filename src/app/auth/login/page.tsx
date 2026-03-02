@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import Header from '@/src/components/Header';
+import LoadingLink from '@/src/components/navigation/LoadingLink';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -81,9 +80,9 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               ¿No tienes cuenta?{' '}
-              <Link href="/auth/register" className="text-black font-medium hover:underline">
+              <LoadingLink href="/auth/register" className="text-black font-medium hover:underline">
                 Registrarse
-              </Link>
+              </LoadingLink>
             </p>
           </div>
         </div>

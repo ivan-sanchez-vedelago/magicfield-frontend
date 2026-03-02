@@ -1,7 +1,5 @@
 "use client";
 
-import Header from '@/src/components/Header';
-import Link from 'next/link';
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductCard from './productCard';

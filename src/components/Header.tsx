@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import LoadingLink from '@/src/components/navigation/LoadingLink';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -97,7 +97,7 @@ export default function Header() {
       <nav className="flex justify-between items-center gap-6">
 
         {/* ===== LOGO ===== */}
-        <Link href="/" className="flex items-center">
+        <LoadingLink href="/" className="flex items-center">
           <Image
             src="/images/magic-field-logo.png"
             alt="Magic Field"
@@ -106,7 +106,7 @@ export default function Header() {
             className="block object-contain"
             priority
           />
-        </Link>
+        </LoadingLink>
 
         <div className="flex justify-between items-center w-full gap-6">
 
@@ -127,9 +127,9 @@ export default function Header() {
           </div>
 
           <div className="hidden md:flex header_tab_container" style={{ minWidth: '242px' }}>
-            <Link href="/products" className="header_tab">Productos</Link>
-            <Link href="/cart" className="header_tab">Carrito</Link>
-            <Link href="/auth/login" className="header_tab">Ingresar</Link>
+            <LoadingLink href="/products" className="header_tab">Productos</LoadingLink>
+            <LoadingLink href="/cart" className="header_tab">Carrito</LoadingLink>
+            <LoadingLink href="/auth/login" className="header_tab">Ingresar</LoadingLink>
           </div>
 
           {/* ===== BOTON HAMBURGUESA ===== */}
@@ -160,9 +160,9 @@ export default function Header() {
             }`}
           >
             <nav className="flex flex-col py-2">
-              <Link href="/products" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Productos</Link>
-              <Link href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</Link>
-              <Link href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</Link>
+              <LoadingLink href="/products" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Productos</LoadingLink>
+              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</LoadingLink>
+              <LoadingLink href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</LoadingLink>
             </nav>
           </div>
         </div>

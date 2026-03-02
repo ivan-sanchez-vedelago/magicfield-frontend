@@ -1,4 +1,3 @@
-import Header from '@/src/components/Header';
 import ProductDetailClient from './ProductDetailClient';
 
 type Product = {

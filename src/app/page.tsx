@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import Header from '@/src/components/Header';
+import LoadingLink from '@/src/components/navigation/LoadingLink';
 
 export default function Home() {
   return (
@@ -12,12 +11,12 @@ export default function Home() {
           <p className="text-xl text-gray-600 mb-8">
             Encuentra los mejores productos con facilidad
           </p>
-          <Link
+          <LoadingLink
             href="/products"
             className="button_primary big_button"
           >
             Ver Catálogo
-          </Link>
+          </LoadingLink>
         </section>
 
         {/* TODO: Agregar sección de productos destacados */}

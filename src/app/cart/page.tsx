@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { useCart } from '../../context/cartContext';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
@@ -108,12 +108,12 @@ export default function CartPage() {
           </div>
 
           <div className="flex flex-wrap justify-around gap-4">
-            <Link
+            <LoadingLink
               href="/products"
               className="button_secondary medium_button"
             >
               Continuar Comprando
-            </Link>
+            </LoadingLink>
 
             <button
               onClick={() => {

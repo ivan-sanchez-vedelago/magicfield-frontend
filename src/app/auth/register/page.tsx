@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import Header from '@/src/components/Header';
+import LoadingLink from '@/src/components/navigation/LoadingLink';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -95,9 +94,9 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               ¿Ya tienes cuenta?{' '}
-              <Link href="/auth/login" className="text-black font-medium hover:underline">
+              <LoadingLink href="/auth/login" className="text-black font-medium hover:underline">
                 Ingresar
-              </Link>
+              </LoadingLink>
             </p>
           </div>
         </div>
