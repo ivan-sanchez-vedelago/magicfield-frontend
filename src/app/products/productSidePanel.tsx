@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useCart } from '../../context/cartContext';
 import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 type Product = {
   id: number;
@@ -28,6 +29,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
 
   const [qty, setQty] = useState(quantityInCart);
   const [showDetails, setShowDetails] = useState(false);
+  const { startNavigation } = useNavigation();
 
   useEffect(() => {
     setQty(quantityInCart);
@@ -114,9 +116,8 @@ export default function ProductSidePanel({ product, onClose }: Props) {
           <button
             onClick={() => {
               closeDrawer();
-              setTimeout(() => {
-                router.push(`/products/${product.id}`);
-              }, 300);
+              startNavigation();
+              router.push(`/products/${product.id}`);
             }}
             className="w-full button_secondary medium_button"
           >

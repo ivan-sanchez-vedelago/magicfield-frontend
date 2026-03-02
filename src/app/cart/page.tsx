@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '../../context/cartContext';
 import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 export default function CartPage() {
   const { items, dispatch, total } = useCart();
   const router = useRouter();
+  const { startNavigation } = useNavigation();
 
   useEffect(() => {
     router.prefetch(`/checkout`);
@@ -114,7 +116,10 @@ export default function CartPage() {
             </Link>
 
             <button
-              onClick={() => router.push("/checkout")}
+              onClick={() => {
+                startNavigation();
+                router.push("/checkout");
+              }}
               className="button_primary medium_button"
               disabled={items.length === 0}
             >

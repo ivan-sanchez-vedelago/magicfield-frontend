@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
+import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 type Product = {
   id: number;
@@ -23,8 +24,11 @@ export default function Header() {
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpenHamburguerMenu] = useState(false);
+  const { startNavigation } = useNavigation();
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -41,7 +45,12 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+
+      if (
+        !searchRef.current?.contains(target) &&
+        !dropdownRef.current?.contains(target)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -53,18 +62,14 @@ export default function Header() {
   useEffect(() => {
     if (!open) return;
 
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        containerRef.current && !containerRef.current.contains(e.target as Node)
-      ) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) {
         setOpenHamburguerMenu(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
     };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
 
   const toggleMenu = () => {
@@ -73,24 +78,25 @@ export default function Header() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!search.trim()) return;
 
-    router.push(`/products?search=${encodeURIComponent(search)}`);
     setShowDropdown(false);
+    startNavigation();
+    router.push(`/products?search=${encodeURIComponent(search)}`);
   };
 
   const goToProduct = (id: number) => {
     setShowDropdown(false);
     setSearch('');
+    startNavigation();
     router.push(`/products/${id}`);
   };
 
   return (
-    <header className="nav_color">
+    <header className="nav_color relative">
       <nav className="flex justify-between items-center gap-6">
 
-        {/* ===== LOGO RESPONSIVE ===== */}
+        {/* ===== LOGO ===== */}
         <Link href="/" className="flex items-center">
           <Image
             src="/images/magic-field-logo.png"
@@ -102,9 +108,10 @@ export default function Header() {
           />
         </Link>
 
-        <div className='flex justify-between items-center w-full gap-6'>
-          {/* 🔎 buscador */}
-          <div ref={containerRef} className="relative w-full">
+        <div className="flex justify-between items-center w-full gap-6">
+
+          {/* ===== BUSCADOR ===== */}
+          <div ref={searchRef} className="w-full">
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
@@ -117,62 +124,34 @@ export default function Header() {
                 className="w-full px-3 py-2 rounded text-black"
               />
             </form>
-
-            {/* ✅ dropdown */}
-            {showDropdown && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 w-full bg-white text-black rounded shadow-lg mt-1 z-50">
-
-                {suggestions.map(product => (
-                  <button
-                    key={product.id}
-                    onClick={() => goToProduct(product.id)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 flex items-center gap-3"
-                  >
-                    {product.imageUrls?.[0] && (
-                      <img
-                        src={product.imageUrls[0]}
-                        className="w-10 h-10 object-cover rounded"
-                      />
-                    )}
-                    {product.name}
-                  </button>
-                ))}
-
-              </div>
-            )}
           </div>
 
           <div className="hidden md:flex header_tab_container" style={{ minWidth: '242px' }}>
-            <Link href="/products" className="header_tab">
-              Productos
-            </Link>
-            <Link href="/cart" className="header_tab">
-              Carrito
-            </Link>
-            <Link href="/auth/login" className="header_tab">
-              Ingresar
-            </Link>
+            <Link href="/products" className="header_tab">Productos</Link>
+            <Link href="/cart" className="header_tab">Carrito</Link>
+            <Link href="/auth/login" className="header_tab">Ingresar</Link>
           </div>
-          
-          {/* ===== HAMBURGER BUTTON ===== */}
+
+          {/* ===== BOTON HAMBURGUESA ===== */}
           <button
             onClick={toggleMenu}
             className="md:hidden w-8 h-8 flex flex-col justify-center items-center gap-1"
-            aria-label="Toggle menu"
           >
             <span className={`block w-6 h-0.5 bg-white transition ${open ? "rotate-45 translate-y-1.5" : ""}`} />
             <span className={`block w-6 h-0.5 bg-white transition ${open ? "opacity-0" : ""}`} />
             <span className={`block w-6 h-0.5 bg-white transition ${open ? "-rotate-45 -translate-y-1.5" : ""}`} />
           </button>
 
+          {/* ===== BACKDROP MOBILE ===== */}
           <div
             className={`fixed inset-0 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
               open ? 'opacity-100 visible' : 'opacity-0 invisible'
             }`}
           />
 
+          {/* ===== MENU MOBILE ===== */}
           <div
-            ref={containerRef}
+            ref={menuRef}
             className={`nav_dropdown nav_color transform transition-all duration-300 md:hidden z-50
             ${
               open
@@ -181,35 +160,41 @@ export default function Header() {
             }`}
           >
             <nav className="flex flex-col py-2">
-
-              <Link
-                href="/products"
-                onClick={() => setOpenHamburguerMenu(false)}
-                className="px-5 py-3 header_tab"
-              >
-                Productos
-              </Link>
-
-              <Link
-                href="/cart"
-                onClick={() => setOpenHamburguerMenu(false)}
-                className="px-5 py-3 header_tab"
-              >
-                Carrito
-              </Link>
-
-              <Link
-                href="/auth/login"
-                onClick={() => setOpenHamburguerMenu(false)}
-                className="px-5 py-3 header_tab"
-              >
-                Ingresar
-              </Link>
-
+              <Link href="/products" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Productos</Link>
+              <Link href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</Link>
+              <Link href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</Link>
             </nav>
           </div>
         </div>
       </nav>
+
+      {/* ===== DROPDOWN ===== */}
+      {showDropdown && suggestions.length > 0 && (
+        <div
+          ref={dropdownRef}
+          className="
+            absolute top-full left-1/2 -translate-x-1/2
+            w-full max-w-5xl
+            bg-white text-black rounded shadow-lg mt-2 z-50
+          "
+        >
+          {suggestions.map(product => (
+            <button
+              key={product.id}
+              onClick={() => goToProduct(product.id)}
+              className="w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center gap-3"
+            >
+              {product.imageUrls?.[0] && (
+                <img
+                  src={product.imageUrls[0]}
+                  className="w-10 h-10 object-cover rounded"
+                />
+              )}
+              {product.name}
+            </button>
+          ))}
+        </div>
+      )}
     </header>
   );
 }

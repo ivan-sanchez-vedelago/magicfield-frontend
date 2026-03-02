@@ -6,6 +6,8 @@ import { Inter } from 'next/font/google';
 import '../globals.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { NavigationProvider } from '@/src/components/navigation/NavigationContext';
+import TopProgressBar from '@/src/components/navigation/TopProgressBar';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -14,7 +16,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Magic Field',
-  description: 'Magic Field - pequeño e-commerce para portfolio profesional',
+  description: 'Magic Field - Tienda online para podructos TCG y otros relacionados',
+  icons: {
+    icon: '/images/favicon.ico',
+  },
 };
 
 export default function RootLayout({ children }: {
@@ -25,10 +30,13 @@ export default function RootLayout({ children }: {
       <body className={inter.className}>
         <CartProvider>
           <ProductProvider>
-            <Header />
-            <CartToast/>
-            {children}
-            <Footer />
+            <NavigationProvider>
+              <TopProgressBar  />
+              <Header />
+              <CartToast/>
+              {children}
+              <Footer />
+            </NavigationProvider>
           </ProductProvider>
         </CartProvider>
       </body>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useCart } from '@/src/context/cartContext';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const { startNavigation } = useNavigation();
 
   async function submitOrder() {
 
@@ -40,6 +42,7 @@ export default function CheckoutPage() {
       if (!res.ok) throw new Error('Error en checkout');
 
       clearCart();
+      startNavigation();
       router.push('/checkout/success');
 
     } catch (e) {
