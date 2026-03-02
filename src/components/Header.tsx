@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
@@ -89,8 +90,16 @@ export default function Header() {
     <header className="nav_color">
       <nav className="flex justify-between items-center gap-6">
 
-        <Link href="/" className="main_title_text">
-          Magic Field
+        {/* ===== LOGO RESPONSIVE ===== */}
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/images/magic-field-logo.png"
+            alt="Magic Field"
+            width={80}
+            height={75}
+            className="block object-contain"
+            priority
+          />
         </Link>
 
         <div className='flex justify-between items-center w-full gap-6'>
