@@ -4,6 +4,7 @@ import { useCart } from '../../../context/cartContext';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
+import ProductImageGallery from '@/src/components/product/ProductImageGallery';
 
 type Product = {
   id: number;
@@ -87,13 +88,12 @@ export default function ProductDetailClient({ product } : { product: Product }) 
       </div>
 
       <section className="detail_page_container">
-
-        <img
-          src={product.imageUrls?.[0]}
-          alt={product.name}
-          className="detail_image"
-          style={{ height: "380px" }}
-        />
+        <div className="detail_image_box box_border">
+          <ProductImageGallery
+            images={product.imageUrls || []}
+            name={product.name}
+          />
+        </div>
 
         <div className="detail_page_info">
           <h1 className="text-3xl font-bold">{product.name}</h1>

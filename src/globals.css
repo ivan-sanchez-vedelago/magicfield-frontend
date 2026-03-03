@@ -210,6 +210,15 @@ hr {
   padding: 1.5rem;
 }
 
+.detail_image_box {
+  width: 33%;
+  min-width: 350px;
+}
+
+.detail_image {
+  object-fit: cover;
+}
+
 .detail_page_info {
   display: flex;
   flex-direction: column;
@@ -219,15 +228,12 @@ hr {
 }
 
 @media (max-width: 900px) {
+  .detail_image_box {
+    width: 70%;
+  }
   .detail_page_info {
     width: 100%;
   }
-}
-
-.detail_image {
-  width: 33%;
-  object-fit: cover;
-  min-width: 350px;
 }
 
 .image_slideshow_arrow {
