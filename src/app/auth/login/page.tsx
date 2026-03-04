@@ -21,8 +21,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-1 flex items-center justify-center py-12 px-6">
+    <div className="flex-1 flex flex-col">
+      <main className="flex items-center justify-center py-12 px-6">
         <section className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Pestaña no disponible</h1>
           <p className="text-xl text-gray-600 mb-8">

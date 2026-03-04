@@ -30,7 +30,7 @@ export default async function ProductDetailPage({
   const product: Product = await res.json();
 
   return (
-    <div className="min-h-screen">
+    <div className="flex-1">
       <ProductDetailClient product={product} />
     </div>
   );

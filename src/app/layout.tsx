@@ -27,7 +27,7 @@ export default function RootLayout({ children }: {
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
+      <body className={`${inter.className} min-h-[100dvh] flex flex-col`}>
         <CartProvider>
           <ProductProvider>
             <NavigationProvider>

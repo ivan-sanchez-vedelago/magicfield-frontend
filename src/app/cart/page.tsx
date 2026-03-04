@@ -16,8 +16,8 @@ export default function CartPage() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <main className="max-w-7xl mx-auto py-12 px-6">
+    <div className="flex-1">
+      <main className="mx-auto py-12 px-6">
         <h1 className="main_title_text mb-6">Mi Carrito</h1>
 
         {/* CARRITO VACÍO */}

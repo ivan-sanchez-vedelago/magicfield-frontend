@@ -56,7 +56,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
   }, [allProducts, product]);
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+    <main className="mx-auto px-6 py-8 space-y-10">
 
       <div className="normal_text box_border">
         <LoadingLink className="underline" href="/">Home</LoadingLink>

@@ -28,8 +28,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-1 flex items-center justify-center py-12 px-6">
+    <div className="flex-1 flex flex-col">
+      <main className="flex items-center justify-center py-12 px-6">
         <div className="w-full max-w-md">
           <h1 className="text-3xl font-bold mb-8 text-center">Registrarse</h1>
 
