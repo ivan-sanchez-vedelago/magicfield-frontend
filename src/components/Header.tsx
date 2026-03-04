@@ -126,10 +126,10 @@ export default function Header() {
             </form>
           </div>
 
-          <div className="hidden md:flex header_tab_container" style={{ minWidth: '242px' }}>
+          <div className="hidden md:flex header_tab_container">
             <LoadingLink href="/products" className="header_tab">Productos</LoadingLink>
             <LoadingLink href="/cart" className="header_tab">Carrito</LoadingLink>
-            <LoadingLink href="/auth/login" className="header_tab">Ingresar</LoadingLink>
+            { /* <LoadingLink href="/auth/login" className="header_tab">Ingresar</LoadingLink> */ }
           </div>
 
           {/* ===== BOTON HAMBURGUESA ===== */}
@@ -162,7 +162,7 @@ export default function Header() {
             <nav className="flex flex-col py-2">
               <LoadingLink href="/products" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Productos</LoadingLink>
               <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</LoadingLink>
-              <LoadingLink href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</LoadingLink>
+              { /* <LoadingLink href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</LoadingLink> */ }
             </nav>
           </div>
         </div>
