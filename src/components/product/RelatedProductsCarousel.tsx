@@ -24,10 +24,8 @@ export default function RelatedProductsCarousel({
 
     const startXRef = useRef(0);
     const startScrollRef = useRef(0);
-    const velocityRef = useRef(0);
     const lastXRef = useRef(0);
     const lastTimeRef = useRef(0);
-    const animationRef = useRef<number | null>(null);
 
     const clamp = (value: number) =>
         Math.max(0, Math.min(value, maxScroll));
@@ -56,10 +54,6 @@ export default function RelatedProductsCarousel({
             const newScroll = startScrollRef.current - dx;
 
             const now = performance.now();
-            const deltaX = e.clientX - lastXRef.current;
-            const deltaTime = now - lastTimeRef.current;
-
-            velocityRef.current = deltaX / deltaTime;
 
             lastXRef.current = e.clientX;
             lastTimeRef.current = now;
@@ -70,7 +64,6 @@ export default function RelatedProductsCarousel({
         const handleUp = () => {
             if (!isDragging) return;
             setIsDragging(false);
-            applyInertia();
         };
 
         window.addEventListener('pointermove', handleMove);
@@ -84,23 +77,14 @@ export default function RelatedProductsCarousel({
         };
     }, [isDragging, maxScroll]);
 
-    const stopInertia = () => {
-        if (animationRef.current) {
-            cancelAnimationFrame(animationRef.current);
-            animationRef.current = null;
-        }
-    };
-
     const getStep = () => containerRef.current?.offsetWidth ?? 300;
 
     const goNext = () => {
-        stopInertia();
         setIsDragging(false);
         setScrollX(prev => Math.min(prev + getStep(), maxScroll));
     };
 
     const goPrev = () => {
-        stopInertia();
         setIsDragging(false);
         setScrollX(prev => Math.max(prev - getStep(), 0));
     };
@@ -115,26 +99,6 @@ export default function RelatedProductsCarousel({
 
         lastXRef.current = e.clientX;
         lastTimeRef.current = performance.now();
-
-        if (animationRef.current) {
-            cancelAnimationFrame(animationRef.current);
-        }
-    };
-
-    const applyInertia = () => {
-        let velocity = velocityRef.current * 1000;
-        const friction = 0.95;
-
-        const animate = () => {
-        if (Math.abs(velocity) < 0.1) return;
-
-        velocity *= friction;
-        setScrollX(prev => clamp(prev - velocity * 0.016));
-
-        animationRef.current = requestAnimationFrame(animate);
-        };
-
-        animationRef.current = requestAnimationFrame(animate);
     };
 
     if (!products.length) return null;
