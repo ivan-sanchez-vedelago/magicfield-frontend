@@ -121,7 +121,7 @@ export default function Header() {
                   setSearch(e.target.value);
                   setShowDropdown(true);
                 }}
-                className="w-full px-3 py-2 rounded text-black"
+                className="input_field"
               />
             </form>
           </div>

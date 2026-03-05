@@ -7,8 +7,8 @@ export default function Home() {
     <div className="flex-1 flex flex-col">
       <main className="mx-auto w-full py-12 px-6">
         <section className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Bienvenido a Magic Field</h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <h1 className="main_title_text">Bienvenido a Magic Field</h1>
+          <p className="normal_text text-gray-400 mt-2 mb-8">
             Encuentra los mejores productos con facilidad
           </p>
           <LoadingLink

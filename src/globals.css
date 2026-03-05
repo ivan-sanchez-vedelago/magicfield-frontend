@@ -93,7 +93,7 @@ hr {
 .normal_text {
   font-size: 16px;
   font-weight: 400;
-  line-height: 1.6rem;
+  line-height: 1.3rem;
 }
 
 .small_text {
@@ -187,6 +187,28 @@ hr {
   padding: 0.25rem 1.5rem;
   font-size: 12px;
   font-weight: 500;
+}
+
+.input_field {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+}
+
+.input_field:focus {
+  outline: none;
+  border-color: #3DDC97;
+  box-shadow: 0 0 0 2px rgba(102,187,106,0.3);
+  
+}
+
+.input_field::placeholder {
+  transition: opacity 0.2s ease;
+}
+
+.input_field:focus::placeholder {
+  opacity: 0;
 }
 
 .object-contain {
