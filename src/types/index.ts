@@ -19,7 +19,7 @@ export interface Product {
 
 // TODO: Tipos para carrito
 export interface CartItem {
-  productId: number;
+  productId: string;
   name: string;
   price: number;
   quantity: number;

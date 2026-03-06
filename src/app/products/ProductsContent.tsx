@@ -7,7 +7,7 @@ import ProductSidePanel from './productSidePanel';
 import { useProducts } from '@/src/context/productContext';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   price: number;

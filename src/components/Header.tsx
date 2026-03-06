@@ -8,7 +8,7 @@ import { useProducts } from '@/src/context/productContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   price: number;
@@ -85,7 +85,7 @@ export default function Header() {
     router.push(`/products?search=${encodeURIComponent(search)}`);
   };
 
-  const goToProduct = (id: number) => {
+  const goToProduct = (id: string) => {
     setShowDropdown(false);
     setSearch('');
     startNavigation();

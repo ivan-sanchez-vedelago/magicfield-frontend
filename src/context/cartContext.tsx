@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useReducer, useState } from 'react';
 
 export interface CartItem {
-  productId: number;
+  productId: string;
   name: string;
   price: number;
   quantity: number;
@@ -17,9 +17,9 @@ type CartState = {
 
 type CartAction =
   | { type: 'ADD_ITEM'; item: CartItem }
-  | { type: 'INCREASE'; productId: number }
-  | { type: 'DECREASE'; productId: number }
-  | { type: 'REMOVE_ITEM'; productId: number }
+  | { type: 'INCREASE'; productId: string }
+  | { type: 'DECREASE'; productId: string }
+  | { type: 'REMOVE_ITEM'; productId: string }
   | { type: 'CLEAR_CART' };
 
 type CartContextType = {
@@ -28,7 +28,7 @@ type CartContextType = {
   dispatch: React.Dispatch<CartAction>;
   clearCart: () => void;
   setProductQuantity: (product: any, qty: number) => void;
-  removeProduct: (productId: number) => void;
+  removeProduct: (productId: string) => void;
   toastMessage: string | null;
 };
 
@@ -152,7 +152,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const removeProduct = (productId: number) => {
+  const removeProduct = (productId: string) => {
     dispatch({ type: 'REMOVE_ITEM', productId });
     showFeedback('Producto eliminado del carrito');
   };

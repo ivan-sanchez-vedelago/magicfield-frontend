@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   price: number;
   imageUrls?: string[];

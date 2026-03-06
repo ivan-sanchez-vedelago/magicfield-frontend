@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   price: number;

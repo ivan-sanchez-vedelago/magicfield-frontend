@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   price: number;

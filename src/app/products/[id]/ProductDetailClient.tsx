@@ -8,7 +8,7 @@ import ProductImageGallery from '@/src/components/product/ProductImageGallery';
 import RelatedProductsCarousel from '@/src/components/product/RelatedProductsCarousel';
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   price: number;
