@@ -75,7 +75,7 @@ export default function ProductCard({ product, onClick }: Props) {
         {product.name}
       </h2>
 
-      <p className="normal_text secondary_text_color">
+      <p className="small_text secondary_text_color">
         {product.description}
       </p>
 

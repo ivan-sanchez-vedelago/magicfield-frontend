@@ -8,6 +8,7 @@ export type Product = {
   description?: string;
   price: number;
   stock: number;
+  type?: 'SINGLE' | 'SEALED' | 'OTHER';
   imageUrls?: string[];
 };
 

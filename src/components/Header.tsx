@@ -92,6 +92,16 @@ export default function Header() {
     router.push(`/products/${id}`);
   };
 
+  const handleCategoryClick = (category: string) => {
+    setOpenHamburguerMenu(false);
+    startNavigation();
+    if (category === 'all') {
+      router.push('/products');
+    } else {
+      router.push(`/products?category=${category}`);
+    }
+  };
+
   return (
     <header className="nav_color relative">
       <nav className="flex justify-between items-center gap-6">
@@ -126,8 +136,15 @@ export default function Header() {
             </form>
           </div>
 
-          <div className="hidden md:flex header_tab_container">
-            <LoadingLink href="/products" className="header_tab">Productos</LoadingLink>
+          <div className="hidden md:flex header_tab_container gap-2">
+            <div className="relative group">
+              <button className="header_tab cursor-pointer flex items-center gap-2">Productos <span className="chevron"></span></button>
+              <div className="absolute left-0 mt-0 w-48 bg-gray-900 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Singles</button>
+                <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Producto Sellado</button>
+                <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Accesorios</button>
+              </div>
+            </div>
             <LoadingLink href="/cart" className="header_tab">Carrito</LoadingLink>
             { /* <LoadingLink href="/auth/login" className="header_tab">Ingresar</LoadingLink> */ }
           </div>
@@ -160,7 +177,9 @@ export default function Header() {
             }`}
           >
             <nav className="flex flex-col py-2">
-              <LoadingLink href="/products" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Productos</LoadingLink>
+              <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
+              <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
+              <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
               <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</LoadingLink>
               { /* <LoadingLink href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</LoadingLink> */ }
             </nav>

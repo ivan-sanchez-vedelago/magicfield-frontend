@@ -81,12 +81,12 @@ hr {
 }
 
 .product_title_text {
-  font-size: 20px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .product_price_text {
-  font-size: 22px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -211,10 +211,6 @@ hr {
   opacity: 0;
 }
 
-.object-contain {
-    object-fit: cover;
-}
-
 .product_image {
   position: relative;
   display: flex;
@@ -316,4 +312,13 @@ hr {
   align-items: center;
   padding: 0 3rem;
   overflow: hidden;
+}
+
+.chevron {
+  display: inline-block;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
 }

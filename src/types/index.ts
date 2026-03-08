@@ -13,6 +13,7 @@ export interface Product {
   description: string;
   price: number;
   stock: number;
+  type?: 'SINGLE' | 'SEALED' | 'OTHER';
   imageUrl: string;
   createdAt: Date;
 }
