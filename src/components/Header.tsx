@@ -181,7 +181,6 @@ export default function Header() {
               <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
               <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
               <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</LoadingLink>
-              { /* <LoadingLink href="/auth/login" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Ingresar</LoadingLink> */ }
             </nav>
           </div>
         </div>

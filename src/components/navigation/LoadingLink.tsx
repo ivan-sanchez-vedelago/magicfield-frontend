@@ -1,17 +1,19 @@
 'use client';
 
 import Link, { LinkProps } from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, MouseEvent } from 'react';
 import { useNavigation } from './NavigationContext';
 
 type Props = LinkProps & {
   children: ReactNode;
   className?: string;
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 export default function LoadingLink({
   children,
   className,
+  onClick,
   ...props
 }: Props) {
   const { startNavigation } = useNavigation();
@@ -21,9 +23,10 @@ export default function LoadingLink({
       {...props}
       className={className}
       onClick={(e) => {
-        startNavigation();
+        if (onClick) {
+          onClick(e);
+        }
 
-        // si el usuario abre en nueva pestaña no mostrar loading
         if (
           e.metaKey ||
           e.ctrlKey ||
@@ -33,6 +36,7 @@ export default function LoadingLink({
         ) {
           return;
         }
+        startNavigation();
       }}
     >
       {children}
