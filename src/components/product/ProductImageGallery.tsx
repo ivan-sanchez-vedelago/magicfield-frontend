@@ -94,7 +94,7 @@ export default function ProductImageGallery({ images, name }: Props) {
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className={`object-contain ${
                     fade ? 'opacity-0' : 'opacity-100'
-                } transition-opacity duration-300`}
+                } transition-opacity duration-300 image_adjuster`}
                 priority
                 />
             </div>

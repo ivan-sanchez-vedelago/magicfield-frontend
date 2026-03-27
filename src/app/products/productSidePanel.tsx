@@ -77,7 +77,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="product_title_text">Producto</h2>
+          <h2 className="product_title_text">{product.name}</h2>
           <button onClick={closeDrawer}>✕</button>
         </div>
 
@@ -87,11 +87,20 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             className="w-full h-64 object-contain"
           />
 
-          <h3 className="product_title_text primary_text_color">{product.name}</h3>
           <p className="normal_text secondary_text_color">{product.description}</p>
-          <p className="product_price_text primary_text_color">${product.price}</p>
+          <p className="product_price_text">ARS$ {product.price.toFixed(2)}</p>
+          <button
+            onClick={() => {
+              closeDrawer();
+              startNavigation();
+              router.push(`/products/${product.id}`);
+            }}
+            className="w-full button_secondary medium_button"
+          >
+            Ver detalles
+          </button>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" style={{alignSelf: 'center'}}>
             <button
               onClick={decrease}
               className="px-3 py-1 border disabled:opacity-50"
@@ -113,19 +122,8 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             </button>
           </div>
 
-          <button
-            onClick={() => {
-              closeDrawer();
-              startNavigation();
-              router.push(`/products/${product.id}`);
-            }}
-            className="w-full button_secondary medium_button"
-          >
-            Ver detalles
-          </button>
-
-          <p className="normal_text secondary_text_color">
-            Stock disponible: {product.stock}
+          <p className="header_tab secondary_text_color" style={{alignSelf: 'center'}}>
+            {product.stock} en stock
           </p>
         </div>
 
@@ -137,7 +135,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             }}
             className="w-full button_primary medium_button"
           >
-            Confirmar
+            Agregar al carrito
           </button>
         </div>
       </aside>

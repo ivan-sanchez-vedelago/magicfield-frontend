@@ -53,7 +53,7 @@ hr {
 }
 
 .sidePanel_main {
-  overflow-y: auto;
+  overflow-y: scroll;
   padding: 1.5rem;
   margin: 0;
   display: flex;
@@ -80,14 +80,23 @@ hr {
   font-weight: 400;
 }
 
+.product_detail_title_text {
+  font-family: cursive;
+  font-size: 30px;
+  font-weight: 600;
+}
+
 .product_title_text {
+  font-family: cursive;
   font-size: 13px;
   font-weight: 600;
 }
 
 .product_price_text {
-  font-size: 12px;
-  font-weight: 700;
+  font-family: sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #178817;
 }
 
 .normal_text {
@@ -184,7 +193,7 @@ hr {
 }
 
 .small_button {
-  padding: 0.25rem 1.5rem;
+  padding: 0.25rem 0.75rem;
   font-size: 12px;
   font-weight: 500;
 }
@@ -215,8 +224,6 @@ hr {
   position: relative;
   display: flex;
   align-items: center;
-  height: 12rem;
-  margin-bottom: 1rem;
   cursor: pointer;
 }
 
@@ -282,7 +289,7 @@ hr {
 .product_box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   cursor: pointer;
 }
 
@@ -321,4 +328,16 @@ hr {
   width: 8px;
   height: 8px;
   transform: rotate(45deg);
+}
+
+.limit_two_lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+.image_adjuster {
+  width: auto!important;
+  height: auto!important;
 }

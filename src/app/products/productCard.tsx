@@ -75,17 +75,15 @@ export default function ProductCard({ product, onClick }: Props) {
         {product.name}
       </h2>
 
-      <p className="small_text secondary_text_color">
+      <p className="small_text secondary_text_color limit_two_lines">
         {product.description}
       </p>
 
-      <div className="flex items-center justify-between">
-        <div className="product_price_text primary_text_color">
-          ${product.price.toFixed(2)}
-        </div>
-        <div className="normal_text secondary_text_color">
-          Stock: {product.stock}
-        </div>
+      <div className="product_price_text" style={{alignSelf: 'center'}}>
+          ARS$ {product.price.toFixed(2)}
+      </div>
+      <div className='small_text' style={{alignSelf: 'center'}}>
+        {product.stock} en stock
       </div>
     </article>
   );

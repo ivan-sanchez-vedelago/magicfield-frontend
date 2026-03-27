@@ -75,7 +75,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
         </div>
 
         <div className="detail_page_info">
-          <h1 className="text-3xl font-bold">{product.name}</h1>
+          <h1 className="product_detail_title_text">{product.name}</h1>
 
           <div className="box_border">
 
@@ -90,19 +90,19 @@ export default function ProductDetailClient({ product } : { product: Product }) 
             <div className="grid grid-cols-3 items-center">
               <p className="text-center">-</p>
 
-              <p className="text-center">
-                ARS ${product.price}
+              <p className="product_price_text text-center">
+                ARS$ {product.price.toFixed(2)}
               </p>
 
               <div className="text-center">
                 <div className="flex justify-center items-center gap-2">
-                  <button onClick={decrease} disabled={qty <= 0} className="px-3 py-1 border disabled:opacity-50">-</button>
+                  <button onClick={decrease} disabled={qty <= 0} className="px-2 py-1 border disabled:opacity-50">-</button>
                   <span className="cantidad_stock_input">{qty}</span>
-                  <button onClick={increase} disabled={qty >= product.stock} className="px-3 py-1 border disabled:opacity-50">+</button>
+                  <button onClick={increase} disabled={qty >= product.stock} className="px-2 py-1 border disabled:opacity-50">+</button>
                 </div>
 
-                <p className="text-sm text-gray-500 mt-1">
-                  Disponible {product.stock}
+                <p className="small_text secondary_text_color mt-1">
+                  Disponible{product.stock > 1 && 's'}: {product.stock}
                 </p>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
       </section>
 
       <section className="px-6">
-        <h2 className="product_price_text mb-2">
+        <h2 className="normal_text mb-2">
           Productos relacionados
         </h2>
 
