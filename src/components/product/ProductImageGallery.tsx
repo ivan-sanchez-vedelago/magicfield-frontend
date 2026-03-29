@@ -88,14 +88,15 @@ export default function ProductImageGallery({ images, name }: Props) {
                 style={zoomStyle}
             >
                 <Image
-                src={images[selectedIndex]}
-                alt={name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className={`object-contain ${
+                  src={images[selectedIndex]}
+                  alt={name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  unoptimized
+                  className={`object-contain ${
                     fade ? 'opacity-0' : 'opacity-100'
-                } transition-opacity duration-300 image_adjuster`}
-                priority
+                  } transition-opacity duration-300`}
+                  priority
                 />
             </div>
         </div>

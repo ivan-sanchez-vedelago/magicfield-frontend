@@ -336,8 +336,3 @@ hr {
   -webkit-box-orient: vertical;  
   overflow: hidden;
 }
-
-.image_adjuster {
-  width: auto!important;
-  height: auto!important;
-}

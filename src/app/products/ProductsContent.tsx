@@ -12,7 +12,13 @@ type Product = {
   description?: string;
   price: number;
   stock: number;
-  type?: string;
+  type?: 'SINGLE' | 'SEALED' | 'OTHER';
+  scryfallId?: string;
+  isFoil?: boolean;
+  set?: string;
+  collectorNumber?: string;
+  condition?: string;
+  language?: string;
   imageUrls?: string[];
 };
 

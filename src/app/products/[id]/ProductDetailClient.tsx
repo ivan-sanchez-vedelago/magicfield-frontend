@@ -13,11 +13,19 @@ type Product = {
   description?: string;
   price: number;
   stock: number;
+  type?: 'SINGLE' | 'SEALED' | 'OTHER';
+  scryfallId?: string;
+  isFoil?: boolean;
+  set?: string;
+  collectorNumber?: string;
+  condition?: string;
+  language?: string;
   imageUrls?: string[];
 };
 
 export default function ProductDetailClient({ product } : { product: Product }) {
 
+  console.log("ProductDetailClient render, product:", product);
   const { items, setProductQuantity, removeProduct } = useCart();
   const { products: allProducts } = useProducts();
 
@@ -79,16 +87,23 @@ export default function ProductDetailClient({ product } : { product: Product }) 
 
           <div className="box_border">
 
-            <div className="grid grid-cols-3 text-sm font-medium text-gray-600">
+            <div className="grid grid-cols-4 text-sm font-medium text-gray-600">
               <div className="text-center">Estado</div>
+              <div className="text-center">Idioma</div>
               <div className="text-center">Precio</div>
               <div className="text-center">Cantidad</div>
             </div>
 
             <hr className="my-2" />
 
-            <div className="grid grid-cols-3 items-center">
-              <p className="text-center">-</p>
+            <div className="grid grid-cols-4 items-center">
+              <p className="text-center">
+                {product.condition || '-'}
+              </p>
+
+              <p className="text-center">
+                {product.language || '-'}
+              </p>
 
               <p className="product_price_text text-center">
                 ARS$ {product.price.toFixed(2)}
@@ -131,16 +146,17 @@ export default function ProductDetailClient({ product } : { product: Product }) 
             </button>
 
             {showDetails && (
-              <div>
+              <div className="normal_text secondary_text_color">
                 <hr className="my-2" />
-                <div className="secondary_text_color p-4">
-                  <p className="normal_text">
-                    <b>Nombre:</b> {product.name}
-                  </p>
-                  <p className="normal_text">
-                    <b>Descripcion:</b> {product.description}
-                  </p>
+                <div className="p-4 grid grid-cols-2 gap-6">
+                    <b>Nombre:</b> {product.name ? product.name : '-'}
+                    <b>Es foil:</b> {product.isFoil ? 'Sí' : 'No'}
+                    <b>Set:</b> {product.set ? product.set : '-'}
+                    <b>N° de coleccionista:</b> {product.collectorNumber ? `#${product.collectorNumber}` : '-'}
                 </div>
+                <p className="normal_text" style={{fontStyle: 'italic', paddingTop: '0.5rem'}}>
+                  {product.description}
+                </p>
               </div>
             )}
           </div>

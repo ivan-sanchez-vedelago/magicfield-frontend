@@ -4,10 +4,19 @@ import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 
 type Product = {
-  id: string;
-  name: string;
-  price: number;
-  imageUrls?: string[];
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    stock: number;
+    type?: 'SINGLE' | 'SEALED' | 'OTHER';
+    scryfallId?: string;
+    isFoil?: boolean;
+    set?: string;
+    collectorNumber?: string;
+    condition?: string;
+    language?: string;
+    imageUrls?: string[];
 };
 
 export default function RelatedProductsCarousel({
