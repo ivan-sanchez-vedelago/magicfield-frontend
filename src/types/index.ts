@@ -6,17 +6,22 @@ export interface AuthUser {
   role: 'ADMIN' | 'USER';
 }
 
-// TODO: Tipos para producto
-export interface Product {
+// Tipo para producto
+export type Product = {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   stock: number;
   type?: 'SINGLE' | 'SEALED' | 'OTHER';
-  imageUrl: string;
-  createdAt: Date;
-}
+  scryfallId?: string;
+  isFoil?: boolean;
+  set?: string;
+  collectorNumber?: string;
+  condition?: string;
+  language?: string;
+  imageUrls?: string[];
+};
 
 // TODO: Tipos para carrito
 export interface CartItem {

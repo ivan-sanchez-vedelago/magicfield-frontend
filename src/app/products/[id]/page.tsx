@@ -1,20 +1,5 @@
 import ProductDetailClient from './ProductDetailClient';
-
-type Product = {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  type?: 'SINGLE' | 'SEALED' | 'OTHER';
-  scryfallId?: string;
-  isFoil?: boolean;
-  set?: string;
-  collectorNumber?: string;
-  condition?: string;
-  language?: string;
-  imageUrls?: string[];
-};
+import type { Product } from '@/src/types';
 
 export default async function ProductDetailPage({
   params,

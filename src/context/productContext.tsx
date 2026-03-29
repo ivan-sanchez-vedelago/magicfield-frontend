@@ -1,22 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { Product } from '@/src/types';
 
-export type Product = {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  type?: 'SINGLE' | 'SEALED' | 'OTHER';
-  scryfallId?: string;
-  isFoil?: boolean;
-  set?: string;
-  collectorNumber?: string;
-  condition?: string;
-  language?: string;
-  imageUrls?: string[];
-};
+export type { Product };
 
 type ProductContextType = {
   products: Product[];

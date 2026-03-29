@@ -6,22 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
 import ProductImageGallery from '@/src/components/product/ProductImageGallery';
 import RelatedProductsCarousel from '@/src/components/product/RelatedProductsCarousel';
-
-type Product = {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  type?: 'SINGLE' | 'SEALED' | 'OTHER';
-  scryfallId?: string;
-  isFoil?: boolean;
-  set?: string;
-  collectorNumber?: string;
-  condition?: string;
-  language?: string;
-  imageUrls?: string[];
-};
+import type { Product } from '@/src/types';
 
 export default function ProductDetailClient({ product } : { product: Product }) {
 
