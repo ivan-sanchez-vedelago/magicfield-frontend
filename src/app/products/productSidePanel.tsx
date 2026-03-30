@@ -79,7 +79,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             className="w-full h-64 object-contain"
           />
 
-          <p className="normal_text secondary_text_color">{product.description}</p>
+          <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
           <p className="product_price_text">ARS$ {product.price.toFixed(2)}</p>
           <button
             onClick={() => {
