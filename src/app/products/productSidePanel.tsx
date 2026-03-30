@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useCart } from '../../context/cartContext';
+import { formatPrice } from '@/src/utils/formatPrice';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import type { Product } from '@/src/types';
@@ -80,7 +81,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
           />
 
           <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
-          <p className="product_price_text">ARS$ {product.price.toFixed(2)}</p>
+          <p className="product_price_text">ARS$ {formatPrice(product.price)}</p>
           <button
             onClick={() => {
               closeDrawer();

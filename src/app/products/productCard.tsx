@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Product } from '@/src/types';
+import { formatPrice } from '@/src/utils/formatPrice';
 
 type Props = {
   product: Product;
@@ -72,7 +73,7 @@ export default function ProductCard({ product, onClick }: Props) {
       </p>
 
       <div className="product_price_text text-center" style={{alignSelf: 'center'}}>
-          ARS$ {product.price.toFixed(2)}
+          ARS$ {formatPrice(product.price)}
       </div>
       <div className='small_text text-center' style={{alignSelf: 'center'}}>
         {product.stock} en stock

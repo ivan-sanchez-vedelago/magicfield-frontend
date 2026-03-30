@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
+import { formatPrice } from '@/src/utils/formatPrice';
 import type { Product } from '@/src/types';
 
 export default function RelatedProductsCarousel({
@@ -128,7 +129,7 @@ export default function RelatedProductsCarousel({
                         className="w-full h-32 object-contain"
                     />
                     <p className="text-sm mt-2">{p.name}</p>
-                    <p className="font-semibold">${p.price}</p>
+                    <p className="font-semibold">ARS$ {formatPrice(p.price)}</p>
                     </LoadingLink>
                 ))}
                 </div>

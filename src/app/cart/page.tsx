@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { useCart } from '../../context/cartContext';
+import { formatPrice } from '@/src/utils/formatPrice';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
@@ -46,7 +47,7 @@ export default function CartPage() {
 
                 <div className="flex-grow">
                   <h2 className="product_title_text">{item.name}</h2>
-                  <p className="normal_text secondary_text_color">${item.price.toFixed(2)}</p>
+                  <p className="normal_text secondary_text_color">ARS$ {formatPrice(item.price)}</p>
                 </div>
 
                 <div className="text-center">
@@ -80,7 +81,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="font-bold w-24 text-right">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ARS$ {formatPrice(item.price * item.quantity)}
                 </div>
 
                 <button
@@ -104,7 +105,7 @@ export default function CartPage() {
         {/* RESUMEN */}
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="subtitle_text flex">
-            Total:<p className="product_price_text px-2">${total.toFixed(2)}</p>
+            Total:<p className="product_price_text px-2">ARS$ {formatPrice(total)}</p>
           </div>
 
           <div className="flex flex-wrap justify-around gap-4">

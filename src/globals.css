@@ -84,19 +84,19 @@ hr {
 }
 
 .product_detail_title_text {
-  font-family: cursive;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 30px;
   font-weight: 600;
 }
 
 .product_title_text {
-  font-family: cursive;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 13px;
   font-weight: 600;
 }
 
 .product_price_text {
-  font-family: sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   font-size: 13px;
   font-weight: 400;
   color: #178817;

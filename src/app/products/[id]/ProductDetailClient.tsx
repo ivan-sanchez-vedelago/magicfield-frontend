@@ -2,6 +2,7 @@
 
 import { useCart } from '../../../context/cartContext';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
+import { formatPrice } from '@/src/utils/formatPrice';
 import { useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
 import ProductImageGallery from '@/src/components/product/ProductImageGallery';
@@ -91,7 +92,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
               </p>
 
               <p className="product_price_text text-center">
-                ARS$ {product.price.toFixed(2)}
+                ARS$ {formatPrice(product.price)}
               </p>
 
               <div className="text-center">
