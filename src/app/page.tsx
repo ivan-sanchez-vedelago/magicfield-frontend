@@ -1,6 +1,7 @@
 'use client';
 
 import LoadingLink from '@/src/components/navigation/LoadingLink';
+import BannerSlider from '@/src/components/BannerSlider';
 
 export default function Home() {
   return (
@@ -17,6 +18,11 @@ export default function Home() {
           >
             Ver Catálogo
           </LoadingLink>
+        </section>
+
+        {/* Banner slider de novedades y promociones */}
+        <section className="mb-12">
+          <BannerSlider />
         </section>
 
         {/* TODO: Agregar sección de productos destacados */}
