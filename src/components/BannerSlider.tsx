@@ -41,6 +41,8 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/banners`)
@@ -63,6 +65,37 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
   const prev = () => goTo(current - 1);
   const next = () => goTo(current + 1);
 
+  const handleSwipe = (startX: number, endX: number) => {
+    const diff = startX - endX;
+    const threshold = 50; // Mínimo de píxeles para considerar un swipe
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        next(); // Deslizar hacia la izquierda = siguiente
+      } else {
+        prev(); // Deslizar hacia la derecha = anterior
+      }
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    handleSwipe(touchStartX.current, touchEndX.current);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    touchStartX.current = e.clientX;
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    touchEndX.current = e.clientX;
+    handleSwipe(touchStartX.current, touchEndX.current);
+  };
+
   useEffect(() => {
     if (paused || banners.length === 0) return;
     timerRef.current = setInterval(() => {
@@ -75,35 +108,35 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
 
   if (banners.length === 0) {
     return (
-      <div className="w-full rounded-2xl bg-gray-100 animate-pulse" style={{ height: '340px' }} />
+      <div className="w-full rounded-2xl bg-gray-100 animate-pulse" style={{ minHeight: '300px' }} />
     );
   }
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-2xl shadow-lg"
-      style={{ height: '340px' }}
+      className="relative w-full overflow-hidden rounded-2xl shadow-2xl select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
     >
       {/* Slides */}
       {banners.map((b, i) => (
         <div
           key={b.id}
-          className="absolute inset-0 transition-opacity duration-700"
+          className={`transition-transform duration-500 ${i === current ? 'block' : 'hidden'}`}
           style={{
-            opacity: i === current ? 1 : 0,
-            pointerEvents: i === current ? 'auto' : 'none',
+            transform: i === current ? 'translateX(0)' : i > current ? 'translateX(100%)' : 'translateX(-100%)',
           }}
         >
           {b.imageUrl ? (
-            <Image
+            <img
               src={b.imageUrl}
               alt={b.title}
-              fill
-              className="object-cover"
+              className="w-full h-auto object-contain"
               style={{ borderRadius: '1rem' }}
-              priority={i === 0}
             />
           ) : (
             <div
@@ -114,7 +147,7 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
 
           {/* Text overlay */}
           <div
-            className="absolute inset-0 flex flex-col justify-end pb-10 px-10"
+            className="absolute bottom-0 left-0 right-0 flex flex-col justify-end pb-10 px-10"
             style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }}
           >
             <h2 className="text-white font-bold text-2xl md:text-3xl drop-shadow-lg">
