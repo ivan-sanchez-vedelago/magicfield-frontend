@@ -91,7 +91,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
                 {product.language || '-'}
               </p>
 
-              <p className="product_price_text text-center">
+              <p className="product_price_small_text text-center">
                 ARS$ {formatPrice(product.price)}
               </p>
 

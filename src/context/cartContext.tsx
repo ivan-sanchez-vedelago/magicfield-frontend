@@ -174,8 +174,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         total,
         dispatch,
         clearCart,
-
-        /* ⭐ NUEVO */
         setProductQuantity,
         removeProduct,
         toastMessage,

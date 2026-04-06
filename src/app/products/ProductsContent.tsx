@@ -14,7 +14,6 @@ export default function ProductsContent() {
 
   const { products, loading } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  console.log("RENDER products:", products);
 
   const categoryTitles: { [key: string]: string } = {
     'all': 'Catálogo de Productos',

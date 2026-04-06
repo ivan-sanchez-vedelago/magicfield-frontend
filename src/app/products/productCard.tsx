@@ -72,7 +72,7 @@ export default function ProductCard({ product, onClick }: Props) {
         {product.description}
       </p>
 
-      <div className="product_price_text text-center" style={{alignSelf: 'center'}}>
+      <div className="product_price_small_text text-center" style={{alignSelf: 'center'}}>
           ARS$ {formatPrice(product.price)}
       </div>
       <div className='small_text text-center' style={{alignSelf: 'center'}}>

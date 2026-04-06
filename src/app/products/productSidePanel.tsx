@@ -15,13 +15,12 @@ interface Props {
 export default function ProductSidePanel({ product, onClose }: Props) {
   const { items, setProductQuantity, removeProduct } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const [qty, setQty] = useState(0);
   const router = useRouter();
 
   const cartItem = items.find(i => i.productId === product.id);
   const quantityInCart = cartItem?.quantity ?? 0;
 
-  const [qty, setQty] = useState(quantityInCart);
-  const [showDetails, setShowDetails] = useState(false);
   const { startNavigation } = useNavigation();
 
   useEffect(() => {
@@ -36,8 +35,13 @@ export default function ProductSidePanel({ product, onClose }: Props) {
     setQty(q => Math.max(0, q - 1));
   };
 
-  const addToCart = () => {
-    setProductQuantity(product, qty);
+  const handleConfirm = () => {
+    if (qty === 0) {
+      removeProduct(product.id);
+    } else {
+      setProductQuantity(product, qty);
+    }
+    closeDrawer();
   };
 
   useEffect(() => {
@@ -81,7 +85,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
           />
 
           <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
-          <p className="product_price_text">ARS$ {formatPrice(product.price)}</p>
+          <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
           <button
             onClick={() => {
               closeDrawer();
@@ -115,20 +119,18 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             </button>
           </div>
 
-          <p className="header_tab secondary_text_color" style={{alignSelf: 'center'}}>
+          <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>
             {product.stock} en stock
           </p>
         </div>
 
         <div className="p-4 border-t">
           <button
-            onClick={() => {
-              addToCart();
-              closeDrawer();
-            }}
+            onClick={handleConfirm}
             className="w-full button_primary medium_button"
+            disabled={qty === quantityInCart}
           >
-            Agregar al carrito
+            {qty === 0 && quantityInCart > 0 ? 'Remover del carrito' : quantityInCart > 0 ? 'Actualizar carrito' : 'Agregar al carrito'}
           </button>
         </div>
       </aside>

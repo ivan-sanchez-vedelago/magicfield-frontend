@@ -2,6 +2,7 @@
 
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useCart } from '@/src/context/cartContext';
+import { formatPrice } from '@/src/utils/formatPrice';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -194,8 +195,8 @@ export default function CheckoutPage() {
 
         </div>
 
-        <div className="normal_text pl-2 mb-4">
-          Total: ${total.toFixed(2)}
+        <div className="subtitle_text flex items-center mb-2">
+          Total:<p className="product_price_big_text px-2">ARS$ {formatPrice(total)}</p>
         </div>
 
         <div className="text-center">

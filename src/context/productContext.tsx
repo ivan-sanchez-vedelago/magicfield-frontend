@@ -18,14 +18,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadProducts = () => {
-    console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
-
     setLoading(true);
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
       .then(r => r.json())
       .then(data => {
-        console.log("PRODUCTS FROM API:", data);
         setProducts(data);
       })
       .catch(console.error)
@@ -33,12 +30,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    console.log("Loading products...");
     loadProducts();
   }, []);
 
   useEffect(() => {
-    console.log("STATE products:", products);
   }, [products]);
 
   return (

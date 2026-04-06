@@ -46,8 +46,13 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex-grow">
-                  <h2 className="product_title_text">{item.name}</h2>
-                  <p className="normal_text secondary_text_color">ARS$ {formatPrice(item.price)}</p>
+                  <h2 
+                    className="product_title_text text_clickable"
+                    onClick={() => {
+                      startNavigation();
+                      router.push(`/products/${item.productId}`);
+                    }}>{item.name}</h2>
+                  <p className="product_price_big_text">ARS$ {formatPrice(item.price)}</p>
                 </div>
 
                 <div className="text-center">
@@ -80,10 +85,6 @@ export default function CartPage() {
                   </p>
                 </div>
 
-                <div className="font-bold w-24 text-right">
-                  ARS$ {formatPrice(item.price * item.quantity)}
-                </div>
-
                 <button
                   onClick={() =>
                     dispatch({
@@ -104,8 +105,8 @@ export default function CartPage() {
 
         {/* RESUMEN */}
         <div className="flex flex-wrap justify-between items-center gap-4">
-          <div className="subtitle_text flex">
-            Total:<p className="product_price_text px-2">ARS$ {formatPrice(total)}</p>
+          <div className="subtitle_text flex items-center">
+            Total:<p className="product_price_big_text px-2">ARS$ {formatPrice(total)}</p>
           </div>
 
           <div className="flex flex-wrap justify-around gap-4">

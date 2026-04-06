@@ -95,9 +95,16 @@ hr {
   font-weight: 600;
 }
 
-.product_price_text {
+.product_price_small_text {
   font-family: 'Trebuchet MS', sans-serif;
   font-size: 13px;
+  font-weight: 400;
+  color: #178817;
+}
+
+.product_price_big_text {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 16px;
   font-weight: 400;
   color: #178817;
 }
@@ -120,6 +127,15 @@ hr {
 
 .secondary_text_color {
   color: #455462;
+}
+
+.text_clickable {
+  cursor: pointer;
+  width: fit-content;
+}
+
+.text_clickable:hover {
+  opacity: 0.5;
 }
 
 @media (min-width: 768px) {
@@ -206,6 +222,8 @@ hr {
   padding: 0.5rem 0.75rem;
   border: 1px solid #ddd;
   border-radius: 0.75rem;
+  color: #1f2937;
+  background-color: #f3f4f6;
 }
 
 .input_field:focus {
@@ -216,6 +234,7 @@ hr {
 }
 
 .input_field::placeholder {
+  color: #9ca3af;
   transition: opacity 0.2s ease;
 }
 
