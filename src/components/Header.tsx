@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import type { Product } from '@/src/types';
+import { ShoppingCart } from 'lucide-react';
 
 export default function Header() {
   const router = useRouter();
@@ -155,7 +156,7 @@ export default function Header() {
                 <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Accesorios</button>
               </div>
             </div>
-            <LoadingLink href="/cart" className="header_tab">Carrito</LoadingLink>
+            <LoadingLink href="/cart" className="header_tab"><ShoppingCart className="w-6 h-6 flex-shrink-0" /></LoadingLink>
             { /* <LoadingLink href="/auth/login" className="header_tab">Ingresar</LoadingLink> */ }
           </div>
 
@@ -190,7 +191,7 @@ export default function Header() {
               <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
               <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
               <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
-              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab">Carrito</LoadingLink>
+              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab"><ShoppingCart className="w-6 h-6 flex-shrink-0" /></LoadingLink>
             </nav>
           </div>
         </div>

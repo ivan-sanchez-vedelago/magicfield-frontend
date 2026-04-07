@@ -129,6 +129,10 @@ hr {
   color: #455462;
 }
 
+.link_text_color {
+  color: #319036;
+}
+
 .text_clickable {
   cursor: pointer;
   width: fit-content;
@@ -357,4 +361,40 @@ hr {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;  
   overflow: hidden;
+}
+
+.cart_overlay {
+  position: fixed;
+  padding: 1rem 1.25rem;
+  top: 5rem;
+  right: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  z-index: 50;
+  animation: slideInFromRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+span.tip {
+  width: 0;
+  height: 0;
+  position: absolute;
+  right: 11px;
+  bottom: 71px;
+  background: none;
+  border: solid 10px;
+  border-color: transparent transparent #f4fff6 transparent;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

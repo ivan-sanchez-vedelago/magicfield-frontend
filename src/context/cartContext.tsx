@@ -101,7 +101,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const showFeedback = (message: string) => {
     setToastMessage(message);
-    setTimeout(() => setToastMessage(null), 2000);
+    setTimeout(() => setToastMessage(null), 4000);
   };
 
   /* HELPERS DE ALTO NIVEL */
