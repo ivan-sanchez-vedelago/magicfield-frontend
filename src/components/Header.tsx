@@ -6,22 +6,26 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
+import { useAuth } from '@/src/context/authContext';
 import type { Product } from '@/src/types';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, User } from 'lucide-react';
 
 export default function Header() {
   const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const [search, setSearch] = useState('');
   const { products } = useProducts();
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpenHamburguerMenu] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { startNavigation } = useNavigation();
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -45,6 +49,12 @@ export default function Header() {
         !dropdownRef.current?.contains(target)
       ) {
         setShowDropdown(false);
+      }
+
+      if (
+        !userMenuRef.current?.contains(target)
+      ) {
+        setUserMenuOpen(false);
       }
     };
 
@@ -93,6 +103,29 @@ export default function Header() {
     } else {
       router.push(`/products?category=${category}`);
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setUserMenuOpen(false);
+    startNavigation();
+    router.push('/');
+  };
+
+  const handleProfileClick = () => {
+    setUserMenuOpen(false);
+    startNavigation();
+    router.push('/perfil');
+  };
+
+  const handleLoginClick = () => {
+    setUserMenuOpen(false);
+    startNavigation();
+    router.push('/auth/login');
+  };
+
+  const toggleUserMenu = () => {
+    setUserMenuOpen(!userMenuOpen);
   };
 
   return (
@@ -157,7 +190,56 @@ export default function Header() {
               </div>
             </div>
             <LoadingLink href="/cart" className="header_tab"><ShoppingCart className="w-6 h-6 flex-shrink-0" /></LoadingLink>
-            { /* <LoadingLink href="/auth/login" className="header_tab">Ingresar</LoadingLink> */ }
+            
+            {/* User Menu */}
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={toggleUserMenu}
+                className="header_tab flex items-center gap-1"
+              >
+                <User className="w-6 h-6 flex-shrink-0" />
+              </button>
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-gray-900 rounded shadow-lg z-50">
+                  {isAuthenticated && user ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-gray-700">
+                        <p className="small_text text-gray-400">Hola,</p>
+                        <p className="font-semibold text-white truncate">{user.name}</p>
+                      </div>
+                      <button
+                        onClick={handleProfileClick}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+                      >
+                        Mi Perfil
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white border-t border-gray-700"
+                      >
+                        Cerrar Sesión
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleLoginClick}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+                      >
+                        Iniciar Sesión
+                      </button>
+                      <LoadingLink
+                        href="/auth/register"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white border-t border-gray-700 block"
+                      >
+                        Registrarse
+                      </LoadingLink>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ===== BOTON HAMBURGUESA ===== */}
@@ -191,7 +273,55 @@ export default function Header() {
               <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
               <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
               <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
-              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab"><ShoppingCart className="w-6 h-6 flex-shrink-0" /></LoadingLink>
+              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab flex items-center gap-2"><ShoppingCart className="w-6 h-6 flex-shrink-0" />Carrito</LoadingLink>
+              
+              <div className="border-t border-gray-700 mt-2 pt-2">
+                {isAuthenticated && user ? (
+                  <>
+                    <div className="px-5 py-3">
+                      <p className="small_text text-gray-400">Hola,</p>
+                      <p className="font-semibold text-white truncate">{user.name}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        handleProfileClick();
+                        setOpenHamburguerMenu(false);
+                      }}
+                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                    >
+                      Mi Perfil
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setOpenHamburguerMenu(false);
+                      }}
+                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                    >
+                      Cerrar Sesión
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleLoginClick();
+                        setOpenHamburguerMenu(false);
+                      }}
+                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                    >
+                      Iniciar Sesión
+                    </button>
+                    <LoadingLink
+                      href="/auth/register"
+                      onClick={() => setOpenHamburguerMenu(false)}
+                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700 block"
+                    >
+                      Registrarse
+                    </LoadingLink>
+                  </>
+                )}
+              </div>
             </nav>
           </div>
         </div>

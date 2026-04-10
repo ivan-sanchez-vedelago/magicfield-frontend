@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { ProductProvider } from '../context/productContext';
 import { CartProvider } from '../context/cartContext';
+import { AuthProvider } from '../context/authContext';
 import CartToast from '../toast/cartToast';
 import { Inter } from 'next/font/google';
-import '../globals.css';
+import '@/src/globals.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { NavigationProvider } from '@/src/components/navigation/NavigationContext';
@@ -28,17 +29,19 @@ export default function RootLayout({ children }: {
   return (
     <html lang="es">
       <body className={`${inter.className} min-h-[100dvh] flex flex-col`}>
-        <CartProvider>
-          <ProductProvider>
-            <NavigationProvider>
-              <TopProgressBar  />
-              <Header />
-              <CartToast/>
-              {children}
-              <Footer />
-            </NavigationProvider>
-          </ProductProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <ProductProvider>
+              <NavigationProvider>
+                <TopProgressBar  />
+                <Header />
+                <CartToast/>
+                {children}
+                <Footer />
+              </NavigationProvider>
+            </ProductProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

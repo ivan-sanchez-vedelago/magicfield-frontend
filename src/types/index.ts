@@ -1,10 +1,10 @@
-// TODO: Tipos para usuario autenticado
+// Tipo para usuario autenticado
 export interface AuthUser {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  role: 'ADMIN' | 'USER';
+  id: string;
+  email: string;
+  name: string;
 }
+
 
 // Tipo para producto
 export type Product = {
