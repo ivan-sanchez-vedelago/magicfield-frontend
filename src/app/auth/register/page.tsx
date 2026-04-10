@@ -3,22 +3,29 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/src/context/authContext';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState<number | ''>('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({
     name: '',
+    lastName: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
   const [touched, setTouched] = useState({
     name: false,
+    lastName: false,
     email: false,
+    phone: false,
     password: false,
     confirmPassword: false,
   });
@@ -38,12 +45,14 @@ export default function RegisterPage() {
 
   useEffect(() => {
     validateForm();
-  }, [name, email, password, confirmPassword]);
+  }, [name, lastName, email, phone, password, confirmPassword]);
 
   const validateForm = () => {
     const newErrors = {
       name: '',
+      lastName: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
     };
@@ -56,8 +65,19 @@ export default function RegisterPage() {
       newErrors.name = 'El nombre no debe exceder 100 caracteres';
     }
 
+    if (lastName && lastName.length < 2) {
+      newErrors.lastName = 'El apellido debe tener al menos 2 caracteres';
+    }
+
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = 'El email no es válido';
+    }
+
+    if (phone !== '') {
+      const phoneStr = phone.toString();
+      if (phoneStr.length < 8 || phoneStr.length > 15) {
+        newErrors.phone = 'El teléfono debe tener entre 8 y 15 dígitos';
+      }
     }
 
     if (password && password.length < 6) {
@@ -84,22 +104,19 @@ export default function RegisterPage() {
     setServerError('');
     setIsSubmitting(true);
 
-    if (
-      errors.name ||
-      errors.email ||
-      errors.password ||
-      errors.confirmPassword ||
-      !name ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
+    const hasErrors = Object.values(errors).some(err => err !== '');
+    const isMissingFields = !name || !lastName || !email || !phone || !password || !confirmPassword;
+
+    if (hasErrors || isMissingFields) {
       setIsSubmitting(false);
+      setTouched({
+        name: true, lastName: true, email: true, phone: true, password: true, confirmPassword: true 
+      });
       return;
     }
 
     try {
-      await register(name, email, password);
+      await register(name, lastName, email, phone, password);
       router.push('/');
     } catch (err) {
       setServerError(error || 'Error al registrarse. Intenta de nuevo.');
@@ -112,9 +129,9 @@ export default function RegisterPage() {
     <div className="flex-1 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="box_border">
-          <h1 className="title_text mb-2">Crear Cuenta</h1>
+          <h1 className="title_text mb-2">Crea tu cuenta</h1>
           <p className="normal_text text-gray-600 mb-6">
-            Completa el formulario para registrarte
+            Con tu cuenta podrás acceder a todas las funcionalidades y disfrutar de una experiencia personalizada.
           </p>
 
           {serverError && (
@@ -125,9 +142,6 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="normal_text font-semibold block mb-2">
-                Nombre
-              </label>
               <input
                 type="text"
                 value={name}
@@ -136,7 +150,7 @@ export default function RegisterPage() {
                 className={`input_field w-full ${
                   errors.name && touched.name ? 'border-red-500' : ''
                 }`}
-                placeholder="Tu nombre"
+                placeholder="Nombre"
               />
               {errors.name && touched.name && (
                 <p className="small_text text-red-500 mt-1">{errors.name}</p>
@@ -144,9 +158,22 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="normal_text font-semibold block mb-2">
-                Email
-              </label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                onBlur={() => handleBlur('lastName')}
+                className={`input_field w-full ${
+                  errors.lastName && touched.lastName ? 'border-red-500' : ''
+                }`}
+                placeholder="Apellido"
+              />
+              {errors.lastName && touched.lastName && (
+                <p className="small_text text-red-500 mt-1">{errors.lastName}</p>
+              )}
+            </div>
+
+            <div>
               <input
                 type="email"
                 value={email}
@@ -163,6 +190,25 @@ export default function RegisterPage() {
             </div>
 
             <div>
+              <input
+                type="number"
+                value={phone}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setPhone(val === '' ? '' : Number(val));
+                }}
+                onBlur={() => handleBlur('phone')}
+                className={`input_field w-full ${
+                  errors.phone && touched.phone ? 'border-red-500' : ''
+                } [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                placeholder="Teléfono (ej: 1122334455)"
+              />
+              {errors.phone && touched.phone && (
+                <p className="small_text text-red-500 mt-1">{errors.phone}</p>
+              )}
+            </div>
+
+            <div>
               <label className="normal_text font-semibold block mb-2">
                 Contraseña
               </label>
@@ -174,24 +220,38 @@ export default function RegisterPage() {
                   onBlur={() => handleBlur('password')}
                   className={`input_field w-full ${
                     errors.password && touched.password
-                      ? 'border-red-500'
-                      : ''
+                    ? 'border-red-500'
+                    : ''
                   }`}
+                  style={{paddingRight: '2.5rem'}}
                   placeholder="Contraseña"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 small_text text-gray-600 hover:text-gray-900"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                  {showPassword ? (
+                    <Eye 
+                      size={20}
+                      strokeWidth={2}
+                      className='primary_text_color'  
+                    />
+                  ) : (
+                    <EyeOff
+                      size={20}
+                      strokeWidth={2}
+                      className='primary_text_color'
+                    />
+                  )}
                 </button>
               </div>
               {errors.password && touched.password && (
                 <p className="small_text text-red-500 mt-1">
                   {errors.password}
-                </p>
-              )}
+                  </p>
+                  )}
             </div>
 
             <div>
@@ -206,9 +266,10 @@ export default function RegisterPage() {
                   onBlur={() => handleBlur('confirmPassword')}
                   className={`input_field w-full ${
                     errors.confirmPassword && touched.confirmPassword
-                      ? 'border-red-500'
-                      : ''
+                    ? 'border-red-500'
+                    : ''
                   }`}
+                  style={{paddingRight: '2.5rem'}}
                   placeholder="Confirmar contraseña"
                 />
                 <button
@@ -216,9 +277,22 @@ export default function RegisterPage() {
                   onClick={() =>
                     setShowConfirmPassword(!showConfirmPassword)
                   }
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 small_text text-gray-600 hover:text-gray-900"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                  aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                  {showConfirmPassword ? (
+                    <Eye 
+                      size={20}
+                      strokeWidth={2}
+                      className='primary_text_color'  
+                    />
+                  ) : (
+                    <EyeOff
+                      size={20}
+                      strokeWidth={2}
+                      className='primary_text_color'
+                    />
+                  )}
                 </button>
               </div>
               {errors.confirmPassword && touched.confirmPassword && (
@@ -230,7 +304,7 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              disabled={isSubmitting || !name || !email || !password || !confirmPassword}
+              disabled={isSubmitting || !name || !lastName || !email || phone === '' || !password || !confirmPassword}
               className={`button_primary w-full medium_button ${
                 isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}

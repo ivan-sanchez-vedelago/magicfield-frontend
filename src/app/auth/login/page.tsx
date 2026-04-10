@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/src/context/authContext';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -117,14 +118,28 @@ export default function LoginPage() {
                       ? 'border-red-500'
                       : ''
                   }`}
+                  style={{paddingRight: '2.5rem'}}
                   placeholder="Contraseña"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 small_text text-gray-600 hover:text-gray-900"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                  {showPassword ? (
+                    <Eye 
+                      size={20}
+                      strokeWidth={2}
+                      className='primary_text_color'  
+                    />
+                  ) : (
+                    <EyeOff
+                      size={20}
+                      strokeWidth={2}
+                      className='primary_text_color'
+                    />
+                  )}
                 </button>
               </div>
               {errors.password && touched.password && (

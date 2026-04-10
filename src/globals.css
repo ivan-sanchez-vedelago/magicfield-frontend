@@ -21,6 +21,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+input:disabled {
+  cursor: not-allowed;
+}
+
 aside {
   position: fixed;
   top: 0;

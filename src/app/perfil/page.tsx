@@ -49,14 +49,44 @@ export default function ProfilePage() {
               <p className="small_text text-gray-600 uppercase tracking-wide">
                 Nombre
               </p>
-              <p className="subtitle_text mt-1">{user.name}</p>
+              <input
+                type="text"
+                value={user.name}
+                className={`input_field w-full mb-6`}
+                disabled={true}
+              />
+              
+              <p className="small_text text-gray-600 uppercase tracking-wide">
+                Apellido
+              </p>
+              <input
+                type="text"
+                value={user.lastName}
+                className={`input_field w-full mb-6`}
+                disabled={true}
+              />
+
+              <p className="small_text text-gray-600 uppercase tracking-wide">
+                Telefono
+              </p>
+              <input
+                type="number"
+                value={user.phone}
+                className={`input_field w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                disabled={true}
+              />
             </div>
 
             <div className="pb-4 border-b border-gray-200">
               <p className="small_text text-gray-600 uppercase tracking-wide">
                 Email
               </p>
-              <p className="subtitle_text mt-1">{user.email}</p>
+              <input
+                type="email"
+                value={user.email}
+                className={`input_field w-full`}
+                disabled={true}
+              />
             </div>
 
             <div className="pt-2">

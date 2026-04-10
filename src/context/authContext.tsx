@@ -7,6 +7,8 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
+  lastName: string;
+  phone: number | '';
 }
 
 export interface AuthContextType {
@@ -15,7 +17,7 @@ export interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, lastName: string, email: string, phone: number | '', password: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -151,14 +153,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 
   const register = useCallback(
-    async (name: string, email: string, password: string) => {
+    async (name: string, lastName: string, email: string, phone: number | '', password: string) => {
       dispatch({ type: 'SET_LOADING', payload: true });
       try {
         const response = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', // Allow cookies to be set
-          body: JSON.stringify({ name, email, password }),
+          credentials: 'include',
+          body: JSON.stringify({ name, lastName, email, phone, password }),
         });
 
         if (!response.ok) {
