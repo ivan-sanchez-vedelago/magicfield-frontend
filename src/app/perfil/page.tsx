@@ -24,6 +24,8 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<TabType>('profile');
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -64,6 +66,30 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
       setIsLoggingOut(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/account`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        await logout();
+        router.push('/');
+      } else {
+        alert('Error al eliminar la cuenta');
+        setIsDeleting(false);
+      }
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error);
+      alert('Error al eliminar la cuenta');
+      setIsDeleting(false);
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
@@ -171,6 +197,16 @@ export default function ProfilePage() {
               >
                 {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar Sesión'}
               </button>
+
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                disabled={isDeleting}
+                className={`w-full medium_button mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors ${
+                  isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isDeleting ? 'Eliminando...' : 'Eliminar Cuenta'}
+              </button>
             </div>
           )}
 
@@ -232,6 +268,34 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {/* Modal de confirmación para eliminar cuenta */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h2 className="title_text mb-4">¿Eliminar cuenta?</h2>
+            <p className="normal_text text-gray-600 mb-6">
+              Esta acción es irreversible. Se eliminarán todos tus datos incluyendo tu historial de pedidos.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {isDeleting ? 'Eliminando...' : 'Eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
