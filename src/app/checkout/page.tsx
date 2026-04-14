@@ -2,6 +2,7 @@
 
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useCart } from '@/src/context/cartContext';
+import { useAuth } from '@/src/context/authContext';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -9,6 +10,7 @@ import { useState, useEffect } from 'react';
 export default function CheckoutPage() {
 
   const { items, total, clearCart } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
   const { startNavigation } = useNavigation();
 
@@ -81,6 +83,15 @@ export default function CheckoutPage() {
     validate();
   }, [name, lastName, phone, email]);
 
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setLastName(user.lastName || '');
+      setEmail(user.email || '');
+      setPhone(user.phone ? user.phone.toString() : '');
+    }
+  }, [user]);
+
   async function submitOrder() {
 
     if (!formValid) return;
@@ -92,6 +103,7 @@ export default function CheckoutPage() {
       customerLastName: lastName,
       customerPhone: phone,
       customerEmail: email,
+      userId: user ? parseInt(user.id) : 0,
       items: items.map(i => ({
         productId: i.productId,
         quantity: i.quantity
