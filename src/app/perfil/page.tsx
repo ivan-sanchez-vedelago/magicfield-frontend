@@ -15,6 +15,14 @@ interface Order {
   customerName: string;
   saleDate: string;
   status: string;
+  unitPrice: number;
+}
+
+interface GroupedOrder {
+  orderId: string;
+  saleDate: string;
+  total: number;
+  items: Order[];
 }
 
 export default function ProfilePage() {
@@ -26,6 +34,7 @@ export default function ProfilePage() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -56,6 +65,24 @@ export default function ProfilePage() {
     } finally {
       setOrdersLoading(false);
     }
+  };
+
+  const groupOrdersByOrderId = (): GroupedOrder[] => {
+    const grouped: { [key: string]: Order[] } = {};
+
+    orders.forEach((order) => {
+      if (!grouped[order.orderId]) {
+        grouped[order.orderId] = [];
+      }
+      grouped[order.orderId].push(order);
+    });
+
+    return Object.entries(grouped).map(([orderId, items]) => ({
+      orderId,
+      saleDate: items[0].saleDate,
+      total: items.reduce((sum, item) => sum + item.subtotal, 0),
+      items,
+    }));
   };
 
   const handleLogout = async () => {
@@ -218,48 +245,82 @@ export default function ProfilePage() {
                 </p>
               ) : (
                 <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <p className="small_text text-gray-600 uppercase tracking-wide">
-                            Pedido
-                          </p>
-                          <p className="subtitle_text">{order.orderId?.slice(0, 8)}...</p>
-                        </div>
-                        <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full small_text">
-                          {order.status}
-                        </span>
-                      </div>
+                  {groupOrdersByOrderId().map((groupedOrder) => {
+                    const isExpanded = expandedOrder === groupedOrder.orderId;
+                    const orderDate = new Date(groupedOrder.saleDate).toLocaleDateString('es-ES');
 
-                      <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div>
-                          <p className="small_text text-gray-600 uppercase tracking-wide">
-                            Producto
+                    return (
+                      <div
+                        key={groupedOrder.orderId}
+                        className="border border-gray-300 rounded-lg overflow-hidden"
+                      >
+                        {/* Header - clickeable */}
+                        <button
+                          onClick={() =>
+                            setExpandedOrder(
+                              isExpanded ? null : groupedOrder.orderId
+                            )
+                          }
+                          className="w-full p-4 bg-white hover:bg-gray-50 transition-colors flex justify-between items-center"
+                        >
+                          <p className="normal_text font-medium">
+                            Pedido {orderDate}
                           </p>
-                          <p className="normal_text">{order.productName}</p>
-                        </div>
-                        <div>
-                          <p className="small_text text-gray-600 uppercase tracking-wide">
-                            Cantidad
-                          </p>
-                          <p className="normal_text">{order.quantity}</p>
-                        </div>
-                      </div>
+                          <div className="flex items-center gap-4">
+                            <p className="product_price_big_text">
+                              ARS$ {groupedOrder.total.toLocaleString('es-ES')}
+                            </p>
+                            <span
+                              className={`transition-transform ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            >
+                              ▼
+                            </span>
+                          </div>
+                        </button>
 
-                      <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                        <p className="small_text text-gray-600">
-                          {new Date(order.saleDate).toLocaleDateString('es-ES')}
-                        </p>
-                        <p className="product_price_big_text">
-                          ARS$ {order.subtotal.toLocaleString('es-ES')}
-                        </p>
+                        {/* Contenido expandible */}
+                        {isExpanded && (
+                          <div className="border-t border-gray-300 bg-gray-50 p-4">
+                            <div className="space-y-3 mb-4">
+                              {groupedOrder.items.map((item) => (
+                                <div
+                                  key={item.id}
+                                  className="bg-white p-3 rounded border border-gray-200"
+                                >
+                                  <div className="flex justify-between items-start mb-2">
+                                    <p className="normal_text font-medium">
+                                      {item.productName}
+                                    </p>
+                                    <p className="normal_text text-gray-600">
+                                      Cantidad: {item.quantity}
+                                    </p>
+                                  </div>
+                                  <p className="small_text text-gray-600">
+                                    Precio: ARS${' '}
+                                    {(item.unitPrice).toLocaleString('es-ES')}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Footer con resumen */}
+                            <div className="border-t border-gray-300 pt-3 mt-3 flex justify-between items-center">
+                              <p className="small_text text-gray-600">
+                                {new Date(groupedOrder.saleDate).toLocaleDateString(
+                                  'es-ES'
+                                )}
+                              </p>
+                              <p className="product_price_big_text">
+                                ARS$ {groupedOrder.total.toLocaleString('es-ES')}
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
