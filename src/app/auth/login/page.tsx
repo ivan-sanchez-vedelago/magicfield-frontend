@@ -72,7 +72,7 @@ export default function LoginPage() {
     <div className="flex-1 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="box_border">
-          <h1 className="title_text mb-2">Inicia Sesión</h1>
+          <h1 className="main_title_text mb-2">Inicia Sesión</h1>
           <p className="normal_text text-gray-600 mb-6">
             Completa el formulario para acceder a tu cuenta
           </p>

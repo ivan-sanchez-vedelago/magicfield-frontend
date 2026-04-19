@@ -129,7 +129,7 @@ export default function RegisterPage() {
     <div className="flex-1 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="box_border">
-          <h1 className="title_text mb-2">Crea tu cuenta</h1>
+          <h1 className="main_title_text mb-2">Crea tu cuenta</h1>
           <p className="normal_text text-gray-600 mb-6">
             Con tu cuenta podrás acceder a todas las funcionalidades y disfrutar de una experiencia personalizada.
           </p>
