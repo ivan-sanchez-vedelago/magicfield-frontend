@@ -103,7 +103,7 @@ export default function CheckoutPage() {
       customerLastName: lastName,
       customerPhone: phone,
       customerEmail: email,
-      userId: user ? parseInt(user.id) : 0,
+      userId: user ? user.id : null,
       items: items.map(i => ({
         productId: i.productId,
         quantity: i.quantity
