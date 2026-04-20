@@ -3,6 +3,7 @@
 import { useAuth } from '@/src/context/authContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type TabType = 'profile' | 'orders';
 
@@ -270,13 +271,12 @@ export default function ProfilePage() {
                             <p className="product_price_big_text">
                               ARS$ {groupedOrder.total.toLocaleString('es-ES')}
                             </p>
-                            <span
-                              className={`transition-transform ${
-                                isExpanded ? 'rotate-180' : ''
-                              }`}
-                            >
-                              ▼
-                            </span>
+                            {!isExpanded && (
+                              <ChevronDown className="w-6 h-6 flex-shrink-0" />
+                            )}
+                            {isExpanded && (
+                              <ChevronUp className="w-6 h-6 flex-shrink-0" />
+                            )}
                           </div>
                         </button>
 
@@ -287,34 +287,24 @@ export default function ProfilePage() {
                               {groupedOrder.items.map((item) => (
                                 <div
                                   key={item.id}
-                                  className="bg-white p-3 rounded border border-gray-200"
+                                  className="flex justify-between bg-white p-4 rounded-2xl border border-gray-200"
                                 >
-                                  <div className="flex justify-between items-start mb-2">
+                                  <div className="flex flex-col">
                                     <p className="normal_text font-medium">
                                       {item.productName}
                                     </p>
-                                    <p className="normal_text text-gray-600">
-                                      Cantidad: {item.quantity}
+                                    <p className="product_price_small_text ">
+                                      ARS${' '}
+                                      {(item.unitPrice).toLocaleString('es-ES')}
                                     </p>
                                   </div>
-                                  <p className="small_text text-gray-600">
-                                    Precio: ARS${' '}
-                                    {(item.unitPrice).toLocaleString('es-ES')}
-                                  </p>
+                                  <div style={{ alignContent: 'center'}}>
+                                    <b className="normal_text text-gray-600" style={{ fontWeight: '700'}}>
+                                      x{item.quantity}
+                                    </b>
+                                  </div>
                                 </div>
                               ))}
-                            </div>
-
-                            {/* Footer con resumen */}
-                            <div className="border-t border-gray-300 pt-3 mt-3 flex justify-between items-center">
-                              <p className="small_text text-gray-600">
-                                {new Date(groupedOrder.saleDate).toLocaleDateString(
-                                  'es-ES'
-                                )}
-                              </p>
-                              <p className="product_price_big_text">
-                                ARS$ {groupedOrder.total.toLocaleString('es-ES')}
-                              </p>
                             </div>
                           </div>
                         )}
