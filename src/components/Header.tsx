@@ -7,12 +7,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useAuth } from '@/src/context/authContext';
+import { useCart } from '@/src/context/cartContext';
 import type { Product } from '@/src/types';
 import { ShoppingCart, User } from 'lucide-react';
 
 export default function Header() {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
+  const { items: cartItems } = useCart();
 
   const [search, setSearch] = useState('');
   const { products } = useProducts();
@@ -189,7 +191,14 @@ export default function Header() {
                 <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Accesorios</button>
               </div>
             </div>
-            <LoadingLink href="/cart" className="header_tab"><ShoppingCart className="w-6 h-6 flex-shrink-0" /></LoadingLink>
+            <LoadingLink href="/cart" className="header_tab relative">
+              <ShoppingCart className="w-6 h-6 flex-shrink-0" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </LoadingLink>
             
             {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
@@ -273,7 +282,17 @@ export default function Header() {
               <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
               <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
               <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
-              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab flex items-center gap-2"><ShoppingCart className="w-6 h-6 flex-shrink-0" />Carrito</LoadingLink>
+              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab flex items-center gap-2 relative">
+                <div className="relative">
+                  <ShoppingCart className="w-6 h-6 flex-shrink-0" />
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartItems.length}
+                    </span>
+                  )}
+                </div>
+                Carrito
+              </LoadingLink>
               
               <div className="border-t border-gray-700 mt-2 pt-2">
                 {isAuthenticated && user ? (

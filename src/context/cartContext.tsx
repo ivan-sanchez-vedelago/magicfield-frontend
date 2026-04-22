@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, useState } from 'react';
+import React, { createContext, useContext, useReducer, useState, useEffect } from 'react';
 
 export interface CartItem {
   productId: string;
@@ -20,7 +20,8 @@ type CartAction =
   | { type: 'INCREASE'; productId: string }
   | { type: 'DECREASE'; productId: string }
   | { type: 'REMOVE_ITEM'; productId: string }
-  | { type: 'CLEAR_CART' };
+  | { type: 'CLEAR_CART' }
+  | { type: 'RESTORE_CART'; items: CartItem[] };
 
 type CartContextType = {
   items: CartItem[];
@@ -88,13 +89,41 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'CLEAR_CART':
       return { ...state, items: [] };
 
+    case 'RESTORE_CART':
+      return { ...state, items: action.items };
+
     default:
       return state;
   }
 }
 
+const CART_STORAGE_KEY = 'magicfield_cart';
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  /* PERSISTENCIA EN localStorage */
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(CART_STORAGE_KEY);
+      if (saved) {
+        const parsed: CartItem[] = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          dispatch({ type: 'RESTORE_CART', items: parsed });
+        }
+      }
+    } catch {
+      // localStorage no disponible o datos corruptos, ignorar
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));
+    } catch {
+      // localStorage no disponible, ignorar
+    }
+  }, [state.items]);
 
   /* FEEDBACK GLOBAL */
   const [toastMessage, setToastMessage] = useState<string | null>(null);
