@@ -194,7 +194,7 @@ export default function Header() {
             <LoadingLink href="/cart" className="header_tab relative">
               <ShoppingCart className="w-6 h-6 flex-shrink-0" />
               {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute top-3 -right-2 text-white text-xs font-bold rounded-full w-4 h-4 flex justify-center" style={{ backgroundColor: '#700670' }}>
                   {cartItems.length}
                 </span>
               )}
@@ -286,7 +286,7 @@ export default function Header() {
                 <div className="relative">
                   <ShoppingCart className="w-6 h-6 flex-shrink-0" />
                   {cartItems.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    <span className="absolute top-3 -right-2 text-white text-xs font-bold rounded-full w-4 h-4 flex justify-center" style={{ backgroundColor: '#700670' }}>
                       {cartItems.length}
                     </span>
                   )}
