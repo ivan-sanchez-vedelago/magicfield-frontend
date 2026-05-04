@@ -155,26 +155,6 @@ hr {
   outline: 2px solid #2E7D32;
 }
 
-@media (min-width: 768px) {
-
-  aside {
-    width: 25%;
-    min-width: 350px;
-  }
-  
-  .header_tab_container {
-    display: flex;
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 767px) {
-  aside {
-    width: 50%;
-    min-width: 250px;
-  }
-}
-
 .header_tab {
   font-size: 16px;
   font-weight: 500;
@@ -438,16 +418,53 @@ hr {
   animation: slideInFromRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-span.tip {
-  width: 0;
-  height: 0;
-  position: absolute;
-  right: 3%;
-  bottom: 71px;
-  background: none;
-  border: solid 10px;
-  border-color: transparent transparent #f4fff6 transparent;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+/* Triángulo que hace de BORDE */
+.dialog_bubble::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    right: 23%;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 11px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Triángulo que hace de FONDO (el relleno blanco) */
+.dialog_bubble::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    right: calc(23% + 1px);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+}
+
+@media (max-width: 767px) {
+  aside {
+    width: 50%;
+    min-width: 250px;
+  }
+
+  .dialog_bubble::before {
+    right: 5%;
+  }
+
+  .dialog_bubble::after {
+    right: calc(5% + 1px);
+  }
+}
+
+@media (min-width: 768px) {
+  aside {
+    width: 25%;
+    min-width: 350px;
+  }
+  
+  .header_tab_container {
+    display: flex;
+    gap: 1.5rem;
+  }
 }
 
 @keyframes slideInFromRight {
