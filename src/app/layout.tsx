@@ -3,6 +3,7 @@ import { ProductProvider } from '../context/productContext';
 import { CartProvider } from '../context/cartContext';
 import { AuthProvider } from '../context/authContext';
 import CartToast from '../toast/cartToast';
+import AuthToast from '../toast/authToast';
 import { Inter } from 'next/font/google';
 import '@/src/globals.css';
 import Header from '../components/Header';
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: {
                 <TopProgressBar  />
                 <Header />
                 <CartToast/>
+                <AuthToast/>
                 {children}
                 <Footer />
               </NavigationProvider>

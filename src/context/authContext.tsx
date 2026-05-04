@@ -16,6 +16,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  successMessage: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, lastName: string, email: string, phone: number | '', password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -99,7 +100,13 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 // Provider
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  const showSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(null), 4000);
+  };
 
   // Restore session on mount
   useEffect(() => {
@@ -142,6 +149,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         const userData = await response.json();
         dispatch({ type: 'SET_USER', payload: userData });
+        showSuccess(`¡Bienvenido ${userData.name}!`);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Error desconocido';
@@ -170,6 +178,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         const userData = await response.json();
         dispatch({ type: 'SET_USER', payload: userData });
+        showSuccess('¡Registro exitoso!');
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : 'Error desconocido';
@@ -190,6 +199,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Error during logout:', error);
     } finally {
       dispatch({ type: 'LOGOUT' });
+      showSuccess('¡Hasta luego!');
     }
   }, [API_URL]);
 
@@ -202,6 +212,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isAuthenticated: state.isAuthenticated,
     isLoading: state.isLoading,
     error: state.error,
+    successMessage,
     login,
     register,
     logout,
