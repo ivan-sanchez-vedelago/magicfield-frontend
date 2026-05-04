@@ -22,12 +22,14 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpenHamburguerMenu] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [productsMenuOpen, setProductsMenuOpen] = useState(false);
   const { startNavigation } = useNavigation();
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const productsMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -57,6 +59,12 @@ export default function Header() {
         !userMenuRef.current?.contains(target)
       ) {
         setUserMenuOpen(false);
+      }
+
+      if (
+        !productsMenuRef.current?.contains(target)
+      ) {
+        setProductsMenuOpen(false);
       }
     };
 
@@ -99,6 +107,7 @@ export default function Header() {
 
   const handleCategoryClick = (category: string) => {
     setOpenHamburguerMenu(false);
+    setProductsMenuOpen(false);
     startNavigation();
     if (category === 'all') {
       router.push('/products');
@@ -128,6 +137,10 @@ export default function Header() {
 
   const toggleUserMenu = () => {
     setUserMenuOpen(!userMenuOpen);
+  };
+
+  const toggleProductsMenu = () => {
+    setProductsMenuOpen(!productsMenuOpen);
   };
 
   return (
@@ -183,12 +196,29 @@ export default function Header() {
           </div>
 
           <div className="hidden md:flex header_tab_container gap-2">
-            <div className="relative group">
-              <button className="header_tab cursor-pointer flex items-center gap-2">Productos <span className="chevron"></span></button>
-              <div className="absolute left-0 mt-0 w-48 bg-gray-900 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Singles</button>
-                <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Producto Sellado</button>
-                <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white">Accesorios</button>
+            {/* ===== BACKDROP DESKTOP ===== */}
+            <div
+              className={`fixed inset-0 backdrop-blur-sm transition-opacity duration-300 hidden md:block z-40 ${
+                productsMenuOpen || userMenuOpen ? 'opacity-100 visible pointer-events-auto' : 'opacity-0 invisible pointer-events-none'
+              }`}
+              onClick={() => {
+                setProductsMenuOpen(false);
+                setUserMenuOpen(false);
+              }}
+            />
+            
+            <div ref={productsMenuRef}>
+              <button onClick={toggleProductsMenu} className="header_tab cursor-pointer flex items-center gap-2">Productos <span className="chevron"></span></button>
+              <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 ${
+                productsMenuOpen
+                  ? 'opacity-100 translate-y-0 scale-100'
+                  : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
+              }`}>
+                <nav className="flex flex-col py-2">
+                  <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
+                  <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
+                  <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
+                </nav>
               </div>
             </div>
             <LoadingLink href="/cart" className="header_tab relative">
@@ -201,30 +231,34 @@ export default function Header() {
             </LoadingLink>
             
             {/* User Menu */}
-            <div className="relative" ref={userMenuRef}>
+            <div ref={userMenuRef}>
               <button
                 onClick={toggleUserMenu}
                 className="header_tab flex items-center gap-1"
               >
                 <User className="w-6 h-6 flex-shrink-0" />
               </button>
-              {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-900 rounded shadow-lg z-50">
+              <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 ${
+                userMenuOpen
+                  ? 'opacity-100 translate-y-0 scale-100'
+                  : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
+              }`}>
+                <nav className="flex flex-col py-2">
                   {isAuthenticated && user ? (
                     <>
-                      <div className="px-4 py-3 border-b border-gray-700">
+                      <div className="px-5 py-3 border-b border-gray-700">
                         <p className="small_text text-gray-400">Hola,</p>
                         <p className="font-semibold text-white truncate">{user.name}</p>
                       </div>
                       <button
                         onClick={handleProfileClick}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+                        className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
                       >
                         Mi Perfil
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white border-t border-gray-700"
+                        className="w-full text-left px-5 py-3 border-t border-gray-700 header_tab hover:bg-gray-700"
                       >
                         Cerrar Sesión
                       </button>
@@ -233,21 +267,21 @@ export default function Header() {
                     <>
                       <button
                         onClick={handleLoginClick}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+                        className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
                       >
                         Iniciar Sesión
                       </button>
                       <LoadingLink
                         href="/auth/register"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-700 text-white border-t border-gray-700 block"
+                        className="w-full text-left px-5 py-3 border-t border-gray-700 header_tab hover:bg-gray-700 block"
                       >
                         Registrarse
                       </LoadingLink>
                     </>
                   )}
-                </div>
-              )}
+                </nav>
+              </div>
             </div>
           </div>
 
