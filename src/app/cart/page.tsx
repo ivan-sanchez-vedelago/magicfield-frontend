@@ -33,7 +33,12 @@ export default function CartPage() {
                 key={item.productId}
                 className="box_border flex flex-wrap items-center gap-4"
               >
-                <div className="w-24 h-24 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                <div 
+                  className="w-24 h-24 bg-gray-100 rounded overflow-hidden flex items-center justify-center div_clickable"
+                  onClick={() => {
+                      startNavigation();
+                      router.push(`/products/${item.productId}`);
+                  }}>
                   {item.imageUrl ? (
                     <img
                       src={item.imageUrl}

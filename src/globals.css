@@ -147,6 +147,14 @@ hr {
   opacity: 0.5;
 }
 
+.div_clickable {
+  cursor: pointer;
+}
+
+.div_clickable:hover {
+  outline: 2px solid #2E7D32;
+}
+
 @media (min-width: 768px) {
 
   aside {
@@ -366,7 +374,7 @@ hr {
 }
 
 .product_box:hover:not(:has(.image_slideshow_arrow:hover)) {
-  outline: 2px solid black;
+  outline: 2px solid #2E7D32;
 }
 
 .cantidad_stock_input::-webkit-inner-spin-button,
