@@ -211,8 +211,8 @@ export default function Header() {
               <button onClick={toggleProductsMenu} className="header_tab cursor-pointer flex items-center gap-2">Productos <span className="chevron"></span></button>
               <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 ${
                 productsMenuOpen
-                  ? 'opacity-100 translate-y-0 scale-100'
-                  : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 translate-x-full pointer-events-none'
               }`}>
                 <nav className="flex flex-col py-2">
                   <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
@@ -240,8 +240,8 @@ export default function Header() {
               </button>
               <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 ${
                 userMenuOpen
-                  ? 'opacity-100 translate-y-0 scale-100'
-                  : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
+                  ? 'opacity-100 translate-x-0'
+                  : 'opacity-0 translate-x-full pointer-events-none'
               }`}>
                 <nav className="flex flex-col py-2">
                   {isAuthenticated && user ? (
@@ -305,11 +305,10 @@ export default function Header() {
           {/* ===== MENU MOBILE ===== */}
           <div
             ref={menuRef}
-            className={`nav_dropdown nav_color transform transition-all duration-300 md:hidden z-50
-            ${
+            className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 md:hidden ${
               open
-                ? 'opacity-100 translate-y-0 scale-100'
-                : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
+                ? 'opacity-100 translate-x-0'
+                : 'opacity-0 translate-x-full pointer-events-none'
             }`}
           >
             <nav className="flex flex-col py-2">

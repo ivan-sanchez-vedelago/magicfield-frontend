@@ -19,6 +19,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 input:disabled {
@@ -44,11 +45,6 @@ hr {
 }
 
 .nav_dropdown {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 14rem;
-  margin-top: 4.75rem;
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
 }
