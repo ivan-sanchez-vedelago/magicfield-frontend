@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import { ProductProvider } from '../context/productContext';
 import { CartProvider } from '../context/cartContext';
 import { AuthProvider } from '../context/authContext';
+import { CheckoutProvider } from '../context/checkoutContext';
 import CartToast from '../toast/cartToast';
 import AuthToast from '../toast/authToast';
+import CheckoutToast from '../toast/checkoutToast';
 import { Inter } from 'next/font/google';
 import '@/src/globals.css';
 import Header from '../components/Header';
@@ -32,16 +34,19 @@ export default function RootLayout({ children }: {
       <body className={`${inter.className} min-h-[100dvh] flex flex-col`}>
         <AuthProvider>
           <CartProvider>
-            <ProductProvider>
-              <NavigationProvider>
-                <TopProgressBar  />
-                <Header />
-                <CartToast/>
-                <AuthToast/>
-                {children}
-                <Footer />
-              </NavigationProvider>
-            </ProductProvider>
+            <CheckoutProvider>
+              <ProductProvider>
+                <NavigationProvider>
+                  <TopProgressBar  />
+                  <Header />
+                  <CartToast/>
+                  <AuthToast/>
+                  <CheckoutToast/>
+                  {children}
+                  <Footer />
+                </NavigationProvider>
+              </ProductProvider>
+            </CheckoutProvider>
           </CartProvider>
         </AuthProvider>
       </body>

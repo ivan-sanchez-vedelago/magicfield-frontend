@@ -435,19 +435,19 @@ hr {
 }
 
 .dialog_bubble_cart::before {
-    right: 23%;
+    right: 54px;
 }
 
 .dialog_bubble_cart::after {
-    right: calc(23% + 1px);
+    right: calc(54px + 1px);
 }
 
 .dialog_bubble_user::before {
-    right: 5%;
+    right: 9px;
 }
 
 .dialog_bubble_user::after {
-    right: calc(5% + 1px);
+    right: calc(9px + 1px);
 }
 
 @media (max-width: 767px) {
@@ -456,12 +456,12 @@ hr {
     min-width: 250px;
   }
 
-  .dialog_bubble_cart::before {
-    right: 5%;
+  .dialog_bubble::before {
+    right: 10.5px;
   }
 
-  .dialog_bubble_cart::after {
-    right: calc(5% + 1px);
+  .dialog_bubble::after {
+    right: calc(10.5px + 1px);
   }
 }
 

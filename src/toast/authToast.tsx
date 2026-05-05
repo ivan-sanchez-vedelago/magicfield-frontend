@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/src/context/authContext';
-import { CheckCircle, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import LoadingLink from '../components/navigation/LoadingLink';
 
 export default function AuthToast() {

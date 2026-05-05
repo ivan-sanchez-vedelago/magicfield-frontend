@@ -3,6 +3,7 @@
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useCart } from '@/src/context/cartContext';
 import { useAuth } from '@/src/context/authContext';
+import { useCheckout } from '@/src/context/checkoutContext';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -11,6 +12,7 @@ export default function CheckoutPage() {
 
   const { items, total, clearCart } = useCart();
   const { user } = useAuth();
+  const { showCheckoutSuccess } = useCheckout();
   const router = useRouter();
   const { startNavigation } = useNavigation();
 
@@ -120,6 +122,7 @@ export default function CheckoutPage() {
       if (!res.ok) throw new Error('Error en checkout');
 
       clearCart();
+      showCheckoutSuccess('¡Compra completada! Podes ver tus pedidos en tu perfil');
       startNavigation();
       router.push('/checkout/success');
 

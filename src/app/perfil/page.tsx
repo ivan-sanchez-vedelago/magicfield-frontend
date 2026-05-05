@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/src/context/authContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -29,6 +29,7 @@ interface GroupedOrder {
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('profile');
   const [orders, setOrders] = useState<Order[]>([]);
@@ -42,6 +43,14 @@ export default function ProfilePage() {
       router.push('/auth/login');
     }
   }, [isAuthenticated, isLoading, router]);
+
+  // Leer query param para establecer tab inicial
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'orders') {
+      setActiveTab('orders');
+    }
+  }, [searchParams]);
 
   // Cargar órdenes cuando se cambia a la pestaña de órdenes
   useEffect(() => {
