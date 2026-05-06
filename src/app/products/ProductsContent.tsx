@@ -28,9 +28,9 @@ export default function ProductsContent() {
     // Filter by category
     if (category && category !== 'all') {
       const typeMap: { [key: string]: string } = {
-        'single': 'SINGLE',
-        'sealed': 'SEALED',
-        'other': 'OTHER'
+        'single': 'SIN',
+        'sealed': 'PSL',
+        'other': 'ACC'
       };
       const typeFilter = typeMap[category];
       if (typeFilter) {

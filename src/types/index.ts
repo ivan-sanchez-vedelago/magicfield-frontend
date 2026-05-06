@@ -13,7 +13,7 @@ export type Product = {
   description?: string;
   price: number;
   stock: number;
-  type?: 'SINGLE' | 'SEALED' | 'OTHER';
+  type?: 'SIN' | 'PSL' | 'ACC';
   scryfallId?: string;
   isFoil?: boolean;
   set?: string;
