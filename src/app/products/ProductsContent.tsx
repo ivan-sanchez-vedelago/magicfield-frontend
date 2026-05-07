@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import ProductCard from './productCard';
 import ProductSidePanel from './productSidePanel';
 import { useProducts } from '@/src/context/productContext';
-import { useCategories } from '@/src/context/categoryContext';
+import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
 import type { Product } from '@/src/types';
 
 export default function ProductsContent() {
@@ -21,9 +21,9 @@ export default function ProductsContent() {
     if (!category) return [];
     const root = categories.find(c => c.shortName === category);
     if (!root) return [category];
-    const children = categories.filter(c => c.parentId === root.id);
-    if (children.length === 0) return [category];
-    return children.map(c => c.shortName);
+    const descendants = getAllDescendants(root.id, categories);
+    if (descendants.length === 0) return [category];
+    return [category, ...descendants.map(d => d.shortName)];
   }, [categories, category]);
 
   const categoryTitle = useMemo(() => {
@@ -35,9 +35,8 @@ export default function ProductsContent() {
   const filteredProducts = useMemo(() => {
     let result = products;
 
-    if (category) {
-      const shortNamesToMatch = descendantShortNames.length > 0 ? descendantShortNames : [category];
-      result = result.filter(product => shortNamesToMatch.includes(product.type ?? ''));
+    if (category && descendantShortNames.length > 0) {
+      result = result.filter(product => descendantShortNames.includes(product.type ?? ''));
     }
 
     if (searchQuery) {

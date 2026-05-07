@@ -5,11 +5,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
-import { useCategories } from '@/src/context/categoryContext';
+import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useAuth } from '@/src/context/authContext';
 import { useCart } from '@/src/context/cartContext';
-import type { Product } from '@/src/types';
+import type { Product, Category } from '@/src/types';
 import { ShoppingCart, User } from 'lucide-react';
 
 export default function Header() {
@@ -25,13 +25,25 @@ export default function Header() {
   const [open, setOpenHamburguerMenu] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [productsMenuOpen, setProductsMenuOpen] = useState(false);
-  const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
   const { startNavigation } = useNavigation();
 
   const rootCategories = categories.filter(c => c.parentId === 0);
 
   const getCategoryChildren = (categoryId: number) =>
     categories.filter(c => c.parentId === categoryId);
+
+  const toggleCategoryExpand = (categoryId: number) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  };
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -116,35 +128,31 @@ export default function Header() {
   const handleCategoryClick = (shortName: string) => {
     setOpenHamburguerMenu(false);
     setProductsMenuOpen(false);
-    setExpandedCategory(null);
+    setExpandedCategories(new Set());
     startNavigation();
     router.push(`/products?category=${shortName}`);
   };
 
-  const renderCategoryTree = (onClose?: () => void) =>
-    rootCategories.map(cat => {
+  const renderCategoryTree = (parentId: number | null, onClose?: () => void, depth: number = 0): React.ReactNode[] => {
+    const items = categories.filter(c => c.parentId === parentId);
+    return items.map(cat => {
       const children = getCategoryChildren(cat.id);
-      const isExpanded = expandedCategory === cat.id;
+      const isExpanded = expandedCategories.has(cat.id);
+      const paddingLeft = depth * 16; // 16px por nivel
+      
       if (children.length > 0) {
         return (
           <div key={cat.id}>
             <button
-              onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
-              className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700 flex items-center justify-between"
+              onClick={() => toggleCategoryExpand(cat.id)}
+              style={{ paddingLeft: `${16 + paddingLeft}px` }}
+              className="w-full text-left py-3 header_tab hover:bg-gray-700 flex items-center justify-between"
             >
               {cat.name}
               <span className={`chevron transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}></span>
             </button>
-            <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-96' : 'max-h-0'}`}>
-              {children.map(child => (
-                <button
-                  key={child.id}
-                  onClick={() => { handleCategoryClick(child.shortName); onClose?.(); }}
-                  className="w-full text-left pl-8 pr-5 py-2 header_tab hover:bg-gray-700 text-sm"
-                >
-                  {child.name}
-                </button>
-              ))}
+            <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-full' : 'max-h-0'}`}>
+              {renderCategoryTree(cat.id, onClose, depth + 1)}
             </div>
           </div>
         );
@@ -153,13 +161,15 @@ export default function Header() {
           <button
             key={cat.id}
             onClick={() => { handleCategoryClick(cat.shortName); onClose?.(); }}
-            className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+            style={{ paddingLeft: `${16 + paddingLeft}px` }}
+            className="w-full text-left py-3 header_tab hover:bg-gray-700"
           >
             {cat.name}
           </button>
         );
       }
     });
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -260,7 +270,7 @@ export default function Header() {
                   : 'opacity-0 translate-x-full pointer-events-none'
               }`}>
                 <nav className="flex flex-col py-2">
-                  {renderCategoryTree()}
+                  {renderCategoryTree(0)}
                 </nav>
               </div>
             </div>
@@ -355,7 +365,7 @@ export default function Header() {
             }`}
           >
             <nav className="flex flex-col py-2">
-              {renderCategoryTree(() => setOpenHamburguerMenu(false))}
+              {renderCategoryTree(0, () => setOpenHamburguerMenu(false))}
               <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab flex items-center gap-2 relative">
                 <div className="relative">
                   <ShoppingCart className="w-6 h-6 flex-shrink-0" />
