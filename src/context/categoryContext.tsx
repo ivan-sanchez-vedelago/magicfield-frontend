@@ -23,7 +23,7 @@ export function CategoryProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <CategoryContext.Provider value={{ categories, loading }}>
+    <CategoryContext.Provider value={{ categories: categories.filter(c => c.id !== 0), loading }}>
       {children}
     </CategoryContext.Provider>
   );

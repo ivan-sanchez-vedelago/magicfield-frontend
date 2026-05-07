@@ -141,11 +141,11 @@ export default function Header() {
     if (depth > MAX_DEPTH) return [];
     const items = categories.filter(c => c.parentId === parentId);
     return items.map(cat => {
-      const children = getCategoryChildren(cat.id);
+      const hasChildren = categories.some(c => c.parentId === cat.id);
       const isExpanded = expandedCategories.has(cat.id);
       const paddingLeft = depth * 16;
       
-      if (children.length > 0) {
+      if (hasChildren) {
         return (
           <div key={cat.id}>
             <button
@@ -156,9 +156,11 @@ export default function Header() {
               {cat.name}
               <span className={`chevron transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}></span>
             </button>
-            <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-full' : 'max-h-0'}`}>
-              {renderCategoryTree(cat.id, onClose, depth + 1)}
-            </div>
+            {isExpanded && (
+              <div className="overflow-hidden transition-all duration-200">
+                {renderCategoryTree(cat.id, onClose, depth + 1)}
+              </div>
+            )}
           </div>
         );
       } else {
@@ -174,7 +176,7 @@ export default function Header() {
         );
       }
     });
-  }, [categories, expandedCategories, getCategoryChildren, handleCategoryClick, toggleCategoryExpand]);
+  }, [categories, expandedCategories, handleCategoryClick, toggleCategoryExpand]);
 
   const handleLogout = async () => {
     await logout();
