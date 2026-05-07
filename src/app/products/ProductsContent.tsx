@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import ProductCard from './productCard';
 import ProductSidePanel from './productSidePanel';
 import { useProducts } from '@/src/context/productContext';
+import { useCategories } from '@/src/context/categoryContext';
 import type { Product } from '@/src/types';
 
 export default function ProductsContent() {
@@ -13,32 +14,32 @@ export default function ProductsContent() {
   const category = searchParams.get('category') || '';
 
   const { products, loading } = useProducts();
+  const { categories } = useCategories();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const categoryTitles: { [key: string]: string } = {
-    'all': 'Catálogo de Productos',
-    'single': 'Singles',
-    'sealed': 'Producto Sellado',
-    'other': 'Accesorios'
-  };
+  const descendantShortNames = useMemo(() => {
+    if (!category) return [];
+    const root = categories.find(c => c.shortName === category);
+    if (!root) return [category];
+    const children = categories.filter(c => c.parentId === root.id);
+    if (children.length === 0) return [category];
+    return children.map(c => c.shortName);
+  }, [categories, category]);
+
+  const categoryTitle = useMemo(() => {
+    if (!category) return 'Catálogo de Productos';
+    const cat = categories.find(c => c.shortName === category);
+    return cat ? cat.name : 'Catálogo de Productos';
+  }, [categories, category]);
 
   const filteredProducts = useMemo(() => {
     let result = products;
 
-    // Filter by category
-    if (category && category !== 'all') {
-      const typeMap: { [key: string]: string } = {
-        'single': 'SIN',
-        'sealed': 'PSL',
-        'other': 'ACC'
-      };
-      const typeFilter = typeMap[category];
-      if (typeFilter) {
-        result = result.filter(product => product.type === typeFilter);
-      }
+    if (category) {
+      const shortNamesToMatch = descendantShortNames.length > 0 ? descendantShortNames : [category];
+      result = result.filter(product => shortNamesToMatch.includes(product.type ?? ''));
     }
 
-    // Filter by search query
     if (searchQuery) {
       result = result.filter(product =>
         product.name.toLowerCase().includes(searchQuery) ||
@@ -47,15 +48,13 @@ export default function ProductsContent() {
     }
 
     return result;
-  }, [products, searchQuery, category]);
-
-  const title = categoryTitles[category] || 'Catálogo de Productos';
+  }, [products, searchQuery, category, descendantShortNames]);
 
   return (
     <div className="flex-1">
       <main className="mx-auto py-12 px-6">
         <h1 className="main_title_text mb-6">
-          {title}
+          {categoryTitle}
         </h1>
 
         {searchQuery && (

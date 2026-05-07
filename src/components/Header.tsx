@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useProducts } from '@/src/context/productContext';
+import { useCategories } from '@/src/context/categoryContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useAuth } from '@/src/context/authContext';
 import { useCart } from '@/src/context/cartContext';
@@ -19,11 +20,18 @@ export default function Header() {
   const [search, setSearch] = useState('');
   const { products } = useProducts();
   const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const { categories } = useCategories();
   const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpenHamburguerMenu] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [productsMenuOpen, setProductsMenuOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const { startNavigation } = useNavigation();
+
+  const rootCategories = categories.filter(c => c.parentId === 0);
+
+  const getCategoryChildren = (categoryId: number) =>
+    categories.filter(c => c.parentId === categoryId);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -105,16 +113,53 @@ export default function Header() {
     router.push(`/products/${id}`);
   };
 
-  const handleCategoryClick = (category: string) => {
+  const handleCategoryClick = (shortName: string) => {
     setOpenHamburguerMenu(false);
     setProductsMenuOpen(false);
+    setExpandedCategory(null);
     startNavigation();
-    if (category === 'all') {
-      router.push('/products');
-    } else {
-      router.push(`/products?category=${category}`);
-    }
+    router.push(`/products?category=${shortName}`);
   };
+
+  const renderCategoryTree = (onClose?: () => void) =>
+    rootCategories.map(cat => {
+      const children = getCategoryChildren(cat.id);
+      const isExpanded = expandedCategory === cat.id;
+      if (children.length > 0) {
+        return (
+          <div key={cat.id}>
+            <button
+              onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+              className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700 flex items-center justify-between"
+            >
+              {cat.name}
+              <span className={`chevron transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}></span>
+            </button>
+            <div className={`overflow-hidden transition-all duration-200 ${isExpanded ? 'max-h-96' : 'max-h-0'}`}>
+              {children.map(child => (
+                <button
+                  key={child.id}
+                  onClick={() => { handleCategoryClick(child.shortName); onClose?.(); }}
+                  className="w-full text-left pl-8 pr-5 py-2 header_tab hover:bg-gray-700 text-sm"
+                >
+                  {child.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      } else {
+        return (
+          <button
+            key={cat.id}
+            onClick={() => { handleCategoryClick(cat.shortName); onClose?.(); }}
+            className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+          >
+            {cat.name}
+          </button>
+        );
+      }
+    });
 
   const handleLogout = async () => {
     await logout();
@@ -215,9 +260,7 @@ export default function Header() {
                   : 'opacity-0 translate-x-full pointer-events-none'
               }`}>
                 <nav className="flex flex-col py-2">
-                  <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
-                  <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
-                  <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
+                  {renderCategoryTree()}
                 </nav>
               </div>
             </div>
@@ -312,9 +355,7 @@ export default function Header() {
             }`}
           >
             <nav className="flex flex-col py-2">
-              <button onClick={() => handleCategoryClick('single')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Singles</button>
-              <button onClick={() => handleCategoryClick('sealed')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Producto Sellado</button>
-              <button onClick={() => handleCategoryClick('other')} className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700">Accesorios</button>
+              {renderCategoryTree(() => setOpenHamburguerMenu(false))}
               <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab flex items-center gap-2 relative">
                 <div className="relative">
                   <ShoppingCart className="w-6 h-6 flex-shrink-0" />

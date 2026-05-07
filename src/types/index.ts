@@ -1,3 +1,11 @@
+// Tipo para categoria
+export interface Category {
+  id: number;
+  name: string;
+  shortName: string;
+  parentId: number | null;
+}
+
 // Tipo para usuario autenticado
 export interface AuthUser {
   id: string;

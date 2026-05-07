@@ -3,6 +3,7 @@ import { ProductProvider } from '../context/productContext';
 import { CartProvider } from '../context/cartContext';
 import { AuthProvider } from '../context/authContext';
 import { CheckoutProvider } from '../context/checkoutContext';
+import { CategoryProvider } from '../context/categoryContext';
 import CartToast from '../toast/cartToast';
 import AuthToast from '../toast/authToast';
 import CheckoutToast from '../toast/checkoutToast';
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: {
           <CartProvider>
             <CheckoutProvider>
               <ProductProvider>
+                <CategoryProvider>
                 <NavigationProvider>
                   <TopProgressBar  />
                   <Header />
@@ -45,6 +47,7 @@ export default function RootLayout({ children }: {
                   {children}
                   <Footer />
                 </NavigationProvider>
+                </CategoryProvider>
               </ProductProvider>
             </CheckoutProvider>
           </CartProvider>
