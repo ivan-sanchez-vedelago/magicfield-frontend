@@ -143,14 +143,14 @@ export default function Header() {
     return items.map(cat => {
       const hasChildren = categories.some(c => c.parentId === cat.id);
       const isExpanded = expandedCategories.has(cat.id);
-      const paddingLeft = depth * 16;
+      const paddingLeft = depth * 0.5;
       
       if (hasChildren) {
         return (
           <div key={cat.id}>
             <button
               onClick={() => toggleCategoryExpand(cat.id)}
-              style={{ paddingLeft: `${16 + paddingLeft}px` }}
+              style={{ paddingLeft: `${1.25 + paddingLeft}rem`, paddingRight: '1.25rem' }}
               className="w-full text-left py-3 header_tab hover:bg-gray-700 flex items-center justify-between"
             >
               {cat.name}
@@ -168,7 +168,7 @@ export default function Header() {
           <button
             key={cat.id}
             onClick={() => { handleCategoryClick(cat.shortName); onClose?.(); }}
-            style={{ paddingLeft: `${16 + paddingLeft}px` }}
+            style={{ paddingLeft: `${1.25 + paddingLeft}rem`, paddingRight: '1.25rem' }}
             className="w-full text-left py-3 header_tab hover:bg-gray-700"
           >
             {cat.name}
@@ -270,8 +270,8 @@ export default function Header() {
             />
             
             <div ref={productsMenuRef}>
-              <button onClick={toggleProductsMenu} className="header_tab cursor-pointer flex items-center gap-2">Productos <span className="chevron"></span></button>
-              <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 ${
+              <button onClick={toggleProductsMenu} className="header_tab cursor-pointer flex items-center gap-2">Catalogo <span className="chevron"></span></button>
+              <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-60 z-50 ${
                 productsMenuOpen
                   ? 'opacity-100 translate-x-0'
                   : 'opacity-0 translate-x-full pointer-events-none'
@@ -365,7 +365,7 @@ export default function Header() {
           {/* ===== MENU MOBILE ===== */}
           <div
             ref={menuRef}
-            className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 md:hidden ${
+            className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-60 z-50 md:hidden ${
               open
                 ? 'opacity-100 translate-x-0'
                 : 'opacity-0 translate-x-full pointer-events-none'
