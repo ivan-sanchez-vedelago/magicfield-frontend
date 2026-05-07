@@ -3,7 +3,7 @@
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useProducts } from '@/src/context/productContext';
 import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
@@ -30,10 +30,12 @@ export default function Header() {
 
   const rootCategories = categories.filter(c => c.parentId === 0);
 
-  const getCategoryChildren = (categoryId: number) =>
-    categories.filter(c => c.parentId === categoryId);
+  const getCategoryChildren = useCallback((categoryId: number) =>
+    categories.filter(c => c.parentId === categoryId),
+    [categories]
+  );
 
-  const toggleCategoryExpand = (categoryId: number) => {
+  const toggleCategoryExpand = useCallback((categoryId: number) => {
     setExpandedCategories(prev => {
       const next = new Set(prev);
       if (next.has(categoryId)) {
@@ -43,7 +45,15 @@ export default function Header() {
       }
       return next;
     });
-  };
+  }, []);
+
+  const handleCategoryClick = useCallback((shortName: string) => {
+    setOpenHamburguerMenu(false);
+    setProductsMenuOpen(false);
+    setExpandedCategories(new Set());
+    startNavigation();
+    router.push(`/products?category=${shortName}`);
+  }, [startNavigation, router]);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -125,20 +135,15 @@ export default function Header() {
     router.push(`/products/${id}`);
   };
 
-  const handleCategoryClick = (shortName: string) => {
-    setOpenHamburguerMenu(false);
-    setProductsMenuOpen(false);
-    setExpandedCategories(new Set());
-    startNavigation();
-    router.push(`/products?category=${shortName}`);
-  };
+  const MAX_DEPTH = 10;
 
-  const renderCategoryTree = (parentId: number | null, onClose?: () => void, depth: number = 0): React.ReactNode[] => {
+  const renderCategoryTree = useCallback((parentId: number | null, onClose?: () => void, depth: number = 0): React.ReactNode[] => {
+    if (depth > MAX_DEPTH) return [];
     const items = categories.filter(c => c.parentId === parentId);
     return items.map(cat => {
       const children = getCategoryChildren(cat.id);
       const isExpanded = expandedCategories.has(cat.id);
-      const paddingLeft = depth * 16; // 16px por nivel
+      const paddingLeft = depth * 16;
       
       if (children.length > 0) {
         return (
@@ -169,7 +174,7 @@ export default function Header() {
         );
       }
     });
-  };
+  }, [categories, expandedCategories, getCategoryChildren, handleCategoryClick, toggleCategoryExpand]);
 
   const handleLogout = async () => {
     await logout();
