@@ -60,17 +60,26 @@ export default function ProductDetailClient({ product } : { product: Product }) 
     <main className="mx-auto px-6 py-8 space-y-10">
 
       <div className="normal_text box_border">
-        <LoadingLink className="underline" href="/">Home</LoadingLink>
-        {breadcrumbPath.map((item, index) => (
-          <div key={item.id} className="inline">
+        {breadcrumbPath.length > 0 ? (
+          <>
+            {breadcrumbPath.map((item, index) => (
+              <div key={item.id} className="inline">
+                {index > 0 && <span> / </span>}
+                <LoadingLink className="underline" href={`/products?category=${item.shortName}`}>
+                  {item.name}
+                </LoadingLink>
+              </div>
+            ))}
             <span> / </span>
-            <LoadingLink className="underline" href={`/products?category=${item.id}`}>
-              {item.name}
-            </LoadingLink>
-          </div>
-        ))}
-        <span> / </span>
-        <span className="">{product.name}</span>
+            <span className="">{product.name}</span>
+          </>
+        ) : (
+          <>
+            <LoadingLink className="underline" href="/">Home</LoadingLink>
+            <span> / </span>
+            <span className="">{product.name}</span>
+          </>
+        )}
       </div>
 
       <section className="detail_page_container">
