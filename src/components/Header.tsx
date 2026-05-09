@@ -161,7 +161,7 @@ export default function Header() {
                 borderBottomLeftRadius: '15px',
                 maxHeight: isExpanded ? '1000px' : '0px'
               }}
-              className={`overflow-hidden border-t border-gray-700 category-wrapper ${isExpanded ? 'category-open' : 'category-closed'}`}>
+              className={`overflow-hidden border-t border-b border-gray-700 category-wrapper ${isExpanded ? 'category-open' : 'category-closed'}`}>
               <div>
                 {renderCategoryTree(cat.id, onClose, depth + 1)}
               </div>
