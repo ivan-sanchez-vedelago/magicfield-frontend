@@ -140,10 +140,10 @@ export default function Header() {
   const renderCategoryTree = useCallback((parentId: number | null, onClose?: () => void, depth: number = 0): React.ReactNode[] => {
     if (depth > MAX_DEPTH) return [];
     const items = categories.filter(c => c.parentId === parentId);
-    return items.map(cat => {
+    return items.map((cat) => {
       const hasChildren = categories.some(c => c.parentId === cat.id);
       const isExpanded = expandedCategories.has(cat.id);
-      const paddingLeft = depth * 0.5;
+      const paddingLeft = depth * 0.75;
       
       if (hasChildren) {
         return (
@@ -151,16 +151,21 @@ export default function Header() {
             <button
               onClick={() => toggleCategoryExpand(cat.id)}
               style={{ paddingLeft: `${1.25 + paddingLeft}rem`, paddingRight: '1.25rem' }}
-              className="w-full text-left py-3 header_tab hover:bg-gray-700 flex items-center justify-between"
+              className="nav_dropdown w-full text-left py-2 header_tab flex items-center justify-between"
             >
               {cat.name}
-              <span className={`chevron transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}></span>
+              <span className={`chevron transition-transform duration-300 ${isExpanded ? 'rotate-[225deg]' : 'rotate-[45deg]'}`}></span>
             </button>
-            {isExpanded && (
-              <div className="overflow-hidden transition-all duration-200">
+            <div 
+              style={{ 
+                borderBottomLeftRadius: '15px',
+                maxHeight: isExpanded ? '1000px' : '0px'
+              }}
+              className={`overflow-hidden border-t border-gray-700 category-wrapper ${isExpanded ? 'category-open' : 'category-closed'}`}>
+              <div>
                 {renderCategoryTree(cat.id, onClose, depth + 1)}
               </div>
-            )}
+            </div>
           </div>
         );
       } else {
@@ -168,8 +173,8 @@ export default function Header() {
           <button
             key={cat.id}
             onClick={() => { handleCategoryClick(cat.shortName); onClose?.(); }}
-            style={{ paddingLeft: `${1.25 + paddingLeft}rem`, paddingRight: '1.25rem' }}
-            className="w-full text-left py-3 header_tab hover:bg-gray-700"
+            style={{ paddingLeft: `${1.25 + paddingLeft}rem`, paddingRight: '1.25rem', animationDelay: `${0.05}s` }}
+            className={`nav_dropdown w-full text-left py-2 header_tab`}
           >
             {cat.name}
           </button>
@@ -270,13 +275,13 @@ export default function Header() {
             />
             
             <div ref={productsMenuRef}>
-              <button onClick={toggleProductsMenu} className="header_tab cursor-pointer flex items-center gap-2">Catalogo <span className="chevron"></span></button>
-              <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-60 z-50 ${
+              <button onClick={toggleProductsMenu} className="header_tab cursor-pointer flex items-center gap-2">Catalogo <span className={`chevron transition-transform duration-300 ${productsMenuOpen ? 'rotate-[225deg]' : 'rotate-[45deg]'}`}></span></button>
+              <div className={`nav_dropdown nav_color transform transition-all fixed top-14 right-0 w-60 z-50 overflow-hidden nav-dropdown-expand ${productsMenuOpen ? 'duration-500' : 'duration-300'} ${
                 productsMenuOpen
                   ? 'opacity-100 translate-x-0'
                   : 'opacity-0 translate-x-full pointer-events-none'
               }`}>
-                <nav className="flex flex-col py-2">
+                <nav className="flex flex-col">
                   {renderCategoryTree(0)}
                 </nav>
               </div>
@@ -298,27 +303,27 @@ export default function Header() {
               >
                 <User className="w-6 h-6 flex-shrink-0" />
               </button>
-              <div className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-48 z-50 ${
+              <div className={`nav_dropdown nav_color transform transition-all fixed top-14 right-0 w-48 z-50 overflow-hidden nav-dropdown-expand ${userMenuOpen ? 'duration-500' : 'duration-300'} ${
                 userMenuOpen
                   ? 'opacity-100 translate-x-0'
                   : 'opacity-0 translate-x-full pointer-events-none'
               }`}>
-                <nav className="flex flex-col py-2">
+                <nav className="flex flex-col">
                   {isAuthenticated && user ? (
                     <>
-                      <div className="px-5 py-3 border-b border-gray-700">
+                      <div className="px-5 py-2 border-b border-gray-700">
                         <p className="small_text text-gray-400">Hola,</p>
                         <p className="font-semibold text-white truncate">{user.name}</p>
                       </div>
                       <button
                         onClick={handleProfileClick}
-                        className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                        className="w-full text-left px-5 py-2 header_tab"
                       >
                         Mi Perfil
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-5 py-3 border-t border-gray-700 header_tab hover:bg-gray-700"
+                        className="w-full text-left px-5 py-2 border-t border-gray-700 header_tab"
                       >
                         Cerrar Sesión
                       </button>
@@ -327,14 +332,14 @@ export default function Header() {
                     <>
                       <button
                         onClick={handleLoginClick}
-                        className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                        className="w-full text-left px-5 py-2 header_tab"
                       >
                         Iniciar Sesión
                       </button>
                       <LoadingLink
                         href="/auth/register"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full text-left px-5 py-3 border-t border-gray-700 header_tab hover:bg-gray-700 block"
+                        className="w-full text-left px-5 py-2 border-t border-gray-700 header_tab block"
                       >
                         Registrarse
                       </LoadingLink>
@@ -365,15 +370,15 @@ export default function Header() {
           {/* ===== MENU MOBILE ===== */}
           <div
             ref={menuRef}
-            className={`nav_dropdown nav_color transform transition-all duration-300 fixed top-14 right-0 w-60 z-50 md:hidden ${
+            className={`nav_dropdown nav_color transform transition-all fixed top-14 right-0 w-60 z-50 md:hidden overflow-hidden nav-dropdown-expand ${open ? 'duration-500' : 'duration-300'} ${
               open
                 ? 'opacity-100 translate-x-0'
                 : 'opacity-0 translate-x-full pointer-events-none'
             }`}
           >
-            <nav className="flex flex-col py-2">
+            <nav className="flex flex-col">
               {renderCategoryTree(0, () => setOpenHamburguerMenu(false))}
-              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-3 header_tab flex items-center gap-2 relative">
+              <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-2 header_tab flex items-center gap-2 relative">
                 <div className="relative">
                   <ShoppingCart className="w-6 h-6 flex-shrink-0" />
                   {cartItems.length > 0 && (
@@ -388,7 +393,7 @@ export default function Header() {
               <div className="border-t border-gray-700 mt-2 pt-2">
                 {isAuthenticated && user ? (
                   <>
-                    <div className="px-5 py-3">
+                    <div className="px-5 py-2">
                       <p className="small_text text-gray-400">Hola,</p>
                       <p className="font-semibold text-white truncate">{user.name}</p>
                     </div>
@@ -397,7 +402,7 @@ export default function Header() {
                         handleProfileClick();
                         setOpenHamburguerMenu(false);
                       }}
-                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                      className="w-full text-left px-5 py-2 header_tab"
                     >
                       Mi Perfil
                     </button>
@@ -406,7 +411,7 @@ export default function Header() {
                         handleLogout();
                         setOpenHamburguerMenu(false);
                       }}
-                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                      className="w-full text-left px-5 py-2 header_tab"
                     >
                       Cerrar Sesión
                     </button>
@@ -418,14 +423,14 @@ export default function Header() {
                         handleLoginClick();
                         setOpenHamburguerMenu(false);
                       }}
-                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700"
+                      className="w-full text-left px-5 py-2 header_tab"
                     >
                       Iniciar Sesión
                     </button>
                     <LoadingLink
                       href="/auth/register"
                       onClick={() => setOpenHamburguerMenu(false)}
-                      className="w-full text-left px-5 py-3 header_tab hover:bg-gray-700 block"
+                      className="w-full text-left px-5 py-2 header_tab block"
                     >
                       Registrarse
                     </LoadingLink>
@@ -451,7 +456,7 @@ export default function Header() {
             <button
               key={product.id}
               onClick={() => goToProduct(product.id)}
-              className="w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center gap-3"
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-3"
             >
               {product.imageUrls?.[0] && (
                 <img
