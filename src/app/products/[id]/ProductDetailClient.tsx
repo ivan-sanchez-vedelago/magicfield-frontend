@@ -63,12 +63,12 @@ export default function ProductDetailClient({ product } : { product: Product }) 
         {breadcrumbPath.length > 0 ? (
           <>
             {breadcrumbPath.map((item, index) => (
-              <div key={item.id} className="inline">
+              <span key={item.id}>
                 {index > 0 && <span> / </span>}
                 <LoadingLink className="underline" href={`/products?category=${item.shortName}`}>
                   {item.name}
                 </LoadingLink>
-              </div>
+              </span>
             ))}
             <span> / </span>
             <span className="">{product.name}</span>

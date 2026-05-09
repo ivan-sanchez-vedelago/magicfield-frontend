@@ -7,14 +7,17 @@ export interface BreadcrumbItem {
 }
 
 /**
- * Construye la ruta de categorías desde root hasta una categoría específica.
- * Por ejemplo, si categoryId = 5 y el árbol es:
- *   0 (root) > 1 > 2 > 5
- * Retorna: [{ id: 0, name: 'root', shortName: 'ROOT' }, { id: 1, name: '...', shortName: '...' }, ...]
+ * Construye la ruta de categorías desde el nivel más alto disponible hasta una categoría específica.
+ * Nota: La categoría root (id=0) se filtra en el contexto, así que el path comienza
+ * desde la categoría de primer nivel (parentId=0) hacia abajo.
+ *
+ * Ejemplo: Si categoryId = 5 y el árbol es:
+ *   0 (root "catalogo", filtrada) > 1 (name='Cartas', parentId=0) > 2 (name='Magic', parentId=1) > 5
+ * Retorna: [{ id: 1, name: 'Cartas', shortName: 'CARTAS' }, { id: 2, name: 'Magic', ... }, { id: 5, ... }]
  *
  * @param categoryId - ID de la categoría terminal
- * @param categories - Array de todas las categorías disponibles
- * @returns Array ordenado desde root hasta la categoría especificada (incluyendo root)
+ * @param categories - Array de categorías disponibles (sin id=0)
+ * @returns Array ordenado desde la categoría raíz disponible hasta la especificada
  */
 export function getBreadcrumbPath(
   categoryId: number | undefined | null,
@@ -28,7 +31,7 @@ export function getBreadcrumbPath(
 
   // Construir la ruta subiendo hacia root
   const path: BreadcrumbItem[] = [];
-  let current: Category | null = targetCategory;
+  let current: Category = targetCategory;
 
   while (current) {
     path.unshift({
@@ -42,28 +45,11 @@ export function getBreadcrumbPath(
       break;
     }
 
-    current = categories.find(c => c.id === current.parentId) ?? null;
-  }
-
-  // Agregar la categoría root (id=0) si no está ya en el path
-  const hasRoot = path.some(p => p.id === 0);
-  if (!hasRoot && path.length > 0) {
-    // Buscar categoría root en la lista (aunque normalmente se filtra)
-    const rootCategory = categories.find(c => c.id === 0);
-    if (rootCategory) {
-      path.unshift({
-        id: 0,
-        name: rootCategory.name,
-        shortName: rootCategory.shortName
-      });
-    } else {
-      // Si no existe, crear una categoría root por defecto
-      path.unshift({
-        id: 0,
-        name: 'Inicio',
-        shortName: 'HOME'
-      });
+    const parent = categories.find(c => c.id === current.parentId);
+    if (!parent) {
+      break;
     }
+    current = parent;
   }
 
   return path;
