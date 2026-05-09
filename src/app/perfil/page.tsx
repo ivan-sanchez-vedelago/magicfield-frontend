@@ -23,6 +23,7 @@ interface GroupedOrder {
   orderId: string;
   saleDate: string;
   total: number;
+  status: string;
   items: Order[];
 }
 
@@ -91,8 +92,30 @@ export default function ProfilePage() {
       orderId,
       saleDate: items[0].saleDate,
       total: items.reduce((sum, item) => sum + item.subtotal, 0),
+      status: items[0].status,
       items,
     }));
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${orderId}/cancel`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user?.id }),
+        }
+      );
+      if (res.ok) {
+        fetchOrders();
+      } else {
+        alert('No se pudo cancelar el pedido');
+      }
+    } catch (error) {
+      console.error('Error al cancelar pedido:', error);
+      alert('Error al cancelar el pedido');
+    }
   };
 
   const handleLogout = async () => {
@@ -277,6 +300,17 @@ export default function ProfilePage() {
                             Pedido {orderDate}
                           </p>
                           <div className="flex items-center gap-4">
+                            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                              groupedOrder.status === 'PENDING'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : groupedOrder.status === 'COMPLETED'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {groupedOrder.status === 'PENDING' ? 'Pendiente'
+                                : groupedOrder.status === 'COMPLETED' ? 'Completado'
+                                : 'Cancelado'}
+                            </span>
                             <p className="product_price_big_text">
                               ARS$ {groupedOrder.total.toLocaleString('es-ES')}
                             </p>
@@ -317,7 +351,17 @@ export default function ProfilePage() {
                             </div>
                           </div>
                         )}
-                      </div>
+                        {/* Botón cancelar (solo PENDING) */}
+                        {groupedOrder.status === 'PENDING' && (
+                          <div className="border-t border-gray-200 p-3 bg-gray-50 flex justify-end">
+                            <button
+                              onClick={() => handleCancelOrder(groupedOrder.orderId)}
+                              className="small_button button_danger_secondary"
+                            >
+                              Cancelar pedido
+                            </button>
+                          </div>
+                        )}                      </div>
                     );
                   })}
                 </div>
