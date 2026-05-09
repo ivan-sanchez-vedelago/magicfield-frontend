@@ -5,6 +5,8 @@ import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
+import { useCategories } from '../../../context/categoryContext';
+import { getBreadcrumbPath } from '@/src/utils/breadcrumb';
 import ProductImageGallery from '@/src/components/product/ProductImageGallery';
 import RelatedProductsCarousel from '@/src/components/product/RelatedProductsCarousel';
 import type { Product } from '@/src/types';
@@ -14,6 +16,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
   console.log("ProductDetailClient render, product:", product);
   const { items, setProductQuantity, removeProduct } = useCart();
   const { products: allProducts } = useProducts();
+  const { categories } = useCategories();
 
   const cartItem = items.find(i => i.productId === product.id);
   const quantityInCart = cartItem?.quantity ?? 0;
@@ -49,13 +52,23 @@ export default function ProductDetailClient({ product } : { product: Product }) 
       ).slice(0, 10);
   }, [allProducts, product]);
 
+  const breadcrumbPath = useMemo(() => {
+    return getBreadcrumbPath(product.categoryId, categories);
+  }, [product.categoryId, categories]);
+
   return (
     <main className="mx-auto px-6 py-8 space-y-10">
 
       <div className="normal_text box_border">
         <LoadingLink className="underline" href="/">Home</LoadingLink>
-        <span> / </span>
-        <LoadingLink className="underline" href="/products">Productos</LoadingLink>
+        {breadcrumbPath.map((item, index) => (
+          <div key={item.id} className="inline">
+            <span> / </span>
+            <LoadingLink className="underline" href={`/products?category=${item.id}`}>
+              {item.name}
+            </LoadingLink>
+          </div>
+        ))}
         <span> / </span>
         <span className="">{product.name}</span>
       </div>
