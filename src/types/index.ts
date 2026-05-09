@@ -28,6 +28,7 @@ export type Product = {
   collectorNumber?: string;
   condition?: string;
   language?: string;
+  categoryId?: number;
   imageUrls?: string[];
 };
 
