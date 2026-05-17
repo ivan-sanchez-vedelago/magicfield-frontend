@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import type { Product } from '@/src/types';
 import { formatPrice } from '@/src/utils/formatPrice';
 
@@ -30,10 +31,11 @@ export default function ProductCard({ product, onClick }: Props) {
       <div className="product_image">
         {images.length > 0 ? (
           <>
-            <img
+            <Image
+              fill
               src={images[current]}
               alt={product.name}
-              className="object-contain w-full h-full"
+              className="object-contain"
             />
 
             {images.length > 1 && (
