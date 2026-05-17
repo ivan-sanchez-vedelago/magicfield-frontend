@@ -14,7 +14,78 @@ interface PagedProducts {
   currentPage: number;
 }
 
-const PAGE_SIZE_OPTIONS = [10, 20, 30];
+function getPageNumbers(currentPage: number, totalPages: number): (number | '...')[] {
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i);
+  const items: (number | '...')[] = [];
+  const windowStart = Math.max(0, currentPage - 1);
+  const windowEnd   = Math.min(totalPages - 1, currentPage + 1);
+  const leftEdge    = Math.max(0, Math.min(windowStart, totalPages - 3));
+  const rightEdge   = Math.min(totalPages - 1, Math.max(windowEnd, 2));
+  items.push(0);
+  if (leftEdge > 1) items.push('...');
+  for (let i = Math.max(1, leftEdge); i <= Math.min(totalPages - 2, rightEdge); i++) items.push(i);
+  if (rightEdge < totalPages - 2) items.push('...');
+  items.push(totalPages - 1);
+  return items;
+}
+
+function PaginationBar({
+  currentPage, totalPages, pageSize, onPageChange, onPageSizeChange,
+}: {
+  currentPage: number; totalPages: number; pageSize: number;
+  onPageChange: (p: number) => void; onPageSizeChange: (s: number) => void;
+}) {
+  const pages = getPageNumbers(currentPage, totalPages);
+  return (
+    <div className="flex items-center justify-end gap-2 flex-wrap">
+      {totalPages > 1 && (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onPageChange(Math.max(0, currentPage - 1))}
+            disabled={currentPage === 0}
+            className="pagination_btn disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            &#8249;
+          </button>
+          {pages.map((page, i) =>
+            page === '...' ? (
+              <span key={`d${i}`} className="pagination_ellipsis">&#8230;</span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => onPageChange(page as number)}
+                className={page === currentPage ? 'pagination_btn_active' : 'pagination_btn'}
+              >
+                {(page as number) + 1}
+              </button>
+            )
+          )}
+          <button
+            onClick={() => onPageChange(Math.min(totalPages - 1, currentPage + 1))}
+            disabled={currentPage >= totalPages - 1}
+            className="pagination_btn disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            &#8250;
+          </button>
+        </div>
+      )}
+
+      {totalPages > 1 && <div className="h-6 w-px bg-gray-300 mx-1" />}
+
+      <div className="flex items-center gap-1">
+        {[10, 20, 30].map(size => (
+          <button
+            key={size}
+            onClick={() => onPageSizeChange(size)}
+            className={size === pageSize ? 'pagination_btn_active' : 'pagination_btn'}
+          >
+            {size}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function ProductsContent() {
   const searchParams = useSearchParams();
@@ -84,28 +155,23 @@ export default function ProductsContent() {
         </h1>
 
         {searchQuery && (
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-500 mb-4">
             Resultados para: <span className="font-semibold">{`"${searchQuery}"`}</span>
           </p>
         )}
 
-        {/* Page size selector */}
-        <div className="flex items-center gap-2 mb-6">
-          <span className="small_text text-gray-500">Mostrar:</span>
-          {PAGE_SIZE_OPTIONS.map(size => (
-            <button
-              key={size}
-              onClick={() => { setPageSize(size); setCurrentPage(0); }}
-              className={`px-3 py-1 rounded text-sm font-medium border transition-colors ${
-                pageSize === size
-                  ? 'bg-gray-800 text-white border-gray-800'
-                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500'
-              }`}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
+        {/* Pagination bar — top */}
+        {products.length > 0 && (
+          <div className="mb-4">
+            <PaginationBar
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(s) => { setPageSize(s); setCurrentPage(0); }}
+            />
+          </div>
+        )}
 
         {loading ? (
           <p>Cargando productos...</p>
@@ -125,28 +191,16 @@ export default function ProductsContent() {
               ))}
             </div>
 
-            {/* Pagination controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4 mt-8">
-                <button
-                  onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
-                  disabled={currentPage === 0}
-                  className="px-4 py-2 rounded border border-gray-300 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-                >
-                  Anterior
-                </button>
-                <span className="small_text text-gray-600">
-                  Página {currentPage + 1} de {totalPages} · {totalElements} productos
-                </span>
-                <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))}
-                  disabled={currentPage >= totalPages - 1}
-                  className="px-4 py-2 rounded border border-gray-300 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-                >
-                  Siguiente
-                </button>
-              </div>
-            )}
+            {/* Pagination bar — bottom */}
+            <div className="mt-6">
+              <PaginationBar
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(s) => { setPageSize(s); setCurrentPage(0); }}
+              />
+            </div>
           </>
         )}
 
