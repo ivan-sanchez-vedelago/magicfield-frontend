@@ -38,8 +38,7 @@ function PaginationBar({
   const pages = getPageNumbers(currentPage, totalPages);
   return (
     <div className="flex items-center justify-end gap-2 flex-wrap">
-      {totalPages > 1 && (
-        <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1">
           <button
             onClick={() => onPageChange(Math.max(0, currentPage - 1))}
             disabled={currentPage === 0}
@@ -68,9 +67,8 @@ function PaginationBar({
             &#8250;
           </button>
         </div>
-      )}
 
-      {totalPages > 1 && <div className="h-6 w-px bg-gray-300 mx-1" />}
+      <div className="h-6 w-px bg-gray-300 mx-1" />
 
       <div className="flex items-center gap-1">
         {[10, 20, 30].map(size => (
