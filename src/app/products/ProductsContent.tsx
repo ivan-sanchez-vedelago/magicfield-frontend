@@ -79,7 +79,7 @@ export default function ProductsContent() {
   const { categories } = useCategories();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -156,7 +156,9 @@ export default function ProductsContent() {
         )}
 
         {loading ? (
-          <p>Cargando productos...</p>
+          <p className="text-gray-500">
+            Cargando productos...
+          </p>
         ) : products.length === 0 ? (
           <p className="text-gray-500">
             No se encontraron productos.
