@@ -71,6 +71,19 @@ function PaginationBar({
   );
 }
 
+function ProductCardSkeleton() {
+  return (
+    <div className="product_box box_border animate-pulse">
+      <div className="product_image bg-gray-700/50 rounded" />
+      <div className="h-4 bg-gray-700/50 rounded mt-2 mx-2" />
+      <div className="h-3 bg-gray-700/40 rounded mt-1 mx-2" />
+      <div className="h-3 bg-gray-700/40 rounded mt-1 mx-4" />
+      <div className="h-5 bg-gray-700/50 rounded mt-2 mx-6" />
+      <div className="h-3 bg-gray-700/30 rounded mt-1 mx-8 mb-2" />
+    </div>
+  );
+}
+
 export default function ProductsContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search')?.toLowerCase() || '';
@@ -156,7 +169,11 @@ export default function ProductsContent() {
         )}
 
         {loading ? (
-          <p>Cargando productos...</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {Array.from({ length: pageSize }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
         ) : products.length === 0 ? (
           <p className="text-gray-500">
             No se encontraron productos.
