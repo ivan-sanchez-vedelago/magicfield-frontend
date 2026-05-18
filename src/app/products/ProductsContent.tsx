@@ -163,11 +163,11 @@ export default function ProductsContent() {
         )}
 
         {/* Pagination bar — top */}
-        {products.length > 0 && (
+        {!loading && products.length === 0 ? null : (
           <div className="mb-4">
             <PaginationBar
               currentPage={currentPage}
-              totalPages={totalPages}
+              totalPages={loading ? 1 : totalPages}
               onPageChange={setCurrentPage}
             />
           </div>
