@@ -137,9 +137,14 @@ export default function ProductsContent() {
         setProducts(data.content);
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
+        setLoading(false);
       })
-      .catch(err => { if (err.name !== 'AbortError') console.error(err); })
-      .finally(() => setLoading(false));
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          setLoading(false);
+        }
+      });
 
     return () => controller.abort();
   }, [currentPage, pageSize, searchQuery, categoriesParam]);
