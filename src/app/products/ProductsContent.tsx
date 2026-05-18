@@ -108,9 +108,9 @@ export default function ProductsContent() {
   }, [categories, category]);
 
   const categoryTitle = useMemo(() => {
-    if (!category) return 'Catálogo de Productos';
+    if (!category) return 'Catálogo';
     const cat = categories.find(c => c.shortName === category);
-    return cat ? cat.name : 'Catálogo de Productos';
+    return cat ? cat.name : 'Catálogo';
   }, [categories, category]);
 
   // Reset to page 0 when filters change
