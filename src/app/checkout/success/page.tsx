@@ -11,10 +11,10 @@ export default function CheckoutSuccess() {
           Te enviamos un email de confirmación con los detalles de tu compra. Nos comunicaremos contigo a la brevedad para coordinar la entrega.
         </p>
         <LoadingLink
-          href="/products"
+          href="/perfil?tab=orders"
           className="button_primary medium_button inline-block w-60"
         >
-          Volver
+          Ver mis pedidos
         </LoadingLink>
       </div>
     </div>
