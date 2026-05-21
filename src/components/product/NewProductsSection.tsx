@@ -81,7 +81,7 @@ export default function NewProductsSection() {
           </div>
           <div className='flex justify-end justify-between'>
             <p className="normal_text text-gray-200 mt-1 drop-shadow">Revisa los últimos productos</p>
-            <LoadingLink href="/products" className="small_text text-gray-200 text_clickable" style={{ alignContent: 'center', minWidth: '60px' }}>
+            <LoadingLink href="/products" className="small_text text-gray-200 text_clickable flex items-center min-w-[60px]">
               Ver todo →
             </LoadingLink>
           </div>
