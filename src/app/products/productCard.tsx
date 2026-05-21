@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { Product } from '@/src/types';
 import { formatPrice } from '@/src/utils/formatPrice';
@@ -13,6 +13,11 @@ type Props = {
 export default function ProductCard({ product, onClick }: Props) {
   const images = product.imageUrls ?? [];
   const [current, setCurrent] = useState(0);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [current]);
 
   const prev = () => {
     setCurrent((c) =>
@@ -31,11 +36,15 @@ export default function ProductCard({ product, onClick }: Props) {
       <div className="product_image">
         {images.length > 0 ? (
           <>
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gray-700/50 animate-pulse rounded" />
+            )}
             <Image
               fill
               src={images[current]}
               alt={product.name}
               className="object-contain"
+              onLoad={() => setImageLoaded(true)}
             />
 
             {images.length > 1 && (

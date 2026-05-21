@@ -71,6 +71,19 @@ function PaginationBar({
   );
 }
 
+function ProductCardSkeleton() {
+  return (
+    <div className="product_box box_border animate-pulse">
+      <div className="product_image bg-gray-700/50 rounded" />
+      <div className="h-4 bg-gray-700/50 rounded mt-2 mx-2" />
+      <div className="h-3 bg-gray-700/40 rounded mt-1 mx-2" />
+      <div className="h-3 bg-gray-700/40 rounded mt-1 mx-4" />
+      <div className="h-5 bg-gray-700/50 rounded mt-2 mx-6" />
+      <div className="h-3 bg-gray-700/30 rounded mt-1 mx-8 mb-2" />
+    </div>
+  );
+}
+
 export default function ProductsContent() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search')?.toLowerCase() || '';
@@ -79,7 +92,7 @@ export default function ProductsContent() {
   const { categories } = useCategories();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -95,9 +108,9 @@ export default function ProductsContent() {
   }, [categories, category]);
 
   const categoryTitle = useMemo(() => {
-    if (!category) return 'Catálogo de Productos';
+    if (!category) return 'Catálogo';
     const cat = categories.find(c => c.shortName === category);
-    return cat ? cat.name : 'Catálogo de Productos';
+    return cat ? cat.name : 'Catálogo';
   }, [categories, category]);
 
   // Reset to page 0 when filters change
@@ -124,9 +137,14 @@ export default function ProductsContent() {
         setProducts(data.content);
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
+        setLoading(false);
       })
-      .catch(err => { if (err.name !== 'AbortError') console.error(err); })
-      .finally(() => setLoading(false));
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          setLoading(false);
+        }
+      });
 
     return () => controller.abort();
   }, [currentPage, pageSize, searchQuery, categoriesParam]);
@@ -145,18 +163,22 @@ export default function ProductsContent() {
         )}
 
         {/* Pagination bar — top */}
-        {products.length > 0 && (
+        {!loading && products.length === 0 ? null : (
           <div className="mb-4">
             <PaginationBar
               currentPage={currentPage}
-              totalPages={totalPages}
+              totalPages={loading ? 1 : totalPages}
               onPageChange={setCurrentPage}
             />
           </div>
         )}
 
         {loading ? (
-          <p>Cargando productos...</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            {Array.from({ length: pageSize }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
         ) : products.length === 0 ? (
           <p className="text-gray-500">
             No se encontraron productos.
