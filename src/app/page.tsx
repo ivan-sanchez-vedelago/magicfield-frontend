@@ -2,30 +2,25 @@
 
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import BannerSlider from '@/src/components/BannerSlider';
+import NewProductsSection from '@/src/components/product/NewProductsSection';
 
 export default function Home() {
   return (
     <div className="flex-1 flex flex-col">
-      <main className="mx-auto w-full py-8 px-6">
+      <main className="">
         {/* Banner slider de novedades y promociones */}
-        <section className="mb-12">
+        <section className="mx-auto w-full py-8 px-6 mb-4">
           <BannerSlider />
         </section>
 
-        <section className="text-center mb-12">
-          <h1 className="main_title_text">Bienvenido a Magic Field</h1>
-          <p className="normal_text text-gray-400 mt-2 mb-8">
-            Encuentra los mejores productos con facilidad
-          </p>
-          <LoadingLink
-            href="/products"
-            className="button_primary big_button"
-          >
-            Ver Catálogo
-          </LoadingLink>
+        {/* Sección de productos nuevos */}
+        <section className="">
+          <NewProductsSection />
         </section>
 
-        {/* TODO: Agregar sección de productos destacados */}
+        <section className="mx-auto w-full py-8 px-6 text-center mb-8">
+
+        </section>
       </main>
     </div>
   );

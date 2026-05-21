@@ -29,6 +29,7 @@ export type Product = {
   condition?: string;
   language?: string;
   categoryId?: number;
+  createdAt?: string;
   imageUrls?: string[];
 };
 

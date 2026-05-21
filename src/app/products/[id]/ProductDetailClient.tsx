@@ -43,13 +43,39 @@ export default function ProductDetailClient({ product } : { product: Product }) 
   const relatedProducts = useMemo(() => {
     if (!allProducts.length) return [];
 
-    const words = product.name.toLowerCase().split(" ");
+    const MAX_RELATED = 20;
+    const seen = new Set<string>();
+    const result: Product[] = [];
 
-    return allProducts
-      .filter(p => p.id !== product.id)
-      .filter(p =>
-        words.some(w => p.name.toLowerCase().includes(w))
-      ).slice(0, 10);
+    const add = (candidates: Product[]) => {
+      for (const p of candidates) {
+        if (!seen.has(p.id) && result.length < MAX_RELATED) {
+          seen.add(p.id);
+          result.push(p);
+        }
+      }
+    };
+
+    const others = allProducts.filter(p => p.id !== product.id);
+
+    // 1. Coincidencia por nombre
+    const words = product.name.toLowerCase().split(" ");
+    add(others.filter(p => words.some(w => p.name.toLowerCase().includes(w))));
+
+    // 2. Mismo set (solo singles)
+    if (product.type === 'SIN' && product.set) {
+      add(others.filter(p => p.type === 'SIN' && p.set === product.set));
+    }
+
+    // 3. Misma categoría
+    if (product.categoryId) {
+      add(others.filter(p => p.categoryId === product.categoryId));
+    }
+
+    // 4. Relleno con cualquier otro producto
+    add(others);
+
+    return result;
   }, [allProducts, product]);
 
   const breadcrumbPath = useMemo(() => {
