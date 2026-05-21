@@ -43,13 +43,43 @@ export default function ProductDetailClient({ product } : { product: Product }) 
   const relatedProducts = useMemo(() => {
     if (!allProducts.length) return [];
 
+    const MAX_RELATED = 20;
+    const related = new Set<string>();
+
+    // 1. Productos que coinciden por nombre
     const words = product.name.toLowerCase().split(" ");
+    allProducts
+      .filter(p => p.id !== product.id)
+      .filter(p => words.some(w => p.name.toLowerCase().includes(w)))
+      .forEach(p => related.add(p.id));
+
+    // 2. Si es un single, agregar productos del mismo set
+    if (product.type === 'SIN' && product.set) {
+      allProducts
+        .filter(p => p.id !== product.id)
+        .filter(p => p.type === 'SIN' && p.set === product.set)
+        .forEach(p => related.add(p.id));
+    }
+
+    // 3. Agregar productos de la misma categoría
+    if (product.categoryId) {
+      allProducts
+        .filter(p => p.id !== product.id)
+        .filter(p => p.categoryId === product.categoryId)
+        .forEach(p => related.add(p.id));
+    }
+
+    // 4. Rellenar con otros productos si no llega a 20
+    if (related.size < MAX_RELATED) {
+      allProducts
+        .filter(p => p.id !== product.id && !related.has(p.id))
+        .slice(0, MAX_RELATED - related.size)
+        .forEach(p => related.add(p.id));
+    }
 
     return allProducts
-      .filter(p => p.id !== product.id)
-      .filter(p =>
-        words.some(w => p.name.toLowerCase().includes(w))
-      ).slice(0, 10);
+      .filter(p => related.has(p.id))
+      .slice(0, MAX_RELATED);
   }, [allProducts, product]);
 
   const breadcrumbPath = useMemo(() => {
