@@ -44,42 +44,38 @@ export default function ProductDetailClient({ product } : { product: Product }) 
     if (!allProducts.length) return [];
 
     const MAX_RELATED = 20;
-    const related = new Set<string>();
+    const seen = new Set<string>();
+    const result: Product[] = [];
 
-    // 1. Productos que coinciden por nombre
+    const add = (candidates: Product[]) => {
+      for (const p of candidates) {
+        if (!seen.has(p.id) && result.length < MAX_RELATED) {
+          seen.add(p.id);
+          result.push(p);
+        }
+      }
+    };
+
+    const others = allProducts.filter(p => p.id !== product.id);
+
+    // 1. Coincidencia por nombre
     const words = product.name.toLowerCase().split(" ");
-    allProducts
-      .filter(p => p.id !== product.id)
-      .filter(p => words.some(w => p.name.toLowerCase().includes(w)))
-      .forEach(p => related.add(p.id));
+    add(others.filter(p => words.some(w => p.name.toLowerCase().includes(w))));
 
-    // 2. Si es un single, agregar productos del mismo set
+    // 2. Mismo set (solo singles)
     if (product.type === 'SIN' && product.set) {
-      allProducts
-        .filter(p => p.id !== product.id)
-        .filter(p => p.type === 'SIN' && p.set === product.set)
-        .forEach(p => related.add(p.id));
+      add(others.filter(p => p.type === 'SIN' && p.set === product.set));
     }
 
-    // 3. Agregar productos de la misma categoría
+    // 3. Misma categoría
     if (product.categoryId) {
-      allProducts
-        .filter(p => p.id !== product.id)
-        .filter(p => p.categoryId === product.categoryId)
-        .forEach(p => related.add(p.id));
+      add(others.filter(p => p.categoryId === product.categoryId));
     }
 
-    // 4. Rellenar con otros productos si no llega a 20
-    if (related.size < MAX_RELATED) {
-      allProducts
-        .filter(p => p.id !== product.id && !related.has(p.id))
-        .slice(0, MAX_RELATED - related.size)
-        .forEach(p => related.add(p.id));
-    }
+    // 4. Relleno con cualquier otro producto
+    add(others);
 
-    return allProducts
-      .filter(p => related.has(p.id))
-      .slice(0, MAX_RELATED);
+    return result;
   }, [allProducts, product]);
 
   const breadcrumbPath = useMemo(() => {
