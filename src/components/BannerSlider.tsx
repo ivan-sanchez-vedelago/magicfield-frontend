@@ -150,7 +150,7 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
             className="absolute bottom-0 left-0 right-0 flex flex-col justify-end pb-10 px-10"
             style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }}
           >
-            <h2 className="text-white font-bold text-2xl md:text-3xl drop-shadow-lg">
+            <h2 className="main_title_text text-white drop-shadow-lg">
               {b.title}
             </h2>
             {b.subtitle && (

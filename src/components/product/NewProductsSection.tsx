@@ -74,15 +74,17 @@ export default function NewProductsSection() {
 
   return (
     <section className="new_products_section">
-      <div className="new_products_header">
-        <div className="new_products_header_row">
+      <div className="px-10">
+        <div className="flex flex-col">
           <div>
-            <p className="new_products_label">✦ Novedades</p>
-            <p className="new_products_subtitle">Los últimos productos en nuestro catálogo</p>
+            <p className="main_title_text text-white drop-shadow-lg">✦ Novedades</p>
           </div>
-          <LoadingLink href="/products" className="new_products_link">
-            Ver todo →
-          </LoadingLink>
+          <div className='flex justify-end justify-between'>
+            <p className="normal_text text-gray-200 mt-1 drop-shadow">Revisa los últimos productos</p>
+            <LoadingLink href="/products" className="small_text text-gray-200 text_clickable" style={{ alignContent: 'center', minWidth: '60px' }}>
+              Ver todo →
+            </LoadingLink>
+          </div>
         </div>
         <div className="new_products_divider" />
       </div>
@@ -118,14 +120,14 @@ export default function NewProductsSection() {
         <button
           onClick={goPrev}
           disabled={scrollX === 0}
-          className="new_products_arrow left-2"
+          className="image_slideshow_arrow left-2"
         >
           ‹
         </button>
         <button
           onClick={goNext}
           disabled={scrollX >= maxScroll}
-          className="new_products_arrow right-2"
+          className="image_slideshow_arrow right-2"
         >
           ›
         </button>
@@ -155,8 +157,8 @@ function NewProductCard({ product }: { product: Product }) {
           <div className="new_products_card_img_placeholder">Sin imagen</div>
         )}
       </div>
-      <p className="new_products_card_name">{product.name}</p>
-      <p className="new_products_card_price">ARS$ {formatPrice(product.price)}</p>
+      <p className="product_title_text primary_text_color limit_two_lines">{product.name}</p>
+      <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
     </LoadingLink>
   );
 }
