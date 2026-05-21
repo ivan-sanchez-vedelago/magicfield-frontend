@@ -10,10 +10,20 @@ type Props = {
   onClick: () => void;
 };
 
+function isNewProduct(product: Product): boolean {
+  if (!product.createdAt) return false;
+  const created = new Date(product.createdAt);
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  return created >= oneWeekAgo;
+}
+
 export default function ProductCard({ product, onClick }: Props) {
   const images = product.imageUrls ?? [];
   const [current, setCurrent] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  const isNew = isNewProduct(product);
+  const isFoil = product.type === 'SIN' && product.isFoil === true;
 
   useEffect(() => {
     setImageLoaded(false);
@@ -34,6 +44,8 @@ export default function ProductCard({ product, onClick }: Props) {
   return (
     <article onClick={onClick} className="product_box box_border">
       <div className="product_image">
+        {isFoil && <span className="ribbon ribbon_foil">FOIL</span>}
+        {isNew && <span className="ribbon ribbon_new">NEW</span>}
         {images.length > 0 ? (
           <>
             {!imageLoaded && (

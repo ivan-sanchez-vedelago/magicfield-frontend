@@ -282,6 +282,7 @@ hr {
   align-items: center;
   cursor: pointer;
   height: 220px;
+  overflow: hidden;
 }
 
 .detail_page_container {
@@ -316,6 +317,35 @@ hr {
   .detail_page_info {
     width: 100%;
   }
+}
+
+.ribbon {
+  position: absolute;
+  width: 90px;
+  padding: 5px 0;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-transform: uppercase;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.ribbon_new {
+  top: 16px;
+  right: -22px;
+  background: #dc2626;
+  transform: rotate(45deg);
+}
+
+.ribbon_foil {
+  top: 16px;
+  left: -22px;
+  background: #7c3aed;
+  transform: rotate(-45deg);
 }
 
 .image_slideshow_arrow {

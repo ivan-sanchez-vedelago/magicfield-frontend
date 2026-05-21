@@ -134,7 +134,14 @@ export default function ProductsContent() {
     })
       .then(r => r.json())
       .then((data: PagedProducts) => {
-        setProducts(data.content);
+        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const sorted = [...data.content].sort((a, b) => {
+          const aIsNew = a.createdAt ? new Date(a.createdAt) >= oneWeekAgo : false;
+          const bIsNew = b.createdAt ? new Date(b.createdAt) >= oneWeekAgo : false;
+          if (aIsNew === bIsNew) return 0;
+          return aIsNew ? -1 : 1;
+        });
+        setProducts(sorted);
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
         setLoading(false);
