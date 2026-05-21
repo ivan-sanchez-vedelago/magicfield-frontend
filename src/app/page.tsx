@@ -2,6 +2,7 @@
 
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import BannerSlider from '@/src/components/BannerSlider';
+import NewProductsSection from '@/src/components/product/NewProductsSection';
 
 export default function Home() {
   return (
@@ -24,9 +25,10 @@ export default function Home() {
             Ver Catálogo
           </LoadingLink>
         </section>
-
-        {/* TODO: Agregar sección de productos destacados */}
       </main>
+
+      {/* Sección de productos nuevos */}
+      <NewProductsSection />
     </div>
   );
 }
