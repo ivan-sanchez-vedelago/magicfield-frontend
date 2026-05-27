@@ -14,13 +14,11 @@ const nextConfig = {
 };
 
 export default withSentryConfig(nextConfig, {
-  // Sentry webpack plugin options
-  silent: true,
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
-}, {
-  // Sentry SDK options
+  silent: !process.env.CI,
   widenClientFileUpload: true,
   disableLogger: true,
   hideSourceMaps: true,
+  telemetry: false,
 });
