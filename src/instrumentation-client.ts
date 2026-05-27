@@ -1,12 +1,2 @@
-import * as Sentry from '@sentry/nextjs';
-
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  tracesSampleRate: 0.3,
-  replaysSessionSampleRate: 0,
-  replaysOnErrorSampleRate: 0,
-  environment: process.env.NODE_ENV,
-  integrations: [
-    Sentry.browserTracingIntegration(),
-  ],
-});
+// Sentry client initialization is handled by sentry.client.config.ts in the project root
+// This file is kept to avoid import errors

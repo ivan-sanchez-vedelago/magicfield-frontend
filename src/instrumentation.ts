@@ -1,19 +1,5 @@
-import * as Sentry from '@sentry/nextjs';
-
-export function register() {
-  if (process.env.NEXT_RUNTIME === 'nodejs') {
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN,
-      tracesSampleRate: 0.3,
-      environment: process.env.NODE_ENV,
-    });
-  }
-
-  if (process.env.NEXT_RUNTIME === 'edge') {
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN,
-      tracesSampleRate: 0.3,
-      environment: process.env.NODE_ENV,
-    });
-  }
+// Sentry initialization is handled by sentry.server.config.ts and sentry.edge.config.ts
+// This file is kept for Next.js instrumentation hook compatibility
+export async function register() {
+  // no-op: @sentry/nextjs v8 auto-initializes via root config files
 }
