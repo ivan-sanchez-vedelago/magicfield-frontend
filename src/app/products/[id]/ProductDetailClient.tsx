@@ -13,7 +13,6 @@ import type { Product } from '@/src/types';
 
 export default function ProductDetailClient({ product } : { product: Product }) {
 
-  console.log("ProductDetailClient render, product:", product);
   const { items, setProductQuantity, removeProduct } = useCart();
   const { products: allProducts } = useProducts();
   const { categories } = useCategories();
