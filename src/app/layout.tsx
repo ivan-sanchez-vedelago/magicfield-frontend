@@ -15,6 +15,7 @@ import { NavigationProvider } from '@/src/components/navigation/NavigationContex
 import TopProgressBar from '@/src/components/navigation/TopProgressBar';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { RootLayoutWrapper } from './RootLayoutWrapper';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,27 +36,29 @@ export default function RootLayout({ children }: {
   return (
     <html lang="es">
       <body className={`${inter.className} min-h-[100dvh] flex flex-col`}>
-        <AuthProvider>
-          <CartProvider>
-            <CheckoutProvider>
-              <ProductProvider>
-                <CategoryProvider>
-                <NavigationProvider>
-                  <TopProgressBar  />
-                  <Header />
-                  <CartToast/>
-                  <AuthToast/>
-                  <CheckoutToast/>
-                  {children}
-                  <Footer />
-                  <Analytics />
-                  <SpeedInsights />
-                </NavigationProvider>
-                </CategoryProvider>
-              </ProductProvider>
-            </CheckoutProvider>
-          </CartProvider>
-        </AuthProvider>
+        <RootLayoutWrapper>
+          <AuthProvider>
+            <CartProvider>
+              <CheckoutProvider>
+                <ProductProvider>
+                  <CategoryProvider>
+                  <NavigationProvider>
+                    <TopProgressBar  />
+                    <Header />
+                    <CartToast/>
+                    <AuthToast/>
+                    <CheckoutToast/>
+                    {children}
+                    <Footer />
+                    <Analytics />
+                    <SpeedInsights />
+                  </NavigationProvider>
+                  </CategoryProvider>
+                </ProductProvider>
+              </CheckoutProvider>
+            </CartProvider>
+          </AuthProvider>
+        </RootLayoutWrapper>
       </body>
     </html>
   );
