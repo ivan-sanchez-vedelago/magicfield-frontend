@@ -23,7 +23,8 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
 
-  const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('');
+  const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('RETIRO_RAMOS');
+  const [paymentMethod, setPaymentMethod] = useState<'TRANSFERENCIA' | 'EFECTIVO'>('TRANSFERENCIA');
   const [dni, setDni] = useState('');
   const [street, setStreet] = useState('');
   const [streetNumber, setStreetNumber] = useState('');
@@ -104,6 +105,12 @@ export default function CheckoutPage() {
   }, [name, lastName, phone, email, deliveryOption, dni, street, streetNumber, city, province, postalCode]);
 
   useEffect(() => {
+    if (isShipping && paymentMethod === 'EFECTIVO') {
+      setPaymentMethod('TRANSFERENCIA');
+    }
+  }, [isShipping]);
+
+  useEffect(() => {
     if (user) {
       setName(user.name || '');
       setLastName(user.lastName || '');
@@ -129,6 +136,7 @@ export default function CheckoutPage() {
       shippingCity: city || null,
       shippingProvince: province || null,
       shippingPostalCode: postalCode || null,
+      paymentMethod,
       items: items.map(i => ({
         productId: i.productId,
         quantity: i.quantity
@@ -356,6 +364,37 @@ export default function CheckoutPage() {
             </div>
           </div>
         )}
+
+        {/* Método de pago */}
+        <div className="mb-6">
+          <p className="subtitle_text mb-3">Método de pago</p>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 normal_text cursor-pointer">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="TRANSFERENCIA"
+                checked={paymentMethod === 'TRANSFERENCIA'}
+                onChange={() => setPaymentMethod('TRANSFERENCIA')}
+                className="accent-green-700 w-4 h-4"
+              />
+              Transferencia
+            </label>
+            {!isShipping && (
+              <label className="flex items-center gap-2 normal_text cursor-pointer">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="EFECTIVO"
+                  checked={paymentMethod === 'EFECTIVO'}
+                  onChange={() => setPaymentMethod('EFECTIVO')}
+                  className="accent-green-700 w-4 h-4"
+                />
+                Efectivo
+              </label>
+            )}
+          </div>
+        </div>
 
         <div className="subtitle_text flex items-center mb-2">
           Total:<p className="product_price_big_text px-2">ARS$ {formatPrice(total)}</p>
