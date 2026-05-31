@@ -234,7 +234,7 @@ export default function CheckoutPage() {
         {/* Método de envío */}
         <div className="mb-6">
           <p className="subtitle_text mb-3">Método de envío</p>
-          <div className="flex flex-col gap-2">
+          <div className="input_field grid grid-cols-1 sm:grid-cols-2 gap-2" style={{ backgroundColor: '#ffffff' }}>
             {(
               [
                 { value: 'RETIRO_RAMOS', label: 'Retiro en Ramos Mejia' },
@@ -257,7 +257,7 @@ export default function CheckoutPage() {
             ))}
           </div>
           <p className="small_text text-gray-400 mt-2 pl-1">
-            Los envios a sucursales de andreani suele ser mas baratos
+            Los envios a sucursales de Andreani suelen ser mas baratos
           </p>
         </div>
 
@@ -267,22 +267,22 @@ export default function CheckoutPage() {
             <p className="subtitle_text mb-3">Datos de envío</p>
             <div className="flex flex-col gap-4">
 
-              <div>
-                <input
-                  placeholder="DNI"
-                  className={`input_field ${errors.dni && touched.dni ? 'border-red-500' : ''}`}
-                  value={dni}
-                  inputMode="numeric"
-                  pattern="[0-9]+"
-                  onChange={e => setDni(e.target.value.replace(/\D/g, ''))}
-                  onBlur={() => setTouched(prev => ({ ...prev, dni: true }))}
-                />
-                {errors.dni && touched.dni && (
-                  <p className="small_text text-red-500 pl-2 mt-1">{errors.dni}</p>
-                )}
-              </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <input
+                    placeholder="DNI"
+                    className={`input_field ${errors.dni && touched.dni ? 'border-red-500' : ''}`}
+                    value={dni}
+                    inputMode="numeric"
+                    pattern="[0-9]+"
+                    onChange={e => setDni(e.target.value.replace(/\D/g, ''))}
+                    onBlur={() => setTouched(prev => ({ ...prev, dni: true }))}
+                  />
+                  {errors.dni && touched.dni && (
+                    <p className="small_text text-red-500 pl-2 mt-1">{errors.dni}</p>
+                  )}
+                </div>
+
                 <div>
                   <input
                     placeholder="Calle"
@@ -295,6 +295,9 @@ export default function CheckoutPage() {
                     <p className="small_text text-red-500 pl-2 mt-1">{errors.street}</p>
                   )}
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <input
                     placeholder="Altura"
@@ -307,9 +310,7 @@ export default function CheckoutPage() {
                     <p className="small_text text-red-500 pl-2 mt-1">{errors.streetNumber}</p>
                   )}
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <input
                     placeholder="Localidad"
@@ -322,6 +323,9 @@ export default function CheckoutPage() {
                     <p className="small_text text-red-500 pl-2 mt-1">{errors.city}</p>
                   )}
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <input
                     placeholder="Provincia"
@@ -334,23 +338,21 @@ export default function CheckoutPage() {
                     <p className="small_text text-red-500 pl-2 mt-1">{errors.province}</p>
                   )}
                 </div>
+                <div>
+                  <input
+                    placeholder="Código Postal"
+                    className={`input_field ${errors.postalCode && touched.postalCode ? 'border-red-500' : ''}`}
+                    value={postalCode}
+                    inputMode="numeric"
+                    pattern="[0-9]+"
+                    onChange={e => setPostalCode(e.target.value.replace(/\D/g, ''))}
+                    onBlur={() => setTouched(prev => ({ ...prev, postalCode: true }))}
+                  />
+                  {errors.postalCode && touched.postalCode && (
+                    <p className="small_text text-red-500 pl-2 mt-1">{errors.postalCode}</p>
+                  )}
+                </div>
               </div>
-
-              <div>
-                <input
-                  placeholder="Código Postal"
-                  className={`input_field ${errors.postalCode && touched.postalCode ? 'border-red-500' : ''}`}
-                  value={postalCode}
-                  inputMode="numeric"
-                  pattern="[0-9]+"
-                  onChange={e => setPostalCode(e.target.value.replace(/\D/g, ''))}
-                  onBlur={() => setTouched(prev => ({ ...prev, postalCode: true }))}
-                />
-                {errors.postalCode && touched.postalCode && (
-                  <p className="small_text text-red-500 pl-2 mt-1">{errors.postalCode}</p>
-                )}
-              </div>
-
             </div>
           </div>
         )}
@@ -375,6 +377,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-
-  const { items, total, clearCart } = useCart();
