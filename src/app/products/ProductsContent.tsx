@@ -98,6 +98,7 @@ export default function ProductsContent() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [sortOption, setSortOption] = useState<'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC'>('NAME_ASC');
+  const [fetchError, setFetchError] = useState(false);
 
   const descendantShortNames = useMemo(() => {
     if (!category) return [];
@@ -131,6 +132,7 @@ export default function ProductsContent() {
     params.set('sort', sortOption);
 
     setLoading(true);
+    setFetchError(false);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/paged?${params}`, {
       signal: controller.signal,
     })
@@ -144,6 +146,7 @@ export default function ProductsContent() {
       .catch(err => {
         if (err.name !== 'AbortError') {
           console.error(err);
+          setFetchError(true);
           setLoading(false);
         }
       });
@@ -193,6 +196,10 @@ export default function ProductsContent() {
               <ProductCardSkeleton key={i} />
             ))}
           </div>
+        ) : fetchError ? (
+          <p className="text-red-500">
+            No se pudieron cargar los productos. Intenta nuevamente.
+          </p>
         ) : products.length === 0 ? (
           <p className="text-gray-500">
             No se encontraron productos.

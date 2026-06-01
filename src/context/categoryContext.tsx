@@ -6,6 +6,7 @@ import type { Category } from '@/src/types';
 type CategoryContextType = {
   categories: Category[];
   loading: boolean;
+  error: boolean;
 };
 
 const CategoryContext = createContext<CategoryContextType | null>(null);
@@ -13,17 +14,21 @@ const CategoryContext = createContext<CategoryContextType | null>(null);
 export function CategoryProvider({ children }: { children: React.ReactNode }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`)
       .then(r => r.json())
       .then(data => setCategories(data))
-      .catch(console.error)
+      .catch(err => {
+        console.error(err);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <CategoryContext.Provider value={{ categories: categories.filter(c => c.id !== 0), loading }}>
+    <CategoryContext.Provider value={{ categories: categories.filter(c => c.id !== 0), loading, error }}>
       {children}
     </CategoryContext.Provider>
   );

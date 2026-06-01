@@ -8,6 +8,7 @@ export type { Product };
 type ProductContextType = {
   products: Product[];
   loading: boolean;
+  error: boolean;
   reloadProducts: () => void;
 };
 
@@ -16,16 +17,21 @@ const ProductContext = createContext<ProductContextType | null>(null);
 export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const loadProducts = () => {
     setLoading(true);
+    setError(false);
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`)
       .then(r => r.json())
       .then(data => {
         setProducts(data);
       })
-      .catch(console.error)
+      .catch(err => {
+        console.error(err);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -41,6 +47,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       value={{
         products,
         loading,
+        error,
         reloadProducts: loadProducts
       }}
     >

@@ -35,6 +35,7 @@ export function ProfileContent() {
   const [activeTab, setActiveTab] = useState<TabType>('profile');
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
@@ -62,6 +63,7 @@ export function ProfileContent() {
 
   const fetchOrders = async () => {
     setOrdersLoading(true);
+    setOrdersError(false);
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/orders/user/${user?.id}`,
@@ -70,9 +72,12 @@ export function ProfileContent() {
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
+      } else {
+        setOrdersError(true);
       }
     } catch (error) {
       console.error('Error al cargar órdenes:', error);
+      setOrdersError(true);
     } finally {
       setOrdersLoading(false);
     }
@@ -272,6 +277,10 @@ export function ProfileContent() {
             <div>
               {ordersLoading ? (
                 <p className="normal_text text-center py-8">Cargando pedidos...</p>
+              ) : ordersError ? (
+                <p className="normal_text text-center py-8 text-red-500">
+                  No se pudieron cargar los pedidos. Intenta nuevamente.
+                </p>
               ) : orders.length === 0 ? (
                 <p className="normal_text text-center py-8 text-gray-500">
                   No tienes pedidos aún
