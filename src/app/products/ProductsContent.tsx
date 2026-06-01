@@ -97,6 +97,7 @@ export default function ProductsContent() {
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
+  const [sortOption, setSortOption] = useState<'NAME_ASC' | 'NAME_DESC' | 'PRICE_ASC' | 'PRICE_DESC'>('NAME_ASC');
 
   const descendantShortNames = useMemo(() => {
     if (!category) return [];
@@ -113,10 +114,10 @@ export default function ProductsContent() {
     return cat ? cat.name : 'Catálogo';
   }, [categories, category]);
 
-  // Reset to page 0 when filters change
+  // Reset to page 0 when filters or sort change
   useEffect(() => {
     setCurrentPage(0);
-  }, [searchQuery, category]);
+  }, [searchQuery, category, sortOption]);
 
   const categoriesParam = descendantShortNames.join(',');
 
@@ -127,6 +128,7 @@ export default function ProductsContent() {
     params.set('size', String(pageSize));
     if (searchQuery) params.set('search', searchQuery);
     if (categoriesParam) params.set('categories', categoriesParam);
+    params.set('sort', sortOption);
 
     setLoading(true);
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/paged?${params}`, {
@@ -134,14 +136,7 @@ export default function ProductsContent() {
     })
       .then(r => r.json())
       .then((data: PagedProducts) => {
-        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        const sorted = [...data.content].sort((a, b) => {
-          const aIsNew = a.createdAt ? new Date(a.createdAt) >= oneWeekAgo : false;
-          const bIsNew = b.createdAt ? new Date(b.createdAt) >= oneWeekAgo : false;
-          if (aIsNew === bIsNew) return 0;
-          return aIsNew ? -1 : 1;
-        });
-        setProducts(sorted);
+        setProducts(data.content);
         setTotalPages(data.totalPages);
         setTotalElements(data.totalElements);
         setLoading(false);
@@ -154,7 +149,7 @@ export default function ProductsContent() {
       });
 
     return () => controller.abort();
-  }, [currentPage, pageSize, searchQuery, categoriesParam]);
+  }, [currentPage, pageSize, searchQuery, categoriesParam, sortOption]);
 
   return (
     <div className="flex-1">
@@ -169,9 +164,21 @@ export default function ProductsContent() {
           </p>
         )}
 
-        {/* Pagination bar — top */}
+        {/* Sort + Pagination bar — top */}
         {!loading && products.length === 0 ? null : (
-          <div className="mb-4">
+          <div className="mb-4 flex items-center justify-between gap-2 flex-wrap">
+            {/* Sort dropdown */}
+            <select
+              value={sortOption}
+              onChange={e => setSortOption(e.target.value as typeof sortOption)}
+              className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-400"
+            >
+              <option value="NAME_ASC">Nombre ↑</option>
+              <option value="NAME_DESC">Nombre ↓</option>
+              <option value="PRICE_ASC">Precio ↑</option>
+              <option value="PRICE_DESC">Precio ↓</option>
+            </select>
+
             <PaginationBar
               currentPage={currentPage}
               totalPages={loading ? 1 : totalPages}
