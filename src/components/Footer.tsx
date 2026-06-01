@@ -26,24 +26,23 @@ export default function Footer() {
             <div className="max-w-5xl mx-auto">
 
                 {/* Columnas */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-8">
 
+                    <div>
+                        <p className="font-semibold text-gray-800 text-base mb-4">¿Cómo hacer un pedido?</p>
+                        <p className="text-sm text-gray-600">
+                            Agrega productos al carrito, ingresá tus datos y confirma el pedido. Nos comunicaremos contigo en el corto plazo para coordinar la entrega o envio.
+                        </p>
+                    </div>
                     {/* Columna Información */}
                     <div>
-                        <h3 className="font-semibold text-gray-800 text-base mb-4">Información</h3>
-
-                        <p className="text-sm font-medium text-gray-700 mb-2">Opciones de retiro y envío</p>
+                        <p className="font-semibold text-gray-800 text-base mb-4">Opciones de retiro y envío</p>
                         <ul className="text-sm text-gray-600 space-y-1 mb-4">
-                            <li>📍 Retiro en Ramos Mejía — <span className="text-gray-400">[dirección]</span></li>
-                            <li>📍 Retiro en Francisco Álvarez — <span className="text-gray-400">[dirección]</span></li>
-                            <li>🚚 Envío a domicilio</li>
+                            <li>📍 Retiro en Ramos Mejía — <span className="text-gray-400">[A coordinar]</span></li>
+                            <li>📍 Retiro en Francisco Álvarez — <span className="text-gray-400">[A coordinar]</span></li>
+                            <li>📦 Envío a domicilio</li>
                             <li>📦 Envío a sucursal Andreani</li>
                         </ul>
-
-                        <p className="text-sm font-medium text-gray-700 mb-1">¿Cómo funciona?</p>
-                        <p className="text-sm text-gray-600">
-                            Ingresá tus datos y nos comunicaremos contigo para coordinar la entrega al corto plazo.
-                        </p>
                     </div>
 
                     {/* Columna Contacto */}
@@ -53,28 +52,28 @@ export default function Footer() {
                         <ul className="text-sm text-gray-600 space-y-3">
                             <li className="flex items-center gap-2">
                                 <Phone size={16} strokeWidth={1.5} className="text-gray-500 shrink-0" />
-                                <span className="text-gray-400">[número de teléfono]</span>
+                                <span className="text-gray-400">1134782502</span>
                             </li>
                             <li className="flex items-center gap-2">
                                 <InstagramIcon />
                                 <a
-                                    href="https://instagram.com/[usuario]"
+                                    href="https://instagram.com/magicfield_oeste"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="hover:text-gray-800 transition-colors text-gray-400"
                                 >
-                                    @[usuario]
+                                    @magicfield_oeste
                                 </a>
                             </li>
                             <li className="flex items-center gap-2">
                                 <FacebookIcon />
                                 <a
-                                    href="https://facebook.com/[pagina]"
+                                    href="https://facebook.com/share/1BA8BgAByY/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="hover:text-gray-800 transition-colors text-gray-400"
                                 >
-                                    [nombre de página]
+                                    Magic Field
                                 </a>
                             </li>
                         </ul>

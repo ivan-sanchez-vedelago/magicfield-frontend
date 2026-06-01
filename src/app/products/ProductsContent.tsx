@@ -174,12 +174,12 @@ export default function ProductsContent() {
             <select
               value={sortOption}
               onChange={e => setSortOption(e.target.value as typeof sortOption)}
-              className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-400"
+              className="dropdown"
             >
-              <option value="NAME_ASC">Nombre ↑</option>
-              <option value="NAME_DESC">Nombre ↓</option>
-              <option value="PRICE_ASC">Precio ↑</option>
+              <option value="NAME_ASC">A-Z</option>
+              <option value="NAME_DESC">Z-A</option>
               <option value="PRICE_DESC">Precio ↓</option>
+              <option value="PRICE_ASC">Precio ↑</option>
             </select>
 
             <PaginationBar
