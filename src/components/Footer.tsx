@@ -31,7 +31,7 @@ export default function Footer() {
                     <div>
                         <p className="font-semibold text-gray-800 text-base mb-4">¿Cómo hacer un pedido?</p>
                         <p className="text-sm text-gray-600">
-                            Agrega productos al carrito, ingresá tus datos y confirma el pedido. Nos comunicaremos contigo en el corto plazo para coordinar la entrega o envio.
+                            Agrega productos al carrito, ingresá tus datos y confirma el pedido. Nos comunicaremos contigo en el corto plazo para coordinar el retiro o envio.
                         </p>
                     </div>
                     {/* Columna Información */}
@@ -41,7 +41,7 @@ export default function Footer() {
                             <li>📍 Retiro en Ramos Mejía — <span className="text-gray-400">[A coordinar]</span></li>
                             <li>📍 Retiro en Francisco Álvarez — <span className="text-gray-400">[A coordinar]</span></li>
                             <li>📦 Envío a domicilio</li>
-                            <li>📦 Envío a sucursal Andreani</li>
+                            <li>📦 Envío a sucursal de Andreani</li>
                         </ul>
                     </div>
 

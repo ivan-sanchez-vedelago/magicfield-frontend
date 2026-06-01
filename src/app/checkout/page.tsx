@@ -170,7 +170,7 @@ export default function CheckoutPage() {
 
         <h1 className="main_title_text mb-2">Datos del comprador</h1>
         <p className="normal_text text-gray-400 mb-6">
-          Ingresá tus datos y nos comunicaremos contigo para coordinar la entrega al corto plazo.
+          Ingresá tus datos y nos comunicaremos contigo en el corto plazo para coordinar el retiro o envio.
         </p>
 
         {/* Campos básicos — 1 col en móvil, 2 col en sm+ */}
