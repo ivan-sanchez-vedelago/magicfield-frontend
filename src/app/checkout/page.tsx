@@ -258,7 +258,7 @@ export default function CheckoutPage() {
                   value={opt.value}
                   checked={deliveryOption === opt.value}
                   onChange={() => setDeliveryOption(opt.value)}
-                  className="accent-green-700 w-4 h-4"
+                  className="cursor-pointer accent-green-700 w-4 h-4"
                 />
                 {opt.label}
               </label>
@@ -368,7 +368,7 @@ export default function CheckoutPage() {
         {/* Método de pago */}
         <div className="mb-6">
           <p className="subtitle_text mb-3">Método de pago</p>
-          <div className="flex flex-col gap-2">
+          <div className="input_field grid grid-cols-1 sm:grid-cols-2 gap-2" style={{ backgroundColor: '#ffffff' }}>
             <label className="flex items-center gap-2 normal_text cursor-pointer">
               <input
                 type="radio"
@@ -376,7 +376,7 @@ export default function CheckoutPage() {
                 value="TRANSFERENCIA"
                 checked={paymentMethod === 'TRANSFERENCIA'}
                 onChange={() => setPaymentMethod('TRANSFERENCIA')}
-                className="accent-green-700 w-4 h-4"
+                className="cursor-pointer accent-green-700 w-4 h-4"
               />
               Transferencia
             </label>
@@ -388,7 +388,7 @@ export default function CheckoutPage() {
                   value="EFECTIVO"
                   checked={paymentMethod === 'EFECTIVO'}
                   onChange={() => setPaymentMethod('EFECTIVO')}
-                  className="accent-green-700 w-4 h-4"
+                  className="cursor-pointer accent-green-700 w-4 h-4"
                 />
                 Efectivo
               </label>
