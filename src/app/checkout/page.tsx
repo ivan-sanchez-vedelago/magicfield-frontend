@@ -12,7 +12,7 @@ type DeliveryOption = '' | 'RETIRO_RAMOS' | 'RETIRO_FRANCISCO' | 'ENVIO_DOMICILI
 
 export default function CheckoutPage() {
 
-  const { items, total, clearCart } = useCart();
+  const { items, total, clearCart, verifyAvailability } = useCart();
   const { user } = useAuth();
   const { showCheckoutSuccess } = useCheckout();
   const router = useRouter();
@@ -122,6 +122,16 @@ export default function CheckoutPage() {
   async function submitOrder() {
     if (!formValid) return;
     setLoading(true);
+
+    // Revalidamos stock/existencia por si algo se vendió o eliminó mientras
+    // el usuario completaba sus datos.
+    const available = await verifyAvailability();
+    if (!available) {
+      setLoading(false);
+      startNavigation();
+      router.push('/cart');
+      return;
+    }
 
     const body = {
       customerName: name,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { useCart } from '../../context/cartContext';
 import { formatPrice } from '@/src/utils/formatPrice';
@@ -8,13 +8,26 @@ import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 export default function CartPage() {
-  const { items, dispatch, total } = useCart();
+  const { items, dispatch, total, verifyAvailability } = useCart();
   const router = useRouter();
   const { startNavigation } = useNavigation();
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
   useEffect(() => {
     router.prefetch(`/checkout`);
   }, []);
+
+  async function handleProceedToPayment() {
+    setCheckingAvailability(true);
+    const available = await verifyAvailability();
+    setCheckingAvailability(false);
+
+    // Si el carrito tuvo que corregirse, nos quedamos acá (ya se mostró el aviso).
+    if (!available) return;
+
+    startNavigation();
+    router.push('/checkout');
+  }
 
   return (
     <div className="flex-1">
@@ -123,14 +136,11 @@ export default function CartPage() {
             </LoadingLink>
 
             <button
-              onClick={() => {
-                startNavigation();
-                router.push("/checkout");
-              }}
+              onClick={handleProceedToPayment}
               className="button_primary medium_button"
-              disabled={items.length === 0}
+              disabled={items.length === 0 || checkingAvailability}
             >
-              Proceder al Pago
+              {checkingAvailability ? 'Verificando disponibilidad...' : 'Proceder al Pago'}
             </button>
           </div>
         </div>

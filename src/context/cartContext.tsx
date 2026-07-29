@@ -21,7 +21,12 @@ type CartAction =
   | { type: 'DECREASE'; productId: string }
   | { type: 'REMOVE_ITEM'; productId: string }
   | { type: 'CLEAR_CART' }
-  | { type: 'RESTORE_CART'; items: CartItem[] };
+  | { type: 'RESTORE_CART'; items: CartItem[] }
+  | {
+      type: 'SYNC_AVAILABILITY';
+      updates: { productId: string; quantity: number; stock: number }[];
+      removeIds: string[];
+    };
 
 type CartContextType = {
   items: CartItem[];
@@ -31,6 +36,12 @@ type CartContextType = {
   setProductQuantity: (product: any, qty: number) => void;
   removeProduct: (productId: string) => void;
   toastMessage: string | null;
+  /**
+   * Revalida contra el backend el stock/existencia de los items del carrito.
+   * Ajusta o elimina los items que ya no estén disponibles y avisa al usuario.
+   * Devuelve true si el carrito ya estaba OK (se puede avanzar), false si hubo que corregirlo.
+   */
+  verifyAvailability: () => Promise<boolean>;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -92,6 +103,21 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'RESTORE_CART':
       return { ...state, items: action.items };
 
+    case 'SYNC_AVAILABILITY': {
+      const removeSet = new Set(action.removeIds);
+      const updateMap = new Map(action.updates.map((u) => [u.productId, u]));
+      return {
+        items: state.items
+          .filter((i) => !removeSet.has(i.productId))
+          .map((i) => {
+            const update = updateMap.get(i.productId);
+            return update
+              ? { ...i, quantity: update.quantity, stock: update.stock }
+              : i;
+          }),
+      };
+    }
+
     default:
       return state;
   }
@@ -128,9 +154,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   /* FEEDBACK GLOBAL */
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showFeedback = (message: string) => {
+  const showFeedback = (message: string, duration = 4000) => {
     setToastMessage(message);
-    setTimeout(() => setToastMessage(null), 4000);
+    setTimeout(() => setToastMessage(null), duration);
   };
 
   /* HELPERS DE ALTO NIVEL */
@@ -191,6 +217,79 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     showFeedback('Carrito vaciado');
   }
 
+  const verifyAvailability = async (): Promise<boolean> => {
+    if (state.items.length === 0) return true;
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/check-availability`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: state.items.map((i) => ({
+              productId: i.productId,
+              quantity: i.quantity,
+            })),
+          }),
+        }
+      );
+
+      // Si la validación falla por un problema de red/servidor no bloqueamos
+      // la compra acá: el backend igual va a rechazar el checkout si el stock
+      // realmente no alcanza.
+      if (!res.ok) return true;
+
+      const data: {
+        allAvailable: boolean;
+        results: {
+          productId: string;
+          exists: boolean;
+          name: string | null;
+          availableStock: number;
+          requestedQuantity: number;
+          sufficient: boolean;
+        }[];
+      } = await res.json();
+
+      if (data.allAvailable) return true;
+
+      const removeIds: string[] = [];
+      const updates: { productId: string; quantity: number; stock: number }[] = [];
+      const changes: string[] = [];
+
+      for (const r of data.results) {
+        if (r.sufficient) continue;
+
+        const current = state.items.find((i) => i.productId === r.productId);
+        const label = current?.name || r.name || 'Un producto';
+
+        if (!r.exists || r.availableStock === 0) {
+          removeIds.push(r.productId);
+          changes.push(`${label} (ya no disponible)`);
+        } else {
+          updates.push({
+            productId: r.productId,
+            quantity: r.availableStock,
+            stock: r.availableStock,
+          });
+          changes.push(`${label} (quedan ${r.availableStock})`);
+        }
+      }
+
+      dispatch({ type: 'SYNC_AVAILABILITY', updates, removeIds });
+
+      showFeedback(
+        `Algunos productos de tu carrito ya no están disponibles y fueron actualizados: ${changes.join(', ')}`,
+        9000
+      );
+
+      return false;
+    } catch {
+      return true;
+    }
+  };
+
   const total = state.items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -206,6 +305,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setProductQuantity,
         removeProduct,
         toastMessage,
+        verifyAvailability,
       }}
     >
       {children}
