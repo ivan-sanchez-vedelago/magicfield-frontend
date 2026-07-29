@@ -120,6 +120,7 @@ export default function ProductImageGallery({ images, name }: Props) {
                     alt={`${name} ${index}`}
                     width={70}
                     height={70}
+                    unoptimized
                     className="object-contain"
                 />
 

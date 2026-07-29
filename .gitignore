@@ -4,6 +4,7 @@ node_modules/
 .env.*.local
 .env.production
 *.log
+tsconfig.tsbuildinfo
 
 # Sentry Config File
 .env.sentry-build-plugin

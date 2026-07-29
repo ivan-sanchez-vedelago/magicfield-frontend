@@ -55,6 +55,7 @@ export default function ProductCard({ product, onClick }: Props) {
               fill
               src={images[current]}
               alt={product.name}
+              unoptimized
               className="object-contain"
               onLoad={() => setImageLoaded(true)}
             />
