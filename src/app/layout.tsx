@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { ProductProvider } from '../context/productContext';
 import { CartProvider } from '../context/cartContext';
 import { AuthProvider } from '../context/authContext';
@@ -53,11 +52,6 @@ export default function RootLayout({ children }: {
                     <Footer />
                     <Analytics />
                     <SpeedInsights />
-                    <Script
-                      src="https://cloud.umami.is/script.js"
-                      data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-                      strategy="afterInteractive"
-                    />
                   </NavigationProvider>
                   </CategoryProvider>
                 </ProductProvider>
