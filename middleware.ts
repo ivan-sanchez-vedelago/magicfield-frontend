@@ -25,7 +25,11 @@ function isTrackablePageRequest(request: NextRequest): boolean {
 
 function trackPageView(request: NextRequest, event: NextFetchEvent, clientId: string) {
   const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!backendUrl) return;
+  console.log('[analytics-debug] trackPageView', { backendUrl, path: request.nextUrl.pathname });
+  if (!backendUrl) {
+    console.log('[analytics-debug] sin NEXT_PUBLIC_API_URL, no se manda nada');
+    return;
+  }
 
   const payload = {
     clientId,
@@ -40,9 +44,13 @@ function trackPageView(request: NextRequest, event: NextFetchEvent, clientId: st
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    }).catch(() => {
-      // Analítica best-effort: si falla, no debe afectar la navegación del usuario.
     })
+      .then((res) => {
+        console.log('[analytics-debug] respuesta del backend:', res.status);
+      })
+      .catch((err) => {
+        console.log('[analytics-debug] fetch falló:', err);
+      })
   );
 }
 
@@ -73,6 +81,14 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
   }
 
   const response = NextResponse.next();
+
+  console.log('[analytics-debug] request', {
+    pathname,
+    method: request.method,
+    trackable: isTrackablePageRequest(request),
+    prefetchHeader: request.headers.get('next-router-prefetch'),
+    purposeHeader: request.headers.get('purpose'),
+  });
 
   if (isTrackablePageRequest(request)) {
     let clientId = request.cookies.get(CLIENT_ID_COOKIE)?.value;
