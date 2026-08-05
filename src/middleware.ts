@@ -9,12 +9,25 @@ const authRoutes = ['/auth', '/auth/login', '/auth/register'];
 const CLIENT_ID_COOKIE = 'mf_cid';
 const CLIENT_ID_MAX_AGE = 60 * 60 * 24 * 400; // ~400 días (tope máximo que permiten los navegadores)
 
+// Primer segmento de cada ruta real de la app (ver src/app/*/page.tsx). El middleware corre
+// antes de que Next.js resuelva 404s, así que sin esta lista se trackearía cualquier URL
+// (typos, links rotos, pruebas manuales tipo /test-manual) como si fuera una página real.
+// Importante: agregar acá cualquier sección nueva de nivel superior que se cree a futuro.
+const KNOWN_TOP_LEVEL_SEGMENTS = ['auth', 'cart', 'checkout', 'perfil', 'products'];
+
+function isKnownRoute(pathname: string): boolean {
+  if (pathname === '/') return true;
+  const firstSegment = pathname.split('/')[1];
+  return KNOWN_TOP_LEVEL_SEGMENTS.includes(firstSegment);
+}
+
 function isTrackablePageRequest(request: NextRequest): boolean {
   if (request.method !== 'GET') return false;
 
   const pathname = request.nextUrl.pathname;
   if (pathname.startsWith('/api/')) return false;
   if (/\.[a-zA-Z0-9]+$/.test(pathname)) return false; // archivos estáticos (.png, .css, etc.)
+  if (!isKnownRoute(pathname)) return false; // ruta inexistente (404) o de prueba
 
   // Prefetches automáticos (hover sobre un link, etc.) no son visitas reales.
   if (request.headers.get('purpose') === 'prefetch') return false;
