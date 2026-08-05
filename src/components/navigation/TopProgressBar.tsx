@@ -9,27 +9,29 @@ export default function TopProgressBar() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (!loading) return;
+    if (loading) {
+      setProgress(15);
 
-    setProgress(20);
+      // Trepa hacia el 90% sin llegar nunca sola: mientras siga cargando, sigue avisando
+      // que sigue en curso en vez de completarse y quedar "muerta" a mitad de camino.
+      const trickle = setInterval(() => {
+        setProgress((p) => (p < 90 ? p + (90 - p) * 0.1 : p));
+      }, 200);
 
-    const t1 = setTimeout(() => setProgress(50), 120);
-    const t2 = setTimeout(() => setProgress(80), 260);
+      // Red de seguridad: si la navegación nunca dispara el cambio de ruta (misma URL,
+      // navegación cancelada, etc.), no dejar la barra pegada para siempre.
+      const safety = setTimeout(() => stopNavigation(), 8000);
 
-    const finish = setTimeout(() => {
-      setProgress(100);
+      return () => {
+        clearInterval(trickle);
+        clearTimeout(safety);
+      };
+    }
 
-      setTimeout(() => {
-        setProgress(0);
-        stopNavigation();
-      }, 250);
-    }, 600);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(finish);
-    };
+    // loading pasó a false porque la ruta de destino ya se montó: completar y ocultar.
+    setProgress((p) => (p > 0 ? 100 : 0));
+    const hide = setTimeout(() => setProgress(0), 250);
+    return () => clearTimeout(hide);
   }, [loading, stopNavigation]);
 
   if (!loading && progress === 0) return null;
