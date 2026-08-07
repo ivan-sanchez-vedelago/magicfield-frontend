@@ -158,6 +158,11 @@ function NewProductCard({ product }: { product: Product }) {
         )}
       </div>
       <p className="product_title_text primary_text_color limit_two_lines">{product.name}</p>
+      <p className="small_text secondary_text_color truncate" style={{ fontStyle: 'italic' }}>
+        {product.type === 'SIN'
+          ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`
+          : product.description}
+      </p>
       <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
     </LoadingLink>
   );
