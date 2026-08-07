@@ -66,17 +66,30 @@ export default function Header() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const productsMenuRef = useRef<HTMLDivElement>(null);
 
+  const [isSearching, setIsSearching] = useState(false);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+
     if (!search.trim()) {
+      setIsSearching(false);
       setSuggestions([]);
       return;
     }
 
-    const filtered = products.filter(p =>
-      p.name.toLowerCase().includes(search.toLowerCase())
-    );
+    setIsSearching(true);
+    searchDebounceRef.current = setTimeout(() => {
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      );
+      setSuggestions(filtered.slice(0, MAX_SUGGESTIONS));
+      setIsSearching(false);
+    }, 250);
 
-    setSuggestions(filtered.slice(0, MAX_SUGGESTIONS));
+    return () => {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    };
   }, [search, products]);
 
   // Agrupa la vista previa por categoría, preservando el orden en el que aparecen los matches.
@@ -468,53 +481,67 @@ export default function Header() {
       </nav>
 
       {/* ===== DROPDOWN ===== */}
-      {showDropdown && suggestions.length > 0 && (
-        <div
-          ref={dropdownRef}
-          className="
-            absolute top-full left-1/2 -translate-x-1/2
-            w-full max-w-5xl
-            bg-white text-black rounded shadow-lg mt-2 z-50
-            max-h-[75vh] overflow-y-auto p-4
-          "
-        >
-          {groupedSuggestions.map(group => (
-            <div key={group.categoryName} className="mb-4 last:mb-0">
-              <p className="small_text secondary_text_color uppercase tracking-wide font-semibold mb-2 px-1">
-                {group.categoryName}
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {group.products.map(product => (
-                  <button
-                    key={product.id}
-                    onClick={() => goToProduct(product.id)}
-                    className="flex flex-col items-start text-left gap-1 p-2 rounded hover:bg-gray-100 transition"
-                  >
-                    <div className="w-full aspect-square bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                      {product.imageUrls?.[0] ? (
-                        <img
-                          src={product.imageUrls[0]}
-                          className="w-full h-full object-contain"
-                        />
-                      ) : (
-                        <span className="small_text secondary_text_color">Sin imagen</span>
-                      )}
-                    </div>
-                    <p className="product_title_text primary_text_color w-full truncate">
-                      {product.name}
-                    </p>
-                    <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
-                  </button>
-                ))}
+      {/* Siempre montado (igual que los otros menús del header) para poder animar la
+          aparición con una transición en vez de un mount/unmount abrupto. */}
+      <div
+        ref={dropdownRef}
+        className={`
+          absolute top-full left-1/2 -translate-x-1/2 origin-top
+          w-[80%] max-w-5xl
+          bg-[#fafafa] text-black rounded-xl shadow-2xl ring-1 ring-black/5 mt-2 z-50
+          max-h-[75vh] overflow-y-auto p-4
+          transform transition-all duration-300 ease-out
+          ${showDropdown && search.trim()
+            ? 'opacity-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 -translate-y-2 pointer-events-none'}
+        `}
+      >
+        {isSearching ? (
+          <p className="normal_text secondary_text_color text-center py-6">Buscando...</p>
+        ) : suggestions.length === 0 ? (
+          <p className="normal_text secondary_text_color text-center py-6">
+            No se encontraron productos.
+          </p>
+        ) : (
+          <>
+            {groupedSuggestions.map(group => (
+              <div key={group.categoryName} className="mb-4 last:mb-0">
+                <p className="small_text secondary_text_color uppercase tracking-wide font-semibold mb-2 px-1">
+                  {group.categoryName}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {group.products.map(product => (
+                    <button
+                      key={product.id}
+                      onClick={() => goToProduct(product.id)}
+                      className="flex flex-col items-start text-left gap-1 p-2 rounded hover:bg-gray-100 transition"
+                    >
+                      <div className="w-full aspect-square bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                        {product.imageUrls?.[0] ? (
+                          <img
+                            src={product.imageUrls[0]}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <span className="small_text secondary_text_color">Sin imagen</span>
+                        )}
+                      </div>
+                      <p className="product_title_text primary_text_color w-full truncate">
+                        {product.name}
+                      </p>
+                      <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          <button onClick={goToAllResults} className="button_primary w-full mt-2">
-            Ver todos los resultados
-          </button>
-        </div>
-      )}
+            <button onClick={goToAllResults} className="button_primary w-full mt-2">
+              Ver todos los resultados
+            </button>
+          </>
+        )}
+      </div>
     </header>
   );
 }
