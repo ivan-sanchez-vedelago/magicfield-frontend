@@ -123,6 +123,13 @@ hr {
   line-height: 1.1rem;
 }
 
+.category_filter_title_text {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1rem;
+}
+
 .primary_text_color {
   color: #1F2933;
 }
@@ -390,6 +397,7 @@ hr {
 
 .product_box:hover:not(:has(.image_slideshow_arrow:hover)) {
   outline: 2px solid #2E7D32;
+  background-color: rgb(243 244 246);
 }
 
 .cantidad_stock_input::-webkit-inner-spin-button,

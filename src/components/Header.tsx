@@ -495,6 +495,7 @@ export default function Header() {
             ? 'opacity-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 -translate-y-2 pointer-events-none'}
         `}
+        style={{ border: '1px solid #2E7D32' }}
       >
         {isSearching ? (
           <p className="normal_text secondary_text_color text-center py-6">Buscando...</p>
@@ -506,15 +507,16 @@ export default function Header() {
           <>
             {groupedSuggestions.map(group => (
               <div key={group.categoryName} className="mb-4 last:mb-0">
-                <p className="small_text secondary_text_color uppercase tracking-wide font-semibold mb-2 px-1">
+                <p className="category_filter_title_text secondary_text_color py-2 px-3">
                   {group.categoryName}
                 </p>
+                <hr className="my-2" />
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {group.products.map(product => (
                     <button
                       key={product.id}
                       onClick={() => goToProduct(product.id)}
-                      className="flex flex-col items-start text-left gap-1 p-2 rounded hover:bg-gray-100 transition"
+                      className="product_box text-left p-2 rounded transition"
                     >
                       <div className="w-full aspect-square bg-gray-100 rounded overflow-hidden flex items-center justify-center">
                         {product.imageUrls?.[0] ? (
@@ -536,7 +538,7 @@ export default function Header() {
               </div>
             ))}
 
-            <button onClick={goToAllResults} className="button_primary w-full mt-2">
+            <button onClick={goToAllResults} className="button_primary w-full medium_button mt-2">
               Ver todos los resultados
             </button>
           </>
