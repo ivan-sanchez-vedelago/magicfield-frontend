@@ -3,14 +3,19 @@
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useProducts } from '@/src/context/productContext';
 import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useAuth } from '@/src/context/authContext';
 import { useCart } from '@/src/context/cartContext';
+import { formatPrice } from '@/src/utils/formatPrice';
 import type { Product, Category } from '@/src/types';
 import { ShoppingCart, User } from 'lucide-react';
+
+// Cuántos resultados como máximo se traen para la vista previa del dropdown
+// (el resto se ve entrando con "Ver todos los resultados").
+const MAX_SUGGESTIONS = 12;
 
 export default function Header() {
   const router = useRouter();
@@ -71,8 +76,25 @@ export default function Header() {
       p.name.toLowerCase().includes(search.toLowerCase())
     );
 
-    setSuggestions(filtered.slice(0, 5));
+    setSuggestions(filtered.slice(0, MAX_SUGGESTIONS));
   }, [search, products]);
+
+  // Agrupa la vista previa por categoría, preservando el orden en el que aparecen los matches.
+  const groupedSuggestions = useMemo(() => {
+    const groups: { categoryName: string; products: Product[] }[] = [];
+
+    suggestions.forEach(product => {
+      const categoryName = categories.find(c => c.id === product.categoryId)?.name ?? 'Otros';
+      let group = groups.find(g => g.categoryName === categoryName);
+      if (!group) {
+        group = { categoryName, products: [] };
+        groups.push(group);
+      }
+      group.products.push(product);
+    });
+
+    return groups;
+  }, [suggestions, categories]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -119,13 +141,16 @@ export default function Header() {
     setOpenHamburguerMenu(prev => !prev);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const goToAllResults = useCallback(() => {
     if (!search.trim()) return;
-
     setShowDropdown(false);
     startNavigation();
     router.push(`/products?search=${encodeURIComponent(search)}`);
+  }, [search, startNavigation, router]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    goToAllResults();
   };
 
   const goToProduct = (id: string) => {
@@ -450,23 +475,44 @@ export default function Header() {
             absolute top-full left-1/2 -translate-x-1/2
             w-full max-w-5xl
             bg-white text-black rounded shadow-lg mt-2 z-50
+            max-h-[75vh] overflow-y-auto p-4
           "
         >
-          {suggestions.map(product => (
-            <button
-              key={product.id}
-              onClick={() => goToProduct(product.id)}
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-3"
-            >
-              {product.imageUrls?.[0] && (
-                <img
-                  src={product.imageUrls[0]}
-                  className="w-10 h-10 object-cover rounded"
-                />
-              )}
-              {product.name}
-            </button>
+          {groupedSuggestions.map(group => (
+            <div key={group.categoryName} className="mb-4 last:mb-0">
+              <p className="small_text secondary_text_color uppercase tracking-wide font-semibold mb-2 px-1">
+                {group.categoryName}
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {group.products.map(product => (
+                  <button
+                    key={product.id}
+                    onClick={() => goToProduct(product.id)}
+                    className="flex flex-col items-start text-left gap-1 p-2 rounded hover:bg-gray-100 transition"
+                  >
+                    <div className="w-full aspect-square bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                      {product.imageUrls?.[0] ? (
+                        <img
+                          src={product.imageUrls[0]}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="small_text secondary_text_color">Sin imagen</span>
+                      )}
+                    </div>
+                    <p className="product_title_text primary_text_color w-full truncate">
+                      {product.name}
+                    </p>
+                    <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
+
+          <button onClick={goToAllResults} className="button_primary w-full mt-2">
+            Ver todos los resultados
+          </button>
         </div>
       )}
     </header>
