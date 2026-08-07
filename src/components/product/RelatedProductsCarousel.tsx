@@ -121,15 +121,25 @@ export default function RelatedProductsCarousel({
                     <LoadingLink
                     key={p.id}
                     href={`/products/${p.id}`}
-                    className="border rounded p-3 w-48 flex-shrink-0"
+                    className="product_box box_border flex-shrink-0"
                     >
-                    <img
-                        src={p.imageUrls?.[0]}
-                        alt={p.name}
-                        className="w-full h-32 object-contain"
-                    />
-                    <p className="text-sm mt-2">{p.name}</p>
-                    <p className="font-semibold">ARS$ {formatPrice(p.price)}</p>
+                    <div className="product_image">
+                        {p.imageUrls?.[0] ? (
+                            <img
+                                src={p.imageUrls[0]}
+                                alt={p.name}
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <div className="text-gray-400">Sin imagen</div>
+                        )}
+                    </div>
+                    <h2 className="product_title_text primary_text_color limit_two_lines">
+                        {p.name}
+                    </h2>
+                    <p className="product_price_small_text text-center" style={{ alignSelf: 'center' }}>
+                        ARS$ {formatPrice(p.price)}
+                    </p>
                     </LoadingLink>
                 ))}
                 </div>
