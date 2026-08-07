@@ -108,13 +108,13 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
 
   if (banners.length === 0) {
     return (
-      <div className="w-full rounded-2xl bg-gray-100 animate-pulse" style={{ minHeight: '300px' }} />
+      <div className="w-full max-w-6xl mx-auto rounded-2xl bg-gray-100 animate-pulse" style={{ minHeight: '300px' }} />
     );
   }
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-2xl shadow-2xl select-none"
+      className="relative w-full max-w-6xl mx-auto overflow-hidden rounded-2xl shadow-2xl select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={handleTouchStart}
@@ -145,16 +145,17 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
             />
           )}
 
-          {/* Text overlay */}
+          {/* Text overlay: tamaño y padding escalan con el breakpoint para mantener la misma
+              proporción visual que en pantallas grandes (donde el banner es más alto). */}
           <div
-            className="absolute bottom-0 left-0 right-0 flex flex-col justify-end pb-10 px-10"
+            className="absolute bottom-0 left-0 right-0 flex flex-col justify-end px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8 lg:px-10 lg:pb-10"
             style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)' }}
           >
-            <h2 className="main_title_text text-white drop-shadow-lg">
+            <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white drop-shadow-lg">
               {b.title}
             </h2>
             {b.subtitle && (
-              <p className="text-gray-200 normal_text mt-1 drop-shadow">
+              <p className="text-xs sm:text-sm md:text-sm lg:text-base text-gray-200 mt-1 drop-shadow">
                 {b.subtitle}
               </p>
             )}
