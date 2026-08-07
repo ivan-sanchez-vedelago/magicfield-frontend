@@ -137,6 +137,11 @@ export default function RelatedProductsCarousel({
                     <h2 className="product_title_text primary_text_color limit_two_lines">
                         {p.name}
                     </h2>
+                    <p className="small_text secondary_text_color limit_two_lines" style={{ fontStyle: 'italic' }}>
+                        {p.type === 'SIN'
+                            ? `${p.set ?? ''}${p.collectorNumber ? ` · #${p.collectorNumber}` : ''}`
+                            : p.description}
+                    </p>
                     <p className="product_price_small_text text-center" style={{ alignSelf: 'center' }}>
                         ARS$ {formatPrice(p.price)}
                     </p>

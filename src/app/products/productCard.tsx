@@ -92,9 +92,15 @@ export default function ProductCard({ product, onClick }: Props) {
         {product.name}
       </h2>
 
-      <p className="small_text secondary_text_color limit_two_lines" style={{fontStyle: 'italic'}}>
-        {product.description}
-      </p>
+      {product.type === 'SIN' ? (
+        <p className="small_text secondary_text_color limit_two_lines" style={{fontStyle: 'italic'}}>
+          {product.set}{product.collectorNumber ? ` · #${product.collectorNumber}` : ''}
+        </p>
+      ) : (
+        <p className="small_text secondary_text_color limit_two_lines" style={{fontStyle: 'italic'}}>
+          {product.description}
+        </p>
+      )}
 
       <div className="product_price_small_text text-center" style={{alignSelf: 'center'}}>
           ARS$ {formatPrice(product.price)}

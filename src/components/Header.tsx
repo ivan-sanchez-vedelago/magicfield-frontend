@@ -531,6 +531,11 @@ export default function Header() {
                       <p className="product_title_text primary_text_color w-full truncate">
                         {product.name}
                       </p>
+                      <p className="small_text secondary_text_color w-full truncate" style={{ fontStyle: 'italic' }}>
+                        {product.type === 'SIN'
+                          ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`
+                          : product.description}
+                      </p>
                       <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
                     </button>
                   ))}
