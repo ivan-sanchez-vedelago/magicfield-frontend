@@ -123,7 +123,7 @@ export default function RelatedProductsCarousel({
                     href={`/products/${p.id}`}
                     className="product_box box_border flex-shrink-0"
                     >
-                    <div className="product_image">
+                    <div className="product_image_small">
                         {p.imageUrls?.[0] ? (
                             <img
                                 src={p.imageUrls[0]}
