@@ -121,7 +121,7 @@ export default function RelatedProductsCarousel({
                     <LoadingLink
                     key={p.id}
                     href={`/products/${p.id}`}
-                    className="product_box box_border flex-shrink-0"
+                    className="product_box box_border flex-shrink-0 w-[154px]"
                     >
                     <div className="product_image_small">
                         {p.imageUrls?.[0] ? (
@@ -134,10 +134,10 @@ export default function RelatedProductsCarousel({
                             <div className="text-gray-400">Sin imagen</div>
                         )}
                     </div>
-                    <h2 className="product_title_text primary_text_color limit_two_lines">
+                    <h2 className="product_title_text primary_text_color truncate">
                         {p.name}
                     </h2>
-                    <p className="small_text secondary_text_color limit_two_lines" style={{ fontStyle: 'italic' }}>
+                    <p className="small_text secondary_text_color truncate" style={{ fontStyle: 'italic' }}>
                         {p.type === 'SIN'
                             ? `${p.set ?? ''}${p.collectorNumber ? ` · #${p.collectorNumber}` : ''}`
                             : p.description}
