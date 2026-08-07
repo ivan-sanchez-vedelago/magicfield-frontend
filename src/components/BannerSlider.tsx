@@ -114,7 +114,7 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
 
   return (
     <div
-      className="relative w-full max-w-6xl mx-auto overflow-hidden rounded-2xl shadow-2xl select-none"
+      className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-2xl shadow-2xl select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={handleTouchStart}
