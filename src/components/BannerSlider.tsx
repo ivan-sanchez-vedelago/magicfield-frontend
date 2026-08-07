@@ -122,15 +122,15 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
     >
-      {/* Slides */}
-      {banners.map((b, i) => (
-        <div
-          key={b.id}
-          className={`transition-transform duration-500 ${i === current ? 'block' : 'hidden'}`}
-          style={{
-            transform: i === current ? 'translateX(0)' : i > current ? 'translateX(100%)' : 'translateX(-100%)',
-          }}
-        >
+      {/* Slides: una fila flex de N slides al 100% de ancho cada uno, desplazada con
+          translateX -- así el saliente y el entrante se ven a la vez, uno empujando al otro
+          (display:none no se puede animar, por eso no alcanzaba con solo transform). */}
+      <div
+        className="flex items-start transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${current * 100}%)` }}
+      >
+        {banners.map((b) => (
+        <div key={b.id} className="relative w-full flex-shrink-0">
           {b.imageUrl ? (
             <img
               src={b.imageUrl}
@@ -140,8 +140,8 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
             />
           ) : (
             <div
-              className="w-full h-full"
-              style={{ background: b.bgColor ?? '#0F2F1F', borderRadius: '1rem' }}
+              className="w-full"
+              style={{ minHeight: '300px', background: b.bgColor ?? '#0F2F1F', borderRadius: '1rem' }}
             />
           )}
 
@@ -161,7 +161,8 @@ export default function BannerSlider({ intervalMs = 5000 }: BannerSliderProps) {
             )}
           </div>
         </div>
-      ))}
+        ))}
+      </div>
 
       {/* Prev arrow */}
       <button
