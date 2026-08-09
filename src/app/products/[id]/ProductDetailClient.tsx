@@ -11,33 +11,18 @@ import ProductImageGallery from '@/src/components/product/ProductImageGallery';
 import RelatedProductsCarousel from '@/src/components/product/RelatedProductsCarousel';
 import type { Product } from '@/src/types';
 
-export default function ProductDetailClient({ product } : { product: Product }) {
+export default function ProductDetailClient({
+  product,
+  variants,
+}: {
+  product: Product;
+  variants: Product[];
+}) {
 
-  const { items, setProductQuantity, removeProduct } = useCart();
   const { products: allProducts } = useProducts();
   const { categories } = useCategories();
 
-  const cartItem = items.find(i => i.productId === product.id);
-  const quantityInCart = cartItem?.quantity ?? 0;
-
-  const [qty, setQty] = useState(quantityInCart);
   const [showDetails, setShowDetails] = useState(false);
-
-  useEffect(() => {
-    setQty(quantityInCart);
-  }, [quantityInCart, product.id]);
-
-  const increase = () => setQty(q => Math.min(product.stock, q + 1));
-  const decrease = () => setQty(q => Math.max(0, q - 1));
-
-  const addToCart = () => {
-    setProductQuantity(product, qty);
-  };
-
-  const handleRemoveItem = () => {
-    setQty(0);
-    removeProduct(product.id);
-  };
 
   const relatedProducts = useMemo(() => {
     if (!allProducts.length) return [];
@@ -55,7 +40,10 @@ export default function ProductDetailClient({ product } : { product: Product }) 
       }
     };
 
-    const others = allProducts.filter(p => p.id !== product.id);
+    // Excluye también las otras variantes (condición/idioma) de esta misma carta+finish:
+    // ya se ven en el selector de arriba, no tiene sentido repetirlas como "relacionados".
+    const variantIds = new Set(variants.map(v => v.id));
+    const others = allProducts.filter(p => !variantIds.has(p.id));
 
     // 1. Coincidencia por nombre
     const words = product.name.toLowerCase().split(" ");
@@ -75,7 +63,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
     add(others);
 
     return result;
-  }, [allProducts, product]);
+  }, [allProducts, product, variants]);
 
   const breadcrumbPath = useMemo(() => {
     return getBreadcrumbPath(product.categoryId, categories);
@@ -129,45 +117,9 @@ export default function ProductDetailClient({ product } : { product: Product }) 
 
             <hr className="my-2" />
 
-            <div className="grid grid-cols-4 items-center">
-              <p className="text-center">
-                {product.condition || '-'}
-              </p>
-
-              <p className="text-center">
-                {product.language || '-'}
-              </p>
-
-              <p className="product_price_small_text text-center">
-                ARS$ {formatPrice(product.price)}
-              </p>
-
-              <div className="text-center">
-                <div className="flex justify-center items-center gap-2">
-                  <button onClick={decrease} disabled={qty <= 0} className="px-2 py-1 border disabled:opacity-50">-</button>
-                  <span className="cantidad_stock_input">{qty}</span>
-                  <button onClick={increase} disabled={qty >= product.stock} className="px-2 py-1 border disabled:opacity-50">+</button>
-                </div>
-
-                <p className="small_text secondary_text_color mt-1">
-                  Disponible{product.stock > 1 && 's'}: {product.stock}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 justify-end mt-2">
-              <button onClick={handleRemoveItem} className="small_button button_secondary">
-                Limpiar
-              </button>
-
-              <button
-                onClick={addToCart}
-                className="small_button button_primary"
-                disabled={qty === quantityInCart}
-              >
-                Añadir al carrito
-              </button>
-            </div>
+            {variants.map(variant => (
+              <VariantRow key={variant.id} variant={variant} />
+            ))}
           </div>
 
           <div className="box_border mt-6">
@@ -183,7 +135,7 @@ export default function ProductDetailClient({ product } : { product: Product }) 
                 <hr className="my-2" />
                 <div className="p-4 grid grid-cols-2 gap-6">
                     <b>Nombre:</b> {product.name ? product.name : '-'}
-                    <b>Es foil:</b> {product.isFoil ? 'Sí' : 'No'}
+                    <b>Finish:</b> {product.finishName ? product.finishName : '-'}
                     <b>Set:</b> {product.set ? product.set : '-'}
                     <b>N° de coleccionista:</b> {product.collectorNumber ? `#${product.collectorNumber}` : '-'}
                 </div>
@@ -204,5 +156,67 @@ export default function ProductDetailClient({ product } : { product: Product }) 
         <RelatedProductsCarousel products={relatedProducts} />
       </section>
     </main>
+  );
+}
+
+// Una fila por variante (condición/idioma): cada una es su propio Product.id en la base,
+// así que agregar dos variantes distintas al carrito genera dos líneas independientes,
+// exactamente igual que con productos no relacionados -- no requiere tocar cartContext.
+function VariantRow({ variant }: { variant: Product }) {
+  const { items, setProductQuantity, removeProduct } = useCart();
+  const cartItem = items.find(i => i.productId === variant.id);
+  const quantityInCart = cartItem?.quantity ?? 0;
+
+  const [qty, setQty] = useState(quantityInCart);
+
+  useEffect(() => {
+    setQty(quantityInCart);
+  }, [quantityInCart, variant.id]);
+
+  const increase = () => setQty(q => Math.min(variant.stock, q + 1));
+  const decrease = () => setQty(q => Math.max(0, q - 1));
+
+  const addToCart = () => setProductQuantity(variant, qty);
+  const handleRemoveItem = () => {
+    setQty(0);
+    removeProduct(variant.id);
+  };
+
+  return (
+    <div className="border-b border-gray-200 last:border-b-0 py-2">
+      <div className="grid grid-cols-4 items-center">
+        <p className="text-center">{variant.conditionName || '-'}</p>
+        <p className="text-center">{variant.languageName || '-'}</p>
+        <p className="product_price_small_text text-center">
+          ARS$ {formatPrice(variant.price)}
+        </p>
+
+        <div className="text-center">
+          <div className="flex justify-center items-center gap-2">
+            <button onClick={decrease} disabled={qty <= 0} className="px-2 py-1 border disabled:opacity-50">-</button>
+            <span className="cantidad_stock_input">{qty}</span>
+            <button onClick={increase} disabled={qty >= variant.stock} className="px-2 py-1 border disabled:opacity-50">+</button>
+          </div>
+
+          <p className="small_text secondary_text_color mt-1">
+            Disponible{variant.stock > 1 && 's'}: {variant.stock}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-4 justify-end mt-2">
+        <button onClick={handleRemoveItem} className="small_button button_secondary">
+          Limpiar
+        </button>
+
+        <button
+          onClick={addToCart}
+          className="small_button button_primary"
+          disabled={qty === quantityInCart}
+        >
+          Añadir al carrito
+        </button>
+      </div>
+    </div>
   );
 }

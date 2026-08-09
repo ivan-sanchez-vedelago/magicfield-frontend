@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ProductCard from './productCard';
 import ProductSidePanel from './productSidePanel';
 import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
+import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import type { Product } from '@/src/types';
 
 interface PagedProducts {
@@ -85,6 +86,8 @@ function ProductCardSkeleton() {
 }
 
 export default function ProductsContent() {
+  const router = useRouter();
+  const { startNavigation } = useNavigation();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search')?.toLowerCase() || '';
   const category = searchParams.get('category') || '';
@@ -133,7 +136,9 @@ export default function ProductsContent() {
 
     setLoading(true);
     setFetchError(false);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/paged?${params}`, {
+    // Catálogo público agrupado por (carta+finish) -- distinto del /paged que usa el admin,
+    // que sigue mostrando cada single por separado sin agrupar.
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/catalog?${params}`, {
       signal: controller.signal,
     })
       .then(r => r.json())
@@ -153,6 +158,17 @@ export default function ProductsContent() {
 
     return () => controller.abort();
   }, [currentPage, pageSize, searchQuery, categoriesParam, sortOption]);
+
+  // El panel lateral de agregado rápido no tiene forma de elegir entre variantes: si el
+  // single tiene más de una (condición/idioma distintos), hay que ir directo al detalle.
+  const handleProductClick = (product: Product) => {
+    if ((product.variantCount ?? 1) > 1) {
+      startNavigation();
+      router.push(`/products/${product.id}`);
+    } else {
+      setSelectedProduct(product);
+    }
+  };
 
   return (
     <div className="flex-1">
@@ -211,7 +227,7 @@ export default function ProductsContent() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => handleProductClick(product)}
                 />
               ))}
             </div>

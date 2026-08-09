@@ -21,9 +21,22 @@ export default async function ProductDetailPage({
 
   const product: Product = await res.json();
 
+  // Para singles, trae todas las variantes (condición/idioma) en stock de esta misma
+  // carta+finish -- alimenta el selector de variantes de la pantalla de detalle.
+  let variants: Product[] = [product];
+  if (product.type === 'SIN') {
+    const variantsRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/variants`,
+      { cache: "no-store" }
+    );
+    if (variantsRes.ok) {
+      variants = await variantsRes.json();
+    }
+  }
+
   return (
     <div className="flex-1">
-      <ProductDetailClient product={product} />
+      <ProductDetailClient product={product} variants={variants} />
     </div>
   );
 }

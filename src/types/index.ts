@@ -23,14 +23,21 @@ export type Product = {
   stock: number;
   type?: 'SIN' | 'PSL' | 'ACC';
   scryfallId?: string;
-  isFoil?: boolean;
+  finishId?: number;
+  finishShortName?: string;
+  finishName?: string;
   set?: string;
   collectorNumber?: string;
-  condition?: string;
-  language?: string;
+  conditionId?: number;
+  conditionName?: string;
+  languageId?: number;
+  languageName?: string;
   categoryId?: number;
   createdAt?: string;
   imageUrls?: string[];
+  // Solo viene lleno en el catálogo agrupado: cantidad de variantes (condición/idioma)
+  // distintas que existen en stock para esta carta+finish.
+  variantCount?: number;
 };
 
 // TODO: Tipos para carrito

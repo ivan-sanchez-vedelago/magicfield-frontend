@@ -23,7 +23,9 @@ export default function ProductCard({ product, onClick }: Props) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const isNew = isNewProduct(product);
-  const isFoil = product.type === 'SIN' && product.isFoil === true;
+  const finishLabel = product.type === 'SIN' && product.finishShortName && product.finishShortName !== 'NONFOIL'
+    ? (product.finishName ?? product.finishShortName)
+    : null;
 
   useEffect(() => {
     setImageLoaded(false);
@@ -44,7 +46,7 @@ export default function ProductCard({ product, onClick }: Props) {
   return (
     <article onClick={onClick} className="product_box box_border">
       <div className="product_image">
-        {isFoil && <span className="ribbon ribbon_foil">FOIL</span>}
+        {finishLabel && <span className="ribbon ribbon_foil">{finishLabel.toUpperCase()}</span>}
         {isNew && <span className="ribbon ribbon_new">NEW</span>}
         {images.length > 0 ? (
           <>
@@ -103,6 +105,7 @@ export default function ProductCard({ product, onClick }: Props) {
       )}
 
       <div className="product_price_small_text text-center" style={{alignSelf: 'center'}}>
+          {product.variantCount && product.variantCount > 1 ? 'Desde ' : ''}
           ARS$ {formatPrice(product.price)}
       </div>
       <div className='small_text text-center' style={{alignSelf: 'center'}}>
