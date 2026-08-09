@@ -21,6 +21,7 @@ type CartState = {
 
 type CartAction =
   | { type: 'ADD_ITEM'; item: CartItem }
+  | { type: 'UPDATE_ITEM_INFO'; productId: string; patch: Partial<CartItem> }
   | { type: 'INCREASE'; productId: string }
   | { type: 'DECREASE'; productId: string }
   | { type: 'REMOVE_ITEM'; productId: string }
@@ -73,6 +74,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
       return { items: [...state.items, action.item] };
     }
+
+    case 'UPDATE_ITEM_INFO':
+      return {
+        items: state.items.map((i) =>
+          i.productId === action.productId ? { ...i, ...action.patch } : i
+        ),
+      };
 
     case 'INCREASE':
       return {
@@ -196,6 +204,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       showFeedback('Producto añadido al carrito');
       return;
     }
+
+    // Ya existe: re-sincronizar el snapshot (set/condición/idioma/finish/precio/stock/imagen)
+    // contra el producto actual. Necesario para carritos persistidos en localStorage desde
+    // antes de que CartItem tuviera estos campos -- sin esto, quedarían vacíos para siempre,
+    // porque INCREASE/DECREASE solo tocan la cantidad.
+    dispatch({
+      type: 'UPDATE_ITEM_INFO',
+      productId: product.id,
+      patch: {
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        imageUrl: product.imageUrls?.[0],
+        set: product.set,
+        conditionName: product.conditionName,
+        languageName: product.languageName,
+        finishName: product.finishName,
+      },
+    });
 
     // si existe → ajustar diferencia
     const diff = desiredQty - currentQty;
