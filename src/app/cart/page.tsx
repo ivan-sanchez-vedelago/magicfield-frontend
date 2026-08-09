@@ -64,12 +64,19 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex-grow">
-                  <h2 
+                  <h2
                     className="product_title_text text_clickable"
                     onClick={() => {
                       startNavigation();
                       router.push(`/products/${item.productId}`);
                     }}>{item.name}</h2>
+                  {(item.set || item.conditionName || item.languageName || item.finishName) && (
+                    <p className="small_text secondary_text_color">
+                      {[item.set, item.conditionName, item.languageName, item.finishName]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </p>
+                  )}
                   <p className="product_price_big_text">ARS$ {formatPrice(item.price)}</p>
                 </div>
 

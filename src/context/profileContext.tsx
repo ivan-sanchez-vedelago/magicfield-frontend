@@ -11,6 +11,10 @@ interface Order {
   id: string;
   orderId: string;
   productName: string;
+  set: string | null;
+  conditionName: string | null;
+  languageName: string | null;
+  finishName: string | null;
   quantity: number;
   subtotal: number;
   customerName: string;
@@ -345,6 +349,13 @@ export function ProfileContent() {
                                     <p className="normal_text font-medium">
                                       {item.productName}
                                     </p>
+                                    {(item.set || item.conditionName || item.languageName || item.finishName) && (
+                                      <p className="small_text text-gray-500">
+                                        {[item.set, item.conditionName, item.languageName, item.finishName]
+                                          .filter(Boolean)
+                                          .join(' · ')}
+                                      </p>
+                                    )}
                                     <p className="product_price_small_text ">
                                       ARS${' '}
                                       {(item.unitPrice).toLocaleString('es-ES')}

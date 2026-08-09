@@ -13,36 +13,40 @@ interface Props {
 }
 
 export default function ProductSidePanel({ product, onClose }: Props) {
-  const { items, setProductQuantity, removeProduct } = useCart();
   const [isOpen, setIsOpen] = useState(false);
-  const [qty, setQty] = useState(0);
   const router = useRouter();
-
-  const cartItem = items.find(i => i.productId === product.id);
-  const quantityInCart = cartItem?.quantity ?? 0;
-
   const { startNavigation } = useNavigation();
 
+  const isSingle = product.type === 'SIN';
+  const [variants, setVariants] = useState<Product[]>(isSingle ? [] : [product]);
+  const [variantsLoading, setVariantsLoading] = useState(isSingle);
+
   useEffect(() => {
-    setQty(quantityInCart);
-  }, [quantityInCart, product.id]);
-
-  const increase = () => {
-    setQty(q => Math.min(product.stock, q + 1));
-  };
-
-  const decrease = () => {
-    setQty(q => Math.max(0, q - 1));
-  };
-
-  const handleConfirm = () => {
-    if (qty === 0) {
-      removeProduct(product.id);
-    } else {
-      setProductQuantity(product, qty);
+    if (!isSingle) {
+      setVariants([product]);
+      setVariantsLoading(false);
+      return;
     }
-    closeDrawer();
-  };
+
+    setVariantsLoading(true);
+    const controller = new AbortController();
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${product.id}/variants`, {
+      signal: controller.signal,
+    })
+      .then(r => r.json())
+      .then((data: Product[]) => {
+        setVariants(data);
+        setVariantsLoading(false);
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          setVariants([product]);
+          setVariantsLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [product.id, isSingle]);
 
   useEffect(() => {
     setIsOpen(true);
@@ -84,8 +88,10 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             className="w-full h-64 object-contain"
           />
 
-          <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
-          <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
+          {!isSingle && (
+            <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
+          )}
+
           <button
             onClick={() => {
               closeDrawer();
@@ -97,43 +103,87 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             Ver detalles
           </button>
 
-          <div className="flex items-center gap-4" style={{alignSelf: 'center'}}>
-            <button
-              onClick={decrease}
-              className="px-3 py-1 border disabled:opacity-50"
-              disabled={qty <= 0}
-            >
-              -
-            </button>
-
-            <span className="cantidad_stock_input">
-              {qty}
-            </span>
-
-            <button
-              onClick={increase}
-              className="px-3 py-1 border disabled:opacity-50"
-              disabled={qty >= product.stock}
-            >
-              +
-            </button>
-          </div>
-
-          <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>
-            {product.stock} en stock
-          </p>
-        </div>
-
-        <div className="p-4 border-t">
-          <button
-            onClick={handleConfirm}
-            className="w-full button_primary medium_button"
-            disabled={qty === quantityInCart}
-          >
-            {qty === 0 && quantityInCart > 0 ? 'Remover del carrito' : quantityInCart > 0 ? 'Actualizar carrito' : 'Agregar al carrito'}
-          </button>
+          {variantsLoading ? (
+            <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>Cargando variantes...</p>
+          ) : (
+            variants.map(variant => (
+              <SidePanelVariantRow key={variant.id} variant={variant} showConditionLanguage={isSingle} />
+            ))
+          )}
         </div>
       </aside>
     </>
+  );
+}
+
+// Una fila por variante (condición/idioma), análogo a VariantRow en ProductDetailClient.tsx.
+// Para no-singles hay una única "variante" (el producto mismo) y no se muestran esas columnas.
+function SidePanelVariantRow({ variant, showConditionLanguage }: { variant: Product; showConditionLanguage: boolean }) {
+  const { items, setProductQuantity, removeProduct } = useCart();
+  const cartItem = items.find(i => i.productId === variant.id);
+  const quantityInCart = cartItem?.quantity ?? 0;
+
+  const [qty, setQty] = useState(quantityInCart);
+
+  useEffect(() => {
+    setQty(quantityInCart);
+  }, [quantityInCart, variant.id]);
+
+  const increase = () => setQty(q => Math.min(variant.stock, q + 1));
+  const decrease = () => setQty(q => Math.max(0, q - 1));
+
+  const handleConfirm = () => {
+    if (qty === 0) {
+      removeProduct(variant.id);
+    } else {
+      setProductQuantity(variant, qty);
+    }
+  };
+
+  return (
+    <div className="border-b border-gray-200 last:border-b-0 py-2">
+      {showConditionLanguage && (
+        <div className="flex justify-between text-sm text-gray-600 mb-1">
+          <span>{variant.conditionName || '-'}</span>
+          <span>{variant.languageName || '-'}</span>
+        </div>
+      )}
+
+      <p className="product_price_small_text">ARS$ {formatPrice(variant.price)}</p>
+
+      <div className="flex items-center gap-4" style={{alignSelf: 'center'}}>
+        <button
+          onClick={decrease}
+          className="px-3 py-1 border disabled:opacity-50"
+          disabled={qty <= 0}
+        >
+          -
+        </button>
+
+        <span className="cantidad_stock_input">
+          {qty}
+        </span>
+
+        <button
+          onClick={increase}
+          className="px-3 py-1 border disabled:opacity-50"
+          disabled={qty >= variant.stock}
+        >
+          +
+        </button>
+      </div>
+
+      <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>
+        {variant.stock} en stock
+      </p>
+
+      <button
+        onClick={handleConfirm}
+        className="w-full button_primary medium_button mt-2"
+        disabled={qty === quantityInCart}
+      >
+        {qty === 0 && quantityInCart > 0 ? 'Remover del carrito' : quantityInCart > 0 ? 'Actualizar carrito' : 'Agregar al carrito'}
+      </button>
+    </div>
   );
 }

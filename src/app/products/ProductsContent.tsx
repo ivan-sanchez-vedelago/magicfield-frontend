@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import ProductCard from './productCard';
 import ProductSidePanel from './productSidePanel';
 import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
-import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import type { Product } from '@/src/types';
 
 interface PagedProducts {
@@ -86,8 +85,6 @@ function ProductCardSkeleton() {
 }
 
 export default function ProductsContent() {
-  const router = useRouter();
-  const { startNavigation } = useNavigation();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search')?.toLowerCase() || '';
   const category = searchParams.get('category') || '';
@@ -159,15 +156,8 @@ export default function ProductsContent() {
     return () => controller.abort();
   }, [currentPage, pageSize, searchQuery, categoriesParam, sortOption]);
 
-  // El panel lateral de agregado rápido no tiene forma de elegir entre variantes: si el
-  // single tiene más de una (condición/idioma distintos), hay que ir directo al detalle.
   const handleProductClick = (product: Product) => {
-    if ((product.variantCount ?? 1) > 1) {
-      startNavigation();
-      router.push(`/products/${product.id}`);
-    } else {
-      setSelectedProduct(product);
-    }
+    setSelectedProduct(product);
   };
 
   return (

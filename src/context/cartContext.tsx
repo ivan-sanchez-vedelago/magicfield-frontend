@@ -9,6 +9,10 @@ export interface CartItem {
   quantity: number;
   stock: number;
   imageUrl?: string;
+  set?: string;
+  conditionName?: string;
+  languageName?: string;
+  finishName?: string;
 }
 
 type CartState = {
@@ -183,6 +187,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           quantity: desiredQty,
           stock: product.stock,
           imageUrl: product.imageUrls?.[0],
+          set: product.set,
+          conditionName: product.conditionName,
+          languageName: product.languageName,
+          finishName: product.finishName,
         },
       });
       showFeedback('Producto añadido al carrito');
