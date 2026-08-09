@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse, NextFetchEvent } from 'next/server';
 
-// Protected routes that require authentication
-const protectedRoutes = ['/perfil'];
-
-// Auth routes (redirect to home if already authenticated)
-const authRoutes = ['/auth', '/auth/login', '/auth/register'];
-
 const CLIENT_ID_COOKIE = 'mf_cid';
 const CLIENT_ID_MAX_AGE = 60 * 60 * 24 * 400; // ~400 días (tope máximo que permiten los navegadores)
 
@@ -70,31 +64,14 @@ function trackPageView(request: NextRequest, event: NextFetchEvent, clientId: st
 }
 
 export function middleware(request: NextRequest, event: NextFetchEvent) {
-  const pathname = request.nextUrl.pathname;
-
-  // Check if user has a valid token in cookies
-  const token = request.cookies.get('authToken')?.value;
-
-  // Check if route is protected
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  // Check if route is an auth route
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-
-  // If no token and trying to access protected route, redirect to login
-  if (isProtectedRoute && !token) {
-    const loginUrl = new URL('/auth/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // If token exists and trying to access auth routes, redirect to home
-  if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
+  // Nota: la cookie `authToken` la emite el backend (dominio distinto al del frontend
+  // en producción, ej. *.up.railway.app vs. magicfield.com.ar), así que este middleware
+  // -que corre en el servidor del frontend- nunca la ve en request.cookies: por eso antes
+  // redirigía SIEMPRE a /auth/login al entrar a /perfil, sin importar si el usuario estaba
+  // logueado. El gate real de auth ya lo hacen los propios componentes cliente
+  // (profileContext.tsx, auth/login/page.tsx, auth/register/page.tsx) usando
+  // isAuthenticated de authContext, que sí resuelve el estado real vía fetch con
+  // credentials:'include' al backend.
   const response = NextResponse.next();
 
   if (isTrackablePageRequest(request)) {
