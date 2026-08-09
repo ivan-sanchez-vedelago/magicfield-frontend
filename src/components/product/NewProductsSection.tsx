@@ -4,13 +4,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { useProducts } from '@/src/context/productContext';
+import { groupSinglesByFinish } from '@/src/utils/groupSingles';
 import type { Product } from '@/src/types';
 
 export default function NewProductsSection() {
   const { products, loading } = useProducts();
 
   const newProducts = useMemo(() => {
-    return [...products]
+    return groupSinglesByFinish(products)
       .filter(p => p.createdAt)
       .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
       .slice(0, 20);

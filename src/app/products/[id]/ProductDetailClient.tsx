@@ -3,6 +3,7 @@
 import { useCart } from '../../../context/cartContext';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
+import { groupSinglesByFinish } from '@/src/utils/groupSingles';
 import { useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
 import { useCategories } from '../../../context/categoryContext';
@@ -43,7 +44,7 @@ export default function ProductDetailClient({
     // Excluye también las otras variantes (condición/idioma) de esta misma carta+finish:
     // ya se ven en el selector de arriba, no tiene sentido repetirlas como "relacionados".
     const variantIds = new Set(variants.map(v => v.id));
-    const others = allProducts.filter(p => !variantIds.has(p.id));
+    const others = groupSinglesByFinish(allProducts.filter(p => !variantIds.has(p.id)));
 
     // 1. Coincidencia por nombre
     const words = product.name.toLowerCase().split(" ");

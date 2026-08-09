@@ -10,6 +10,7 @@ import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useAuth } from '@/src/context/authContext';
 import { useCart } from '@/src/context/cartContext';
 import { formatPrice } from '@/src/utils/formatPrice';
+import { groupSinglesByFinish } from '@/src/utils/groupSingles';
 import type { Product, Category } from '@/src/types';
 import { ShoppingCart, User } from 'lucide-react';
 
@@ -83,7 +84,10 @@ export default function Header() {
       const filtered = products.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase())
       );
-      setSuggestions(filtered.slice(0, MAX_SUGGESTIONS));
+      // Agrupar ANTES de recortar: si dos variantes del mismo single matchean, tienen
+      // que fusionarse en una sola entrada antes de aplicar el límite de resultados.
+      const grouped = groupSinglesByFinish(filtered);
+      setSuggestions(grouped.slice(0, MAX_SUGGESTIONS));
       setIsSearching(false);
     }, 250);
 
