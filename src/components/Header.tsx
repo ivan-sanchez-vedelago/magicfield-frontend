@@ -540,7 +540,10 @@ export default function Header() {
                           ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`
                           : product.description}
                       </p>
-                      <p className="product_price_small_text">ARS$ {formatPrice(product.price)}</p>
+                      <p className="product_price_small_text">
+                        {product.variantCount && product.variantCount > 1 ? 'Desde ' : ''}
+                        ARS$ {formatPrice(product.price)}
+                      </p>
                     </button>
                   ))}
                 </div>

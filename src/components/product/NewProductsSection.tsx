@@ -164,7 +164,10 @@ function NewProductCard({ product }: { product: Product }) {
           ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`
           : product.description}
       </p>
-      <p className="product_price_small_text mt-auto">ARS$ {formatPrice(product.price)}</p>
+      <p className="product_price_small_text mt-auto">
+        {product.variantCount && product.variantCount > 1 ? 'Desde ' : ''}
+        ARS$ {formatPrice(product.price)}
+      </p>
     </LoadingLink>
   );
 }

@@ -143,6 +143,7 @@ export default function RelatedProductsCarousel({
                             : p.description}
                     </p>
                     <p className="product_price_small_text text-center" style={{ alignSelf: 'center' }}>
+                        {p.variantCount && p.variantCount > 1 ? 'Desde ' : ''}
                         ARS$ {formatPrice(p.price)}
                     </p>
                     </LoadingLink>

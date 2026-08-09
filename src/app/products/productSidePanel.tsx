@@ -13,6 +13,7 @@ interface Props {
 }
 
 export default function ProductSidePanel({ product, onClose }: Props) {
+  const { items, setProductQuantity, removeProduct } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { startNavigation } = useNavigation();
@@ -34,19 +35,71 @@ export default function ProductSidePanel({ product, onClose }: Props) {
       signal: controller.signal,
     })
       .then(r => r.json())
-      .then((data: Product[]) => {
-        setVariants(data);
-        setVariantsLoading(false);
-      })
+      .then((data: Product[]) => setVariants(data.length > 0 ? data : [product]))
       .catch(err => {
-        if (err.name !== 'AbortError') {
-          setVariants([product]);
-          setVariantsLoading(false);
-        }
-      });
+        if (err.name !== 'AbortError') setVariants([product]);
+      })
+      .finally(() => setVariantsLoading(false));
 
     return () => controller.abort();
   }, [product.id, isSingle]);
+
+  // Con una sola variante (el caso común, singles o no) el panel se comporta exactamente
+  // como antes: un solo stepper acá arriba, sincronizado con el carrito.
+  const hasMultipleVariants = variants.length > 1;
+  const singleVariant = variants[0] ?? product;
+
+  const cartItem = items.find(i => i.productId === singleVariant.id);
+  const quantityInCart = cartItem?.quantity ?? 0;
+  const [qty, setQty] = useState(quantityInCart);
+
+  useEffect(() => {
+    setQty(quantityInCart);
+  }, [quantityInCart, singleVariant.id]);
+
+  // Con 2+ variantes cada fila tiene su propio stepper, pero las cantidades elegidas se
+  // acumulan acá y se aplican todas juntas con un único botón "Agregar al carrito" fijo
+  // en el mismo lugar de siempre -- no un botón por fila.
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (!hasMultipleVariants) return;
+    const initial: Record<string, number> = {};
+    variants.forEach(v => {
+      const existing = items.find(i => i.productId === v.id);
+      initial[v.id] = existing?.quantity ?? 0;
+    });
+    setQuantities(initial);
+  }, [variants, hasMultipleVariants]);
+
+  const setVariantQty = (variantId: string, value: number) => {
+    setQuantities(prev => ({ ...prev, [variantId]: value }));
+  };
+
+  const hasPendingChanges = variants.some(v => {
+    const current = items.find(i => i.productId === v.id)?.quantity ?? 0;
+    return (quantities[v.id] ?? 0) !== current;
+  });
+
+  const increase = () => setQty(q => Math.min(singleVariant.stock, q + 1));
+  const decrease = () => setQty(q => Math.max(0, q - 1));
+
+  const handleConfirm = () => {
+    if (hasMultipleVariants) {
+      variants.forEach(v => {
+        const desired = quantities[v.id] ?? 0;
+        const current = items.find(i => i.productId === v.id)?.quantity ?? 0;
+        if (desired === current) return;
+        if (desired === 0) removeProduct(v.id);
+        else setProductQuantity(v, desired);
+      });
+    } else if (qty === 0) {
+      removeProduct(singleVariant.id);
+    } else {
+      setProductQuantity(singleVariant, qty);
+    }
+    closeDrawer();
+  };
 
   useEffect(() => {
     setIsOpen(true);
@@ -88,8 +141,10 @@ export default function ProductSidePanel({ product, onClose }: Props) {
             className="w-full h-64 object-contain"
           />
 
-          {!isSingle && (
-            <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
+          <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
+
+          {!hasMultipleVariants && (
+            <p className="product_price_small_text">ARS$ {formatPrice(singleVariant.price)}</p>
           )}
 
           <button
@@ -105,53 +160,89 @@ export default function ProductSidePanel({ product, onClose }: Props) {
 
           {variantsLoading ? (
             <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>Cargando variantes...</p>
-          ) : (
+          ) : hasMultipleVariants ? (
             variants.map(variant => (
-              <SidePanelVariantRow key={variant.id} variant={variant} showConditionLanguage={isSingle} />
+              <VariantRow
+                key={variant.id}
+                variant={variant}
+                qty={quantities[variant.id] ?? 0}
+                onChange={(value) => setVariantQty(variant.id, value)}
+              />
             ))
+          ) : (
+            <>
+              <div className="flex items-center gap-4" style={{alignSelf: 'center'}}>
+                <button
+                  onClick={decrease}
+                  className="px-3 py-1 border disabled:opacity-50"
+                  disabled={qty <= 0}
+                >
+                  -
+                </button>
+
+                <span className="cantidad_stock_input">
+                  {qty}
+                </span>
+
+                <button
+                  onClick={increase}
+                  className="px-3 py-1 border disabled:opacity-50"
+                  disabled={qty >= singleVariant.stock}
+                >
+                  +
+                </button>
+              </div>
+
+              <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>
+                {singleVariant.stock} en stock
+              </p>
+            </>
           )}
         </div>
+
+        {!variantsLoading && (
+          <div className="p-4 border-t">
+            <button
+              onClick={handleConfirm}
+              className="w-full button_primary medium_button"
+              disabled={hasMultipleVariants ? !hasPendingChanges : qty === quantityInCart}
+            >
+              {hasMultipleVariants
+                ? 'Agregar al carrito'
+                : (qty === 0 && quantityInCart > 0 ? 'Remover del carrito' : quantityInCart > 0 ? 'Actualizar carrito' : 'Agregar al carrito')}
+            </button>
+          </div>
+        )}
       </aside>
     </>
   );
 }
 
-// Una fila por variante (condición/idioma), análogo a VariantRow en ProductDetailClient.tsx.
-// Para no-singles hay una única "variante" (el producto mismo) y no se muestran esas columnas.
-function SidePanelVariantRow({ variant, showConditionLanguage }: { variant: Product; showConditionLanguage: boolean }) {
-  const { items, setProductQuantity, removeProduct } = useCart();
-  const cartItem = items.find(i => i.productId === variant.id);
-  const quantityInCart = cartItem?.quantity ?? 0;
-
-  const [qty, setQty] = useState(quantityInCart);
-
-  useEffect(() => {
-    setQty(quantityInCart);
-  }, [quantityInCart, variant.id]);
-
-  const increase = () => setQty(q => Math.min(variant.stock, q + 1));
-  const decrease = () => setQty(q => Math.max(0, q - 1));
-
-  const handleConfirm = () => {
-    if (qty === 0) {
-      removeProduct(variant.id);
-    } else {
-      setProductQuantity(variant, qty);
-    }
-  };
+// Fila de solo lectura de cantidad por variante (condición/idioma) cuando hay más de una:
+// el stepper vive acá pero la cantidad elegida se guarda arriba en ProductSidePanel, para
+// que el único botón "Agregar al carrito" del footer pueda aplicar todas las filas juntas.
+function VariantRow({
+  variant,
+  qty,
+  onChange,
+}: {
+  variant: Product;
+  qty: number;
+  onChange: (value: number) => void;
+}) {
+  const increase = () => onChange(Math.min(variant.stock, qty + 1));
+  const decrease = () => onChange(Math.max(0, qty - 1));
 
   return (
-    <div className="border-b border-gray-200 last:border-b-0 py-2">
-      {showConditionLanguage && (
-        <div className="flex justify-between text-sm text-gray-600 mb-1">
-          <span>{variant.conditionName || '-'}</span>
-          <span>{variant.languageName || '-'}</span>
-        </div>
-      )}
+    <div className="w-full border-t pt-3 flex flex-col" style={{alignItems: 'center'}}>
+      <div className="w-full flex justify-between normal_text secondary_text_color">
+        <span>{variant.conditionName || '-'}</span>
+        <span>{variant.languageName || '-'}</span>
+      </div>
 
       <p className="product_price_small_text">ARS$ {formatPrice(variant.price)}</p>
 
-      <div className="flex items-center gap-4" style={{alignSelf: 'center'}}>
+      <div className="flex items-center gap-4">
         <button
           onClick={decrease}
           className="px-3 py-1 border disabled:opacity-50"
@@ -173,17 +264,9 @@ function SidePanelVariantRow({ variant, showConditionLanguage }: { variant: Prod
         </button>
       </div>
 
-      <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>
+      <p className="normal_text secondary_text_color">
         {variant.stock} en stock
       </p>
-
-      <button
-        onClick={handleConfirm}
-        className="w-full button_primary medium_button mt-2"
-        disabled={qty === quantityInCart}
-      >
-        {qty === 0 && quantityInCart > 0 ? 'Remover del carrito' : quantityInCart > 0 ? 'Actualizar carrito' : 'Agregar al carrito'}
-      </button>
     </div>
   );
 }
