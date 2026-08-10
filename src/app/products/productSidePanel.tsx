@@ -76,10 +76,29 @@ export default function ProductSidePanel({ product, onClose }: Props) {
     setQuantities(prev => ({ ...prev, [variantId]: value }));
   };
 
-  const hasPendingChanges = variants.some(v => {
-    const current = items.find(i => i.productId === v.id)?.quantity ?? 0;
-    return (quantities[v.id] ?? 0) !== current;
-  });
+  // Clasifica cada variante con cambios pendientes en alta (0 -> N), baja (N -> 0) o
+  // actualización (N -> M), para poder elegir la misma etiqueta que usaría el caso de una
+  // sola variante -- en vez de un "Agregar al carrito" fijo sin importar qué se esté haciendo.
+  const pendingChanges = variants
+    .map(v => {
+      const current = items.find(i => i.productId === v.id)?.quantity ?? 0;
+      const desired = quantities[v.id] ?? 0;
+      if (desired === current) return null;
+      if (current === 0) return 'add' as const;
+      if (desired === 0) return 'remove' as const;
+      return 'update' as const;
+    })
+    .filter((c): c is 'add' | 'remove' | 'update' => c !== null);
+
+  const hasPendingChanges = pendingChanges.length > 0;
+
+  const multiVariantLabel = !hasPendingChanges
+    ? 'Agregar al carrito'
+    : pendingChanges.every(c => c === 'remove')
+      ? 'Remover del carrito'
+      : pendingChanges.every(c => c === 'add')
+        ? 'Agregar al carrito'
+        : 'Actualizar carrito';
 
   const handleConfirm = () => {
     if (hasMultipleVariants) {
@@ -175,7 +194,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
               disabled={hasMultipleVariants ? !hasPendingChanges : qty === quantityInCart}
             >
               {hasMultipleVariants
-                ? 'Agregar al carrito'
+                ? multiVariantLabel
                 : (qty === 0 && quantityInCart > 0 ? 'Remover del carrito' : quantityInCart > 0 ? 'Actualizar carrito' : 'Agregar al carrito')}
             </button>
           </div>
