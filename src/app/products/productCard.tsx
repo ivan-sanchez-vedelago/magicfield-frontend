@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import type { Product } from '@/src/types';
 import { formatPrice } from '@/src/utils/formatPrice';
@@ -20,16 +20,19 @@ function isNewProduct(product: Product): boolean {
 export default function ProductCard({ product, onClick }: Props) {
   const images = product.imageUrls ?? [];
   const [current, setCurrent] = useState(0);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  // Qué índices ya reportaron onLoad -- a diferencia de antes, todas las imágenes se montan
+  // de una así el navegador ya las tiene pedidas/cacheadas cuando se hace click en la flecha
+  // (si no, cada click disparaba una fetch nueva y recién ahí se veía la imagen siguiente).
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(new Set());
 
   const isNew = isNewProduct(product);
   const finishLabel = product.type === 'SIN' && product.finishShortName && product.finishShortName !== 'NONFOIL'
     ? (product.finishName ?? product.finishShortName)
     : null;
 
-  useEffect(() => {
-    setImageLoaded(false);
-  }, [current]);
+  const markLoaded = (index: number) => {
+    setLoadedIndices(prev => (prev.has(index) ? prev : new Set(prev).add(index)));
+  };
 
   const prev = () => {
     setCurrent((c) =>
@@ -50,17 +53,31 @@ export default function ProductCard({ product, onClick }: Props) {
         {isNew && <span className="ribbon ribbon_new">NEW</span>}
         {images.length > 0 ? (
           <>
-            {!imageLoaded && (
+            {!loadedIndices.has(current) && (
               <div className="absolute inset-0 bg-gray-700/50 animate-pulse rounded" />
             )}
-            <Image
-              fill
-              src={images[current]}
-              alt={product.name}
-              unoptimized
-              className="object-contain"
-              onLoad={() => setImageLoaded(true)}
-            />
+
+            {/* Mismo mecanismo que BannerSlider: todas las imágenes montadas de una en una
+                fila, desplazada con translateX -- así el slide entrante/saliente se ven
+                animados a la vez y ya están pedidas desde el primer render, no recién al
+                cambiar de índice. */}
+            <div
+              className="absolute inset-0 flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${current * 100}%)` }}
+            >
+              {images.map((src, index) => (
+                <div key={src} className="relative w-full h-full flex-shrink-0">
+                  <Image
+                    fill
+                    src={src}
+                    alt={product.name}
+                    unoptimized
+                    className="object-contain"
+                    onLoad={() => markLoaded(index)}
+                  />
+                </div>
+              ))}
+            </div>
 
             {images.length > 1 && (
               <>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 
 type Props = {
@@ -11,18 +11,16 @@ type Props = {
 export default function ProductImageGallery({ images, name }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({})
-  const [fade, setFade] = useState(false)
 
   const imageRef = useRef<HTMLDivElement>(null)
   const touchStartX = useRef<number | null>(null)
 
+  // Mismo mecanismo que BannerSlider (banners del inicio): todas las imágenes montadas de
+  // una en una fila desplazada con translateX, en vez del fade anterior -- así el slide se
+  // ve animado en vez de simplemente aparecer, y ya están todas pedidas desde el primer
+  // render (no recién al cambiar de índice, que era lo que generaba el retraso).
   const changeImage = (index: number) => {
-    if (index === selectedIndex) return
-    setFade(true)
-    setTimeout(() => {
-      setSelectedIndex(index)
-      setFade(false)
-    }, 150)
+    setSelectedIndex(index)
   }
 
   const nextImage = () => {
@@ -84,20 +82,26 @@ export default function ProductImageGallery({ images, name }: Props) {
         onTouchEnd={handleTouchEnd}
         >
             <div
-                className="w-full h-full transition-transform duration-200 ease-out"
-                style={zoomStyle}
+                className="flex h-full transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${selectedIndex * 100}%)` }}
             >
-                <Image
-                  src={images[selectedIndex]}
-                  alt={name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 800px"
-                  unoptimized
-                  className={`object-contain ${
-                    fade ? 'opacity-0' : 'opacity-100'
-                  } transition-opacity duration-300`}
-                  priority
-                />
+                {images.map((img, index) => (
+                    <div
+                        key={img}
+                        className="relative w-full h-full flex-shrink-0 transition-transform duration-200 ease-out"
+                        style={index === selectedIndex ? zoomStyle : undefined}
+                    >
+                        <Image
+                          src={img}
+                          alt={`${name} ${index}`}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 800px"
+                          unoptimized
+                          className="object-contain"
+                          priority={index === 0}
+                        />
+                    </div>
+                ))}
             </div>
         </div>
 
