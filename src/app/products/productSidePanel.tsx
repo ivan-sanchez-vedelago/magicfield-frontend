@@ -81,9 +81,6 @@ export default function ProductSidePanel({ product, onClose }: Props) {
     return (quantities[v.id] ?? 0) !== current;
   });
 
-  const increase = () => setQty(q => Math.min(singleVariant.stock, q + 1));
-  const decrease = () => setQty(q => Math.max(0, q - 1));
-
   const handleConfirm = () => {
     if (hasMultipleVariants) {
       variants.forEach(v => {
@@ -143,10 +140,6 @@ export default function ProductSidePanel({ product, onClose }: Props) {
 
           <p className="normal_text secondary_text_color" style={{fontStyle: 'italic'}}>{product.description}</p>
 
-          {!hasMultipleVariants && (
-            <p className="product_price_small_text">ARS$ {formatPrice(singleVariant.price)}</p>
-          )}
-
           <button
             onClick={() => {
               closeDrawer();
@@ -170,33 +163,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
               />
             ))
           ) : (
-            <>
-              <div className="flex items-center gap-4" style={{alignSelf: 'center'}}>
-                <button
-                  onClick={decrease}
-                  className="px-3 py-1 border disabled:opacity-50"
-                  disabled={qty <= 0}
-                >
-                  -
-                </button>
-
-                <span className="cantidad_stock_input">
-                  {qty}
-                </span>
-
-                <button
-                  onClick={increase}
-                  className="px-3 py-1 border disabled:opacity-50"
-                  disabled={qty >= singleVariant.stock}
-                >
-                  +
-                </button>
-              </div>
-
-              <p className="normal_text secondary_text_color" style={{alignSelf: 'center'}}>
-                {singleVariant.stock} en stock
-              </p>
-            </>
+            <VariantRow variant={singleVariant} qty={qty} onChange={setQty} />
           )}
         </div>
 
@@ -218,9 +185,10 @@ export default function ProductSidePanel({ product, onClose }: Props) {
   );
 }
 
-// Fila de solo lectura de cantidad por variante (condición/idioma) cuando hay más de una:
-// el stepper vive acá pero la cantidad elegida se guarda arriba en ProductSidePanel, para
-// que el único botón "Agregar al carrito" del footer pueda aplicar todas las filas juntas.
+// Fila de condición/idioma + precio + stepper de una variante -- se usa tanto para el caso
+// de una sola variante como para cada fila cuando hay 2+, así comparten exactamente el mismo
+// estilo. La cantidad elegida vive en ProductSidePanel (no acá), para que el único botón
+// "Agregar al carrito" del footer pueda aplicar los cambios de todas las filas juntas.
 function VariantRow({
   variant,
   qty,
@@ -235,7 +203,9 @@ function VariantRow({
 
   return (
     <div className="w-full border-t pt-3 flex flex-col gap-2" style={{alignItems: 'center'}}>
-      <span>{variant.conditionName || 'Near Mint'} - {variant.languageName || 'Ingles'}</span>
+      {variant.type === 'SIN' && (
+        <span>{variant.conditionName || 'Near Mint'} - {variant.languageName || 'Ingles'}</span>
+      )}
 
       <p className="product_price_small_text">ARS$ {formatPrice(variant.price)}</p>
 

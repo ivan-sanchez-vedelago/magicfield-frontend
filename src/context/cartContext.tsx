@@ -10,6 +10,7 @@ export interface CartItem {
   stock: number;
   imageUrl?: string;
   set?: string;
+  collectorNumber?: string;
   conditionName?: string;
   languageName?: string;
   finishName?: string;
@@ -196,6 +197,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           stock: product.stock,
           imageUrl: product.imageUrls?.[0],
           set: product.set,
+          collectorNumber: product.collectorNumber,
           conditionName: product.conditionName,
           languageName: product.languageName,
           finishName: product.finishName,
@@ -218,6 +220,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         stock: product.stock,
         imageUrl: product.imageUrls?.[0],
         set: product.set,
+        collectorNumber: product.collectorNumber,
         conditionName: product.conditionName,
         languageName: product.languageName,
         finishName: product.finishName,

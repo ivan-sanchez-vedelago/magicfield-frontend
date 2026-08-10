@@ -70,9 +70,9 @@ export default function CartPage() {
                       startNavigation();
                       router.push(`/products/${item.productId}`);
                     }}>{item.name}</h2>
-                  {(item.set || item.conditionName || item.languageName || item.finishName) && (
+                  {(item.set || item.collectorNumber || item.conditionName || item.languageName || item.finishName) && (
                     <p className="small_text secondary_text_color">
-                      {[item.set, item.conditionName, item.languageName, item.finishName]
+                      {[item.set, item.collectorNumber ? `#${item.collectorNumber}` : null, item.conditionName, item.languageName, item.finishName]
                         .filter(Boolean)
                         .join(' · ')}
                     </p>

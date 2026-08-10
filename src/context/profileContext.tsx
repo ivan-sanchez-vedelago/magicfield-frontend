@@ -12,6 +12,7 @@ interface Order {
   orderId: string;
   productName: string;
   set: string | null;
+  collectorNumber: string | null;
   conditionName: string | null;
   languageName: string | null;
   finishName: string | null;
@@ -349,9 +350,9 @@ export function ProfileContent() {
                                     <p className="normal_text font-medium">
                                       {item.productName}
                                     </p>
-                                    {(item.set || item.conditionName || item.languageName || item.finishName) && (
+                                    {(item.set || item.collectorNumber || item.conditionName || item.languageName || item.finishName) && (
                                       <p className="small_text text-gray-500">
-                                        {[item.set, item.conditionName, item.languageName, item.finishName]
+                                        {[item.set, item.collectorNumber ? `#${item.collectorNumber}` : null, item.conditionName, item.languageName, item.finishName]
                                           .filter(Boolean)
                                           .join(' · ')}
                                       </p>
