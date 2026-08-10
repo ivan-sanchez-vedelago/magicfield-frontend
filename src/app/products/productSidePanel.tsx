@@ -234,11 +234,8 @@ function VariantRow({
   const decrease = () => onChange(Math.max(0, qty - 1));
 
   return (
-    <div className="w-full border-t pt-3 flex flex-col" style={{alignItems: 'center'}}>
-      <div className="w-full flex justify-between normal_text secondary_text_color">
-        <span>{variant.conditionName || '-'}</span>
-        <span>{variant.languageName || '-'}</span>
-      </div>
+    <div className="w-full border-t pt-3 flex flex-col gap-2" style={{alignItems: 'center'}}>
+      <span>{variant.conditionName || 'Near Mint'} - {variant.languageName || 'Ingles'}</span>
 
       <p className="product_price_small_text">ARS$ {formatPrice(variant.price)}</p>
 
