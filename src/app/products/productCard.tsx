@@ -70,7 +70,7 @@ export default function ProductCard({ product, onClick }: Props) {
                   <Image
                     fill
                     src={src}
-                    alt={product.name}
+                    alt={product.displayName ?? product.name}
                     unoptimized
                     className="object-contain"
                     onLoad={() => markLoaded(index)}
@@ -108,7 +108,7 @@ export default function ProductCard({ product, onClick }: Props) {
       </div>
 
       <h2 onClick={onClick} className="product_title_text primary_text_color limit_two_lines">
-        {product.name}
+        {product.displayName ?? product.name}
       </h2>
 
       {product.type === 'SIN' ? (

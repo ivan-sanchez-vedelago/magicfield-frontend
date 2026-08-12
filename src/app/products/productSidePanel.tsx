@@ -147,7 +147,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="product_title_text">{product.name}</h2>
+          <h2 className="product_title_text">{product.displayName ?? product.name}</h2>
           <button onClick={closeDrawer}>✕</button>
         </div>
 

@@ -85,13 +85,13 @@ export default function ProductDetailClient({
               </span>
             ))}
             <span> / </span>
-            <span className="">{product.name}</span>
+            <span className="">{product.displayName ?? product.name}</span>
           </>
         ) : (
           <>
             <LoadingLink className="underline" href="/">Home</LoadingLink>
             <span> / </span>
-            <span className="">{product.name}</span>
+            <span className="">{product.displayName ?? product.name}</span>
           </>
         )}
       </div>
@@ -100,12 +100,12 @@ export default function ProductDetailClient({
         <div className="detail_image_box box_border">
           <ProductImageGallery
             images={product.imageUrls || []}
-            name={product.name}
+            name={product.displayName ?? product.name}
           />
         </div>
 
         <div className="detail_page_info">
-          <h1 className="product_detail_title_text">{product.name}</h1>
+          <h1 className="product_detail_title_text">{product.displayName ?? product.name}</h1>
 
           <div className="box_border">
 
@@ -135,7 +135,7 @@ export default function ProductDetailClient({
               <div className="normal_text secondary_text_color">
                 <hr className="my-2" />
                 <div className="p-4 grid grid-cols-2 gap-6">
-                    <b>Nombre:</b> {product.name ? product.name : '-'}
+                    <b>Nombre:</b> {product.displayName ?? product.name ?? '-'}
                     <b>Finish:</b> {product.finishName ? product.finishName : '-'}
                     <b>Set:</b> {product.set ? product.set : '-'}
                     <b>N° de coleccionista:</b> {product.collectorNumber ? `#${product.collectorNumber}` : '-'}

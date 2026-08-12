@@ -18,6 +18,11 @@ export interface AuthUser {
 export type Product = {
   id: string;
   name: string;
+  // Nombre + tags de variante de arte/marco concatenados (ej. "Lightning Bolt (Borderless)"),
+  // calculado por el backend. Usar esto para mostrar al usuario; `name` queda puro para lógica
+  // interna (ej. matching de productos relacionados).
+  displayName?: string;
+  variantTags?: string[];
   description?: string;
   price: number;
   stock: number;
