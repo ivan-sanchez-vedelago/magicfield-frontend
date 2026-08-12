@@ -150,7 +150,7 @@ function NewProductCard({ product }: { product: Product }) {
         {img ? (
           <img
             src={img}
-            alt={product.name}
+            alt={product.displayName ?? product.name}
             className="new_products_card_img"
             onLoad={() => setImageLoaded(true)}
           />
@@ -158,7 +158,7 @@ function NewProductCard({ product }: { product: Product }) {
           <div className="new_products_card_img_placeholder">Sin imagen</div>
         )}
       </div>
-      <p className="product_title_text primary_text_color limit_two_lines">{product.name}</p>
+      <p className="product_title_text primary_text_color limit_two_lines">{product.displayName ?? product.name}</p>
       <p className="small_text secondary_text_color truncate" style={{ fontStyle: 'italic' }}>
         {product.type === 'SIN'
           ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`

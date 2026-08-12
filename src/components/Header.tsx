@@ -516,13 +516,19 @@ export default function Header() {
                 </p>
                 <hr className="my-2" />
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {group.products.map(product => (
+                  {group.products.map(product => {
+                    const finishLabel = product.type === 'SIN' && product.finishShortName && product.finishShortName !== 'NONFOIL'
+                      ? (product.finishName ?? product.finishShortName)
+                      : null;
+
+                    return (
                     <button
                       key={product.id}
                       onClick={() => goToProduct(product.id)}
                       className="product_box text-left p-2 rounded transition"
                     >
-                      <div className="w-full aspect-square bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                      <div className="w-full aspect-square bg-gray-100 rounded overflow-hidden flex items-center justify-center relative">
+                        {finishLabel && <span className="ribbon ribbon_foil">{finishLabel.toUpperCase()}</span>}
                         {product.imageUrls?.[0] ? (
                           <img
                             src={product.imageUrls[0]}
@@ -533,7 +539,7 @@ export default function Header() {
                         )}
                       </div>
                       <p className="product_title_text primary_text_color w-full truncate">
-                        {product.name}
+                        {product.displayName ?? product.name}
                       </p>
                       <p className="small_text secondary_text_color w-full truncate" style={{ fontStyle: 'italic' }}>
                         {product.type === 'SIN'
@@ -545,7 +551,8 @@ export default function Header() {
                         ARS$ {formatPrice(product.price)}
                       </p>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}

@@ -117,17 +117,23 @@ export default function RelatedProductsCarousel({
                 }}
                 onPointerDown={handlePointerDown}
                 >
-                {products.map(p => (
+                {products.map(p => {
+                    const finishLabel = p.type === 'SIN' && p.finishShortName && p.finishShortName !== 'NONFOIL'
+                        ? (p.finishName ?? p.finishShortName)
+                        : null;
+
+                    return (
                     <LoadingLink
                     key={p.id}
                     href={`/products/${p.id}`}
                     className="product_box box_border flex-shrink-0 w-[154px]"
                     >
                     <div className="product_image_small">
+                        {finishLabel && <span className="ribbon ribbon_foil">{finishLabel.toUpperCase()}</span>}
                         {p.imageUrls?.[0] ? (
                             <img
                                 src={p.imageUrls[0]}
-                                alt={p.name}
+                                alt={p.displayName ?? p.name}
                                 className="w-full h-full object-contain"
                             />
                         ) : (
@@ -135,7 +141,7 @@ export default function RelatedProductsCarousel({
                         )}
                     </div>
                     <h2 className="product_title_text primary_text_color truncate">
-                        {p.name}
+                        {p.displayName ?? p.name}
                     </h2>
                     <p className="small_text secondary_text_color truncate" style={{ fontStyle: 'italic' }}>
                         {p.type === 'SIN'
@@ -147,7 +153,8 @@ export default function RelatedProductsCarousel({
                         ARS$ {formatPrice(p.price)}
                     </p>
                     </LoadingLink>
-                ))}
+                    );
+                })}
                 </div>
 
                 <button
