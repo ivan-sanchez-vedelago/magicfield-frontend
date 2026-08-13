@@ -4,13 +4,14 @@ import { useCart } from '../../../context/cartContext';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { groupSinglesByFinish } from '@/src/utils/groupSingles';
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
 import { useCategories } from '../../../context/categoryContext';
 import { getBreadcrumbPath } from '@/src/utils/breadcrumb';
 import ProductImageGallery from '@/src/components/product/ProductImageGallery';
 import RelatedProductsCarousel from '@/src/components/product/RelatedProductsCarousel';
 import type { Product } from '@/src/types';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ProductDetailClient({
   product,
@@ -20,7 +21,7 @@ export default function ProductDetailClient({
   variants: Product[];
 }) {
 
-  const { products: allProducts } = useProducts();
+  const { products: allProducts, loading: productsLoading } = useProducts();
   const { categories } = useCategories();
 
   const [showDetails, setShowDetails] = useState(false);
@@ -69,6 +70,13 @@ export default function ProductDetailClient({
   const breadcrumbPath = useMemo(() => {
     return getBreadcrumbPath(product.categoryId, categories);
   }, [product.categoryId, categories]);
+
+  const detailFields = [
+    { label: 'Nombre', value: product.displayName ?? product.name },
+    { label: 'Finish', value: product.finishName },
+    { label: 'Set', value: product.set },
+    { label: 'N° de coleccionista', value: product.collectorNumber ? `#${product.collectorNumber}` : undefined },
+  ].filter(field => field.value);
 
   return (
     <main className="mx-auto px-6 py-8 space-y-10">
@@ -125,24 +133,32 @@ export default function ProductDetailClient({
 
           <div className="box_border mt-6">
             <button
-              className="subtitle_text text-left w-full"
+              className="subtitle_text text-left w-full flex items-center justify-between"
               onClick={() => setShowDetails(v => !v)}
             >
               Detalles del producto
+              {showDetails ? (
+                <ChevronUp className="w-5 h-5 flex-shrink-0" />
+              ) : (
+                <ChevronDown className="w-5 h-5 flex-shrink-0" />
+              )}
             </button>
 
             {showDetails && (
               <div className="normal_text secondary_text_color">
                 <hr className="my-2" />
                 <div className="p-4 grid grid-cols-2 gap-6">
-                    <b>Nombre:</b> {product.displayName ?? product.name ?? '-'}
-                    <b>Finish:</b> {product.finishName ? product.finishName : '-'}
-                    <b>Set:</b> {product.set ? product.set : '-'}
-                    <b>N° de coleccionista:</b> {product.collectorNumber ? `#${product.collectorNumber}` : '-'}
+                  {detailFields.map(field => (
+                    <Fragment key={field.label}>
+                      <b>{field.label}:</b> <span>{field.value}</span>
+                    </Fragment>
+                  ))}
                 </div>
-                <p className="normal_text" style={{fontStyle: 'italic', paddingTop: '0.5rem'}}>
-                  {product.description}
-                </p>
+                {product.description && (
+                  <p className="normal_text" style={{fontStyle: 'italic', paddingTop: '0.5rem'}}>
+                    {product.description}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -154,7 +170,7 @@ export default function ProductDetailClient({
           Productos relacionados
         </h2>
 
-        <RelatedProductsCarousel products={relatedProducts} />
+        <RelatedProductsCarousel products={relatedProducts} loading={productsLoading} />
       </section>
     </main>
   );

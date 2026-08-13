@@ -6,9 +6,11 @@ import { formatPrice } from '@/src/utils/formatPrice';
 import type { Product } from '@/src/types';
 
 export default function RelatedProductsCarousel({
-  products
+  products,
+  loading = false
 }: {
   products: Product[];
+  loading?: boolean;
 }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
@@ -96,7 +98,21 @@ export default function RelatedProductsCarousel({
         lastTimeRef.current = performance.now();
     };
 
-    if (!products.length) return null;
+    if (!loading && !products.length) return null;
+
+    if (loading) {
+        return (
+            <div className="relative">
+                <div className="related_products overflow-hidden relative">
+                    <div className="flex gap-4">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <RelatedProductCardSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative">
@@ -173,6 +189,17 @@ export default function RelatedProductsCarousel({
                 ›
                 </button>
             </div>
+        </div>
+    );
+}
+
+function RelatedProductCardSkeleton() {
+    return (
+        <div className="product_box box_border flex-shrink-0 w-[154px] animate-pulse">
+            <div className="product_image_small bg-gray-700/50 rounded" />
+            <div className="h-3 bg-gray-700/50 rounded mt-1 mx-1" />
+            <div className="h-3 bg-gray-700/40 rounded mt-1 mx-4" />
+            <div className="h-4 bg-gray-700/50 rounded mt-1 mx-8" />
         </div>
     );
 }
