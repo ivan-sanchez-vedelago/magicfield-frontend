@@ -5,6 +5,7 @@ import React, { createContext, useContext, useReducer, useState, useEffect } fro
 export interface CartItem {
   productId: string;
   name: string;
+  displayName?: string;
   price: number;
   quantity: number;
   stock: number;
@@ -192,6 +193,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         item: {
           productId: product.id,
           name: product.name,
+          displayName: product.displayName,
           price: product.price,
           quantity: desiredQty,
           stock: product.stock,
@@ -216,6 +218,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       productId: product.id,
       patch: {
         name: product.name,
+        displayName: product.displayName,
         price: product.price,
         stock: product.stock,
         imageUrl: product.imageUrls?.[0],

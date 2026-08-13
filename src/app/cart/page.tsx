@@ -69,7 +69,7 @@ export default function CartPage() {
                     onClick={() => {
                       startNavigation();
                       router.push(`/products/${item.productId}`);
-                    }}>{item.name}</h2>
+                    }}>{item.displayName ?? item.name}</h2>
                   {(item.set || item.collectorNumber || item.conditionName || item.languageName || item.finishName) && (
                     <p className="small_text secondary_text_color">
                       {[item.set, item.collectorNumber ? `#${item.collectorNumber}` : null, item.conditionName, item.languageName, item.finishName]
