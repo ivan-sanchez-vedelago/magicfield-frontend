@@ -11,6 +11,7 @@ interface Order {
   id: string;
   orderId: string;
   productName: string;
+  variantTags: string | null;
   set: string | null;
   collectorNumber: string | null;
   conditionName: string | null;
@@ -349,6 +350,7 @@ export function ProfileContent() {
                                   <div className="flex flex-col">
                                     <p className="normal_text font-medium">
                                       {item.productName}
+                                      {item.variantTags && item.variantTags.split(', ').map(tag => ` (${tag})`).join('')}
                                     </p>
                                     {(item.set || item.collectorNumber || item.conditionName || item.languageName || item.finishName) && (
                                       <p className="small_text text-gray-500">
