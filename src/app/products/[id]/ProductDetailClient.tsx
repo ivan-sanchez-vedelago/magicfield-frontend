@@ -116,19 +116,7 @@ export default function ProductDetailClient({
           <h1 className="product_detail_title_text">{product.displayName ?? product.name}</h1>
 
           <div className="box_border">
-
-            <div className="grid grid-cols-4 text-sm font-medium text-gray-600">
-              <div className="text-center">Estado</div>
-              <div className="text-center">Idioma</div>
-              <div className="text-center">Precio</div>
-              <div className="text-center">Cantidad</div>
-            </div>
-
-            <hr className="my-2" />
-
-            {variants.map(variant => (
-              <VariantRow key={variant.id} variant={variant} />
-            ))}
+            <VariantsTable variants={variants} />
           </div>
 
           <div className="box_border mt-6">
@@ -176,28 +164,100 @@ export default function ProductDetailClient({
   );
 }
 
-// Una fila por variante (condición/idioma): cada una es su propio Product.id en la base,
-// así que agregar dos variantes distintas al carrito genera dos líneas independientes,
-// exactamente igual que con productos no relacionados -- no requiere tocar cartContext.
-function VariantRow({ variant }: { variant: Product }) {
+// Tabla de variantes (condición/idioma): cada una es su propio Product.id en la base, así
+// que agregar dos variantes distintas al carrito genera dos líneas independientes, igual
+// que con productos no relacionados -- no requiere tocar cartContext. Las cantidades se
+// manejan acá (no por fila) para que "Limpiar" y "Añadir/Quitar del carrito" apliquen de
+// una sola vez a todas las variantes del panel, en vez de un par de botones por fila.
+function VariantsTable({ variants }: { variants: Product[] }) {
   const { items, setProductQuantity, removeProduct } = useCart();
-  const cartItem = items.find(i => i.productId === variant.id);
-  const quantityInCart = cartItem?.quantity ?? 0;
 
-  const [qty, setQty] = useState(quantityInCart);
+  const quantitiesInCart = useMemo(
+    () => Object.fromEntries(
+      variants.map(v => [v.id, items.find(i => i.productId === v.id)?.quantity ?? 0])
+    ),
+    [items, variants]
+  );
+
+  const [quantities, setQuantities] = useState<Record<string, number>>(quantitiesInCart);
 
   useEffect(() => {
-    setQty(quantityInCart);
-  }, [quantityInCart, variant.id]);
+    setQuantities(quantitiesInCart);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(quantitiesInCart)]);
 
-  const increase = () => setQty(q => Math.min(variant.stock, q + 1));
-  const decrease = () => setQty(q => Math.max(0, q - 1));
-
-  const addToCart = () => setProductQuantity(variant, qty);
-  const handleRemoveItem = () => {
-    setQty(0);
-    removeProduct(variant.id);
+  const updateQty = (variantId: string, updater: (q: number) => number) => {
+    setQuantities(prev => ({ ...prev, [variantId]: updater(prev[variantId] ?? 0) }));
   };
+
+  const hasChanges = variants.some(v => quantities[v.id] !== quantitiesInCart[v.id]);
+
+  const handleAddOrRemoveAll = () => {
+    for (const variant of variants) {
+      const qty = quantities[variant.id] ?? 0;
+      if (qty !== quantitiesInCart[variant.id]) {
+        setProductQuantity(variant, qty);
+      }
+    }
+  };
+
+  const handleClearAll = () => {
+    for (const variant of variants) {
+      if ((quantitiesInCart[variant.id] ?? 0) > 0) {
+        removeProduct(variant.id);
+      }
+    }
+    setQuantities(Object.fromEntries(variants.map(v => [v.id, 0])));
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-4 text-sm font-medium text-gray-600">
+        <div className="text-center">Estado</div>
+        <div className="text-center">Idioma</div>
+        <div className="text-center">Precio</div>
+        <div className="text-center">Cantidad</div>
+      </div>
+
+      <hr className="my-2" />
+
+      {variants.map(variant => (
+        <VariantRow
+          key={variant.id}
+          variant={variant}
+          qty={quantities[variant.id] ?? 0}
+          onChange={updater => updateQty(variant.id, updater)}
+        />
+      ))}
+
+      <div className="flex gap-4 justify-end mt-4">
+        <button onClick={handleClearAll} className="small_button button_secondary">
+          Limpiar
+        </button>
+
+        <button
+          onClick={handleAddOrRemoveAll}
+          className="small_button button_primary"
+          disabled={!hasChanges}
+        >
+          Añadir/Quitar del carrito
+        </button>
+      </div>
+    </>
+  );
+}
+
+function VariantRow({
+  variant,
+  qty,
+  onChange,
+}: {
+  variant: Product;
+  qty: number;
+  onChange: (updater: (q: number) => number) => void;
+}) {
+  const increase = () => onChange(q => Math.min(variant.stock, q + 1));
+  const decrease = () => onChange(q => Math.max(0, q - 1));
 
   return (
     <div className="border-b border-gray-200 last:border-b-0 py-2">
@@ -219,20 +279,6 @@ function VariantRow({ variant }: { variant: Product }) {
             Disponible{variant.stock > 1 && 's'}: {variant.stock}
           </p>
         </div>
-      </div>
-
-      <div className="flex gap-4 justify-end mt-2">
-        <button onClick={handleRemoveItem} className="small_button button_secondary">
-          Limpiar
-        </button>
-
-        <button
-          onClick={addToCart}
-          className="small_button button_primary"
-          disabled={qty === quantityInCart}
-        >
-          Añadir al carrito
-        </button>
       </div>
     </div>
   );
