@@ -1,21 +1,32 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
-import { useProducts } from '@/src/context/productContext';
-import { groupSinglesByFinish } from '@/src/utils/groupSingles';
+import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
 import type { Product } from '@/src/types';
 
 export default function NewProductsSection() {
-  const { products, loading } = useProducts();
+  const [newProducts, setNewProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const newProducts = useMemo(() => {
-    return groupSinglesByFinish(products)
-      .filter(p => p.createdAt)
-      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
-      .slice(0, 20);
-  }, [products]);
+  // Endpoint dedicado y acotado (en vez de useProducts(), que trae el catálogo completo):
+  // con miles de productos, cargar todo solo para mostrar 20 en este slider era el cuello
+  // de botella real de esta pantalla.
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/newest?limit=20`, {
+      signal: controller.signal,
+    })
+      .then(r => r.json())
+      .then((data: Product[]) => setNewProducts(data))
+      .catch(err => {
+        if (err.name !== 'AbortError') console.error('Error al cargar novedades:', err);
+      })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -139,7 +150,7 @@ export default function NewProductsSection() {
 
 function NewProductCard({ product }: { product: Product }) {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const img = product.imageUrls?.[0];
+  const img = getThumbnailUrl(product.imageUrls?.[0]);
 
   return (
     <LoadingLink href={`/products/${product.id}`} className="new_products_card">
@@ -152,6 +163,7 @@ function NewProductCard({ product }: { product: Product }) {
             src={img}
             alt={product.displayName ?? product.name}
             className="new_products_card_img"
+            loading="lazy"
             onLoad={() => setImageLoaded(true)}
           />
         ) : (

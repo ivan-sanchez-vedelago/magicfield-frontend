@@ -4,13 +4,12 @@ import LoadingLink from '@/src/components/navigation/LoadingLink';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { useProducts } from '@/src/context/productContext';
 import { useCategories, getAllDescendants } from '@/src/context/categoryContext';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 import { useAuth } from '@/src/context/authContext';
 import { useCart } from '@/src/context/cartContext';
 import { formatPrice } from '@/src/utils/formatPrice';
-import { groupSinglesByFinish } from '@/src/utils/groupSingles';
+import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
 import type { Product, Category } from '@/src/types';
 import { ShoppingCart, User } from 'lucide-react';
 
@@ -24,7 +23,6 @@ export default function Header() {
   const { items: cartItems } = useCart();
 
   const [search, setSearch] = useState('');
-  const { products } = useProducts();
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const { categories } = useCategories();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -70,6 +68,10 @@ export default function Header() {
   const [isSearching, setIsSearching] = useState(false);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Antes filtraba en el cliente sobre el catálogo completo cargado por useProducts() --
+  // con miles de productos, eso significaba traer todo solo para tipear en el buscador.
+  // /api/products/catalog ya agrupa por (carta+finish) y pagina en el backend, así que
+  // alcanza con pedir directamente las primeras MAX_SUGGESTIONS coincidencias.
   useEffect(() => {
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
 
@@ -80,21 +82,26 @@ export default function Header() {
     }
 
     setIsSearching(true);
+    const controller = new AbortController();
+
     searchDebounceRef.current = setTimeout(() => {
-      const filtered = products.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase())
-      );
-      // Agrupar ANTES de recortar: si dos variantes del mismo single matchean, tienen
-      // que fusionarse en una sola entrada antes de aplicar el límite de resultados.
-      const grouped = groupSinglesByFinish(filtered);
-      setSuggestions(grouped.slice(0, MAX_SUGGESTIONS));
-      setIsSearching(false);
+      fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/catalog?search=${encodeURIComponent(search)}&size=${MAX_SUGGESTIONS}`,
+        { signal: controller.signal }
+      )
+        .then(r => r.json())
+        .then((data: { content: Product[] }) => setSuggestions(data.content))
+        .catch(err => {
+          if (err.name !== 'AbortError') console.error('Error al buscar productos:', err);
+        })
+        .finally(() => setIsSearching(false));
     }, 250);
 
     return () => {
       if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+      controller.abort();
     };
-  }, [search, products]);
+  }, [search]);
 
   // Agrupa la vista previa por categoría, preservando el orden en el que aparecen los matches.
   const groupedSuggestions = useMemo(() => {
@@ -531,8 +538,9 @@ export default function Header() {
                         {finishLabel && <span className="ribbon ribbon_foil">{finishLabel.toUpperCase()}</span>}
                         {product.imageUrls?.[0] ? (
                           <img
-                            src={product.imageUrls[0]}
+                            src={getThumbnailUrl(product.imageUrls[0])}
                             className="w-full h-full object-contain"
+                            loading="lazy"
                           />
                         ) : (
                           <span className="small_text secondary_text_color">Sin imagen</span>

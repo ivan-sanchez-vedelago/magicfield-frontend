@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
+import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
 import type { Product } from '@/src/types';
 
 export default function RelatedProductsCarousel({
@@ -148,9 +149,10 @@ export default function RelatedProductsCarousel({
                         {finishLabel && <span className="ribbon ribbon_foil">{finishLabel.toUpperCase()}</span>}
                         {p.imageUrls?.[0] ? (
                             <img
-                                src={p.imageUrls[0]}
+                                src={getThumbnailUrl(p.imageUrls[0])}
                                 alt={p.displayName ?? p.name}
                                 className="w-full h-full object-contain"
+                                loading="lazy"
                             />
                         ) : (
                             <div className="text-gray-400">Sin imagen</div>

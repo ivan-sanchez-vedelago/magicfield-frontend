@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import type { Product } from '@/src/types';
 import { formatPrice } from '@/src/utils/formatPrice';
+import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
 
 type Props = {
   product: Product;
@@ -69,7 +70,7 @@ export default function ProductCard({ product, onClick }: Props) {
                 <div key={src} className="relative w-full h-full flex-shrink-0">
                   <Image
                     fill
-                    src={src}
+                    src={getThumbnailUrl(src) ?? src}
                     alt={product.displayName ?? product.name}
                     unoptimized
                     className="object-contain"
