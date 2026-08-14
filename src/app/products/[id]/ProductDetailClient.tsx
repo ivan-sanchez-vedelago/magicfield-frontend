@@ -240,7 +240,7 @@ function VariantsTable({ variants }: { variants: Product[] }) {
           className="small_button button_primary"
           disabled={!hasChanges}
         >
-          Añadir/Quitar del carrito
+          Añadir al carrito
         </button>
       </div>
     </>
