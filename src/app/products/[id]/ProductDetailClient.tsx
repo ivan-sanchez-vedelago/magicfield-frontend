@@ -190,7 +190,30 @@ function VariantsTable({ variants }: { variants: Product[] }) {
     setQuantities(prev => ({ ...prev, [variantId]: updater(prev[variantId] ?? 0) }));
   };
 
-  const hasChanges = variants.some(v => quantities[v.id] !== quantitiesInCart[v.id]);
+  // Clasifica cada variante con cambios pendientes en alta (0 -> N), baja (N -> 0) o
+  // actualización (N -> M), para elegir la misma etiqueta que usa el aside de la pantalla
+  // general de productos -- en vez de un "Añadir al carrito" fijo sin importar qué se esté
+  // haciendo.
+  const pendingChanges = variants
+    .map(variant => {
+      const current = quantitiesInCart[variant.id] ?? 0;
+      const desired = quantities[variant.id] ?? 0;
+      if (desired === current) return null;
+      if (current === 0) return 'add' as const;
+      if (desired === 0) return 'remove' as const;
+      return 'update' as const;
+    })
+    .filter((c): c is 'add' | 'remove' | 'update' => c !== null);
+
+  const hasChanges = pendingChanges.length > 0;
+
+  const buttonLabel = !hasChanges
+    ? 'Agregar al carrito'
+    : pendingChanges.every(c => c === 'remove')
+      ? 'Remover del carrito'
+      : pendingChanges.every(c => c === 'add')
+        ? 'Agregar al carrito'
+        : 'Actualizar carrito';
 
   const handleAddOrRemoveAll = () => {
     for (const variant of variants) {
@@ -240,7 +263,7 @@ function VariantsTable({ variants }: { variants: Product[] }) {
           className="small_button button_primary"
           disabled={!hasChanges}
         >
-          Añadir al carrito
+          {buttonLabel}
         </button>
       </div>
     </>
