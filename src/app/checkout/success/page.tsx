@@ -1,8 +1,17 @@
 'use client';
 
+import { useEffect } from 'react';
 import LoadingLink from "@/src/components/navigation/LoadingLink";
+import { useCheckout } from '@/src/context/checkoutContext';
 
 export default function CheckoutSuccess() {
+  const { showCheckoutSuccess } = useCheckout();
+
+  useEffect(() => {
+    showCheckoutSuccess('¡Compra completada! Podes ver tus pedidos en tu perfil');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center">
       <div className="text-center px-6">
@@ -11,7 +20,7 @@ export default function CheckoutSuccess() {
           Te enviamos un email de confirmación con los detalles de tu compra. Nos comunicaremos contigo a la brevedad para coordinar la entrega.
         </p>
         <LoadingLink
-          href="/perfil?tab=order"
+          href="/perfil?tab=orders"
           className="button_primary medium_button inline-block w-60"
         >
           Ver mis pedidos
