@@ -169,10 +169,10 @@ export default function ProductDetailClient({
                   {detailFields.map(field => (
                     <Fragment key={field.label}>
                       <b>{field.label}:</b>
-                      <span className="relative">
+                      <span className="relative flex items-center">
                         {field.label === 'Set' && setIconSvg && (
                           <span
-                            className="absolute right-full mr-1.5 inline-block h-5 w-5 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
+                            className="absolute right-full mr-1.5 inline-block w-5 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
                             dangerouslySetInnerHTML={{ __html: setIconSvg }}
                           />
                         )}
