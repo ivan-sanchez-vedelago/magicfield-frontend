@@ -169,14 +169,14 @@ export default function ProductDetailClient({
                   {detailFields.map(field => (
                     <Fragment key={field.label}>
                       <b>{field.label}:</b>
-                      <span className="inline-flex items-center gap-1.5">
-                        {field.value}
+                      <span className="relative">
                         {field.label === 'Set' && setIconSvg && (
                           <span
-                            className="inline-block h-5 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
+                            className="absolute right-full mr-1.5 inline-block h-5 w-5 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
                             dangerouslySetInnerHTML={{ __html: setIconSvg }}
                           />
                         )}
+                        {field.value}
                       </span>
                     </Fragment>
                   ))}
