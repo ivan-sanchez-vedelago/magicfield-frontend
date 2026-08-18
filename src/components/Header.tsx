@@ -25,7 +25,7 @@ export default function Header() {
 
   const [search, setSearch] = useState('');
   const [suggestions, setSuggestions] = useState<Product[]>([]);
-  const { categories } = useCategories();
+  const { categories, browsableCategories } = useCategories();
   const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpenHamburguerMenu] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -33,11 +33,11 @@ export default function Header() {
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
   const { startNavigation } = useNavigation();
 
-  const rootCategories = categories.filter(c => c.parentId === 0);
+  const rootCategories = browsableCategories.filter(c => c.parentId === 0);
 
   const getCategoryChildren = useCallback((categoryId: number) =>
-    categories.filter(c => c.parentId === categoryId),
-    [categories]
+    browsableCategories.filter(c => c.parentId === categoryId),
+    [browsableCategories]
   );
 
   const toggleCategoryExpand = useCallback((categoryId: number) => {
@@ -189,9 +189,9 @@ export default function Header() {
 
   const renderCategoryTree = useCallback((parentId: number | null, onClose?: () => void, depth: number = 0): React.ReactNode[] => {
     if (depth > MAX_DEPTH) return [];
-    const items = categories.filter(c => c.parentId === parentId);
+    const items = browsableCategories.filter(c => c.parentId === parentId);
     return items.map((cat) => {
-      const hasChildren = categories.some(c => c.parentId === cat.id);
+      const hasChildren = browsableCategories.some(c => c.parentId === cat.id);
       const isExpanded = expandedCategories.has(cat.id);
       const paddingLeft = depth * 0.75;
       
@@ -231,7 +231,7 @@ export default function Header() {
         );
       }
     });
-  }, [categories, expandedCategories, handleCategoryClick, toggleCategoryExpand]);
+  }, [browsableCategories, expandedCategories, handleCategoryClick, toggleCategoryExpand]);
 
   const handleLogout = async () => {
     await logout();
