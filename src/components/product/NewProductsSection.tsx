@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
+import { getProductSubtitle } from '@/src/utils/productSubtitle';
 import type { Product } from '@/src/types';
 
 export default function NewProductsSection() {
@@ -172,9 +173,7 @@ function NewProductCard({ product }: { product: Product }) {
       </div>
       <p className="product_title_text primary_text_color limit_two_lines">{product.displayName ?? product.name}</p>
       <p className="small_text secondary_text_color truncate" style={{ fontStyle: 'italic' }}>
-        {product.type === 'SIN'
-          ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`
-          : product.description}
+        {getProductSubtitle(product)}
       </p>
       <p className="product_price_small_text mt-auto">
         {product.variantCount && product.variantCount > 1 ? 'Desde ' : ''}

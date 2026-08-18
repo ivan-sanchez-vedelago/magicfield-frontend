@@ -1,27 +1,29 @@
 import type { Product } from '@/src/types';
 
-// Mismo criterio que ProductServiceImpl.listCatalogPaged() en el backend, pero para listas
-// que ya se cargaron sin agrupar en el cliente (GET /api/products, usado por el buscador
-// global y por "productos relacionados"): agrupa singles por (scryfallId, finish),
-// sumando stock entre condiciones/idiomas y quedándose con el precio mínimo del grupo.
-// Sellados/accesorios pasan sin tocar.
-export function groupSinglesByFinish(products: Product[]): Product[] {
-  const singleGroups = new Map<string, Product[]>();
+// Antes "groupSinglesByFinish" (solo singles). Agrupa en un solo pase tanto singles
+// (scryfallId+finish) como sellados (nombre+set) -- mismo criterio que
+// ProductServiceImpl.listCatalogPaged()/listNewest() del backend para ambos casos. Para
+// listas que ya se cargaron sin agrupar en el cliente (ver ProductDetailClient, "productos
+// relacionados"). Accesorios (sin ninguna de las dos claves) pasan sin tocar.
+export function groupProductVariants(products: Product[]): Product[] {
+  const groups = new Map<string, Product[]>();
   const result: Product[] = [];
 
   for (const p of products) {
-    const isSingle = p.type === 'SIN' && !!p.scryfallId && p.finishId != null;
-    if (!isSingle) {
+    let key: string | null = null;
+    if (p.scryfallId && p.finishId != null) key = `SIN:${p.scryfallId}:${p.finishId}`;
+    else if (p.set) key = `PSL:${p.name}:${p.set}`;
+
+    if (key === null) {
       result.push(p);
       continue;
     }
-    const key = `${p.scryfallId}:${p.finishId}`;
-    const group = singleGroups.get(key);
+    const group = groups.get(key);
     if (group) group.push(p);
-    else singleGroups.set(key, [p]);
+    else groups.set(key, [p]);
   }
 
-  for (const group of singleGroups.values()) {
+  for (const group of groups.values()) {
     const representative = group[0];
     const totalStock = group.reduce((sum, p) => sum + p.stock, 0);
     const minPrice = Math.min(...group.map(p => p.price));

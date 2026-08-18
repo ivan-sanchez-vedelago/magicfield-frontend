@@ -21,10 +21,12 @@ export default async function ProductDetailPage({
 
   const product: Product = await res.json();
 
-  // Para singles, trae todas las variantes (condición/idioma) en stock de esta misma
-  // carta+finish -- alimenta el selector de variantes de la pantalla de detalle.
+  // Para singles (scryfallId+finish) y sellados (set), trae todas las variantes
+  // (condición/idioma) en stock del mismo producto -- alimenta el selector de variantes de
+  // la pantalla de detalle. Presence-based, no por categoría: el shortName de la subcategoría
+  // hoja de un producto real nunca es literalmente "SIN"/"PSL".
   let variants: Product[] = [product];
-  if (product.type === 'SIN') {
+  if (product.scryfallId || product.set) {
     const variantsRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/variants`,
       { cache: "no-store" }

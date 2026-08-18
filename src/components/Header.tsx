@@ -10,6 +10,7 @@ import { useAuth } from '@/src/context/authContext';
 import { useCart } from '@/src/context/cartContext';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
+import { getProductSubtitle } from '@/src/utils/productSubtitle';
 import type { Product, Category } from '@/src/types';
 import { ShoppingCart, User } from 'lucide-react';
 
@@ -524,7 +525,7 @@ export default function Header() {
                 <hr className="my-2" />
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                   {group.products.map(product => {
-                    const finishLabel = product.type === 'SIN' && product.finishShortName && product.finishShortName !== 'NONFOIL'
+                    const finishLabel = product.finishShortName && product.finishShortName !== 'NONFOIL'
                       ? (product.finishName ?? product.finishShortName)
                       : null;
 
@@ -550,9 +551,7 @@ export default function Header() {
                         {product.displayName ?? product.name}
                       </p>
                       <p className="small_text secondary_text_color w-full truncate" style={{ fontStyle: 'italic' }}>
-                        {product.type === 'SIN'
-                          ? `${product.set ?? ''}${product.collectorNumber ? ` · #${product.collectorNumber}` : ''}`
-                          : product.description}
+                        {getProductSubtitle(product)}
                       </p>
                       <p className="product_price_small_text">
                         {product.variantCount && product.variantCount > 1 ? 'Desde ' : ''}

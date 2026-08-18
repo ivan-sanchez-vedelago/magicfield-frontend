@@ -3,7 +3,7 @@
 import { useCart } from '../../../context/cartContext';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
-import { groupSinglesByFinish } from '@/src/utils/groupSingles';
+import { groupProductVariants } from '@/src/utils/groupSingles';
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useProducts } from '../../../context/productContext';
 import { useCategories } from '../../../context/categoryContext';
@@ -42,18 +42,19 @@ export default function ProductDetailClient({
       }
     };
 
-    // Excluye también las otras variantes (condición/idioma) de esta misma carta+finish:
-    // ya se ven en el selector de arriba, no tiene sentido repetirlas como "relacionados".
+    // Excluye también las otras variantes (condición/idioma) de esta misma carta+finish (o
+    // nombre+set para sellados): ya se ven en el selector de arriba, no tiene sentido
+    // repetirlas como "relacionados".
     const variantIds = new Set(variants.map(v => v.id));
-    const others = groupSinglesByFinish(allProducts.filter(p => !variantIds.has(p.id)));
+    const others = groupProductVariants(allProducts.filter(p => !variantIds.has(p.id)));
 
     // 1. Coincidencia por nombre
     const words = product.name.toLowerCase().split(" ");
     add(others.filter(p => words.some(w => p.name.toLowerCase().includes(w))));
 
-    // 2. Mismo set (solo singles)
-    if (product.type === 'SIN' && product.set) {
-      add(others.filter(p => p.type === 'SIN' && p.set === product.set));
+    // 2. Mismo set (presence-based: aplica a singles y sellados por igual)
+    if (product.set) {
+      add(others.filter(p => p.set === product.set));
     }
 
     // 3. Misma categoría
@@ -77,6 +78,35 @@ export default function ProductDetailClient({
     { label: 'Set', value: product.set },
     { label: 'N° de coleccionista', value: product.collectorNumber ? `#${product.collectorNumber}` : undefined },
   ].filter(field => field.value);
+
+  // Símbolo del set (SVG crudo, ya normalizado a currentColor del lado del backend) para
+  // mostrar junto a la fila "Set:" -- inline (no <img>) justamente para que herede el color
+  // del texto circundante en modo claro/oscuro en vez de quedar pegado al color del archivo.
+  const [setIconSvg, setSetIconSvg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!product.set) {
+      setSetIconSvg(null);
+      return;
+    }
+    let cancelled = false;
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/scryfall/sets`)
+      .then(r => r.json())
+      .then((sets: { code: string; name: string }[]) => {
+        if (cancelled) return null;
+        const match = sets.find(s => s.name === product.set);
+        if (!match) return null;
+        return fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/scryfall/sets/${match.code}/icon`)
+          .then(r => (r.ok ? r.json() : null));
+      })
+      .then((data: { svg: string } | null) => {
+        if (!cancelled && data) setSetIconSvg(data.svg);
+      })
+      .catch(() => {});
+
+    return () => { cancelled = true; };
+  }, [product.set]);
 
   return (
     <main className="mx-auto px-6 py-8 space-y-10">
@@ -138,7 +168,16 @@ export default function ProductDetailClient({
                 <div className="p-4 grid grid-cols-2 gap-6">
                   {detailFields.map(field => (
                     <Fragment key={field.label}>
-                      <b>{field.label}:</b> <span>{field.value}</span>
+                      <b>{field.label}:</b>
+                      <span className="inline-flex items-center gap-1.5">
+                        {field.label === 'Set' && setIconSvg && (
+                          <span
+                            className="inline-block w-4 h-4 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: setIconSvg }}
+                          />
+                        )}
+                        {field.value}
+                      </span>
                     </Fragment>
                   ))}
                 </div>

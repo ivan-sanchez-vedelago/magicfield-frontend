@@ -18,12 +18,14 @@ export default function ProductSidePanel({ product, onClose }: Props) {
   const router = useRouter();
   const { startNavigation } = useNavigation();
 
-  const isSingle = product.type === 'SIN';
-  const [variants, setVariants] = useState<Product[]>(isSingle ? [] : [product]);
-  const [variantsLoading, setVariantsLoading] = useState(isSingle);
+  // Presence-based, no por categoría: singles (scryfallId) y sellados (set) traen variantes
+  // de condición/idioma, el resto de tipos no tiene ese concepto.
+  const hasVariantData = !!(product.scryfallId || product.set);
+  const [variants, setVariants] = useState<Product[]>(hasVariantData ? [] : [product]);
+  const [variantsLoading, setVariantsLoading] = useState(hasVariantData);
 
   useEffect(() => {
-    if (!isSingle) {
+    if (!hasVariantData) {
       setVariants([product]);
       setVariantsLoading(false);
       return;
@@ -42,7 +44,7 @@ export default function ProductSidePanel({ product, onClose }: Props) {
       .finally(() => setVariantsLoading(false));
 
     return () => controller.abort();
-  }, [product.id, isSingle]);
+  }, [product.id, hasVariantData]);
 
   // Con una sola variante (el caso común, singles o no) el panel se comporta exactamente
   // como antes: un solo stepper acá arriba, sincronizado con el carrito.
@@ -222,8 +224,8 @@ function VariantRow({
 
   return (
     <div className="w-full border-t pt-3 flex flex-col gap-2" style={{alignItems: 'center'}}>
-      {variant.type === 'SIN' && (
-        <span>{variant.conditionName || 'Near Mint'} - {variant.languageName || 'Ingles'}</span>
+      {(variant.conditionName || variant.languageName) && (
+        <span>{[variant.conditionName, variant.languageName].filter(Boolean).join(' - ')}</span>
       )}
 
       <p className="product_price_small_text">ARS$ {formatPrice(variant.price)}</p>

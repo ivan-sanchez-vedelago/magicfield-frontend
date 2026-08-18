@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
+import { getProductSubtitle } from '@/src/utils/productSubtitle';
 import type { Product } from '@/src/types';
 
 export default function RelatedProductsCarousel({
@@ -135,7 +136,7 @@ export default function RelatedProductsCarousel({
                 onPointerDown={handlePointerDown}
                 >
                 {products.map(p => {
-                    const finishLabel = p.type === 'SIN' && p.finishShortName && p.finishShortName !== 'NONFOIL'
+                    const finishLabel = p.finishShortName && p.finishShortName !== 'NONFOIL'
                         ? (p.finishName ?? p.finishShortName)
                         : null;
 
@@ -162,9 +163,7 @@ export default function RelatedProductsCarousel({
                         {p.displayName ?? p.name}
                     </h2>
                     <p className="small_text secondary_text_color truncate" style={{ fontStyle: 'italic' }}>
-                        {p.type === 'SIN'
-                            ? `${p.set ?? ''}${p.collectorNumber ? ` · #${p.collectorNumber}` : ''}`
-                            : p.description}
+                        {getProductSubtitle(p)}
                     </p>
                     <p className="product_price_small_text text-center" style={{ alignSelf: 'center' }}>
                         {p.variantCount && p.variantCount > 1 ? 'Desde ' : ''}

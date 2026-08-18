@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { Product } from '@/src/types';
 import { formatPrice } from '@/src/utils/formatPrice';
 import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
+import { getProductSubtitle } from '@/src/utils/productSubtitle';
 
 type Props = {
   product: Product;
@@ -27,7 +28,7 @@ export default function ProductCard({ product, onClick }: Props) {
   const [loadedIndices, setLoadedIndices] = useState<Set<number>>(new Set());
 
   const isNew = isNewProduct(product);
-  const finishLabel = product.type === 'SIN' && product.finishShortName && product.finishShortName !== 'NONFOIL'
+  const finishLabel = product.finishShortName && product.finishShortName !== 'NONFOIL'
     ? (product.finishName ?? product.finishShortName)
     : null;
 
@@ -112,15 +113,9 @@ export default function ProductCard({ product, onClick }: Props) {
         {product.displayName ?? product.name}
       </h2>
 
-      {product.type === 'SIN' ? (
-        <p className="small_text secondary_text_color limit_two_lines" style={{fontStyle: 'italic'}}>
-          {product.set}{product.collectorNumber ? ` · #${product.collectorNumber}` : ''}
-        </p>
-      ) : (
-        <p className="small_text secondary_text_color limit_two_lines" style={{fontStyle: 'italic'}}>
-          {product.description}
-        </p>
-      )}
+      <p className="small_text secondary_text_color limit_two_lines" style={{fontStyle: 'italic'}}>
+        {getProductSubtitle(product)}
+      </p>
 
       <div className="product_price_small_text text-center" style={{alignSelf: 'center'}}>
           {product.variantCount && product.variantCount > 1 ? 'Desde ' : ''}
