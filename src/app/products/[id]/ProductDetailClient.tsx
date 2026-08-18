@@ -172,7 +172,7 @@ export default function ProductDetailClient({
                         {field.label}:
                         {field.label === 'Set' && setIconSvg && (
                           <span
-                            className="inline-block w-4 h-4 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
+                            className="inline-block h-5 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
                             dangerouslySetInnerHTML={{ __html: setIconSvg }}
                           />
                         )}
