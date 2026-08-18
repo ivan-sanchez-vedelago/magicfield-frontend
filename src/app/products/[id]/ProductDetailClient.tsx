@@ -168,16 +168,16 @@ export default function ProductDetailClient({
                 <div className="p-4 grid grid-cols-2 gap-6">
                   {detailFields.map(field => (
                     <Fragment key={field.label}>
-                      <b>{field.label}:</b>
-                      <span className="inline-flex items-center gap-1.5">
+                      <b className="inline-flex items-center gap-1.5">
+                        {field.label}:
                         {field.label === 'Set' && setIconSvg && (
                           <span
                             className="inline-block w-4 h-4 flex-shrink-0 [&_svg]:w-full [&_svg]:h-full"
                             dangerouslySetInnerHTML={{ __html: setIconSvg }}
                           />
                         )}
-                        {field.value}
-                      </span>
+                      </b>
+                      <span>{field.value}</span>
                     </Fragment>
                   ))}
                 </div>
