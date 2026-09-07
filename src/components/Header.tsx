@@ -12,7 +12,7 @@ import { formatPrice } from '@/src/utils/formatPrice';
 import { getThumbnailUrl } from '@/src/utils/getThumbnailUrl';
 import { getProductSubtitle } from '@/src/utils/productSubtitle';
 import type { Product, Category } from '@/src/types';
-import { ShoppingCart, User, ClipboardList } from 'lucide-react';
+import { ShoppingCart, User, TextSearch } from 'lucide-react';
 
 // Cuántos resultados como máximo se traen para la vista previa del dropdown
 // (el resto se ve entrando con "Ver todos los resultados").
@@ -337,7 +337,7 @@ export default function Header() {
               </div>
             </div>
             <LoadingLink href="/bulk-filter" className="header_tab flex items-center">
-              <ClipboardList className="w-6 h-6 flex-shrink-0" />
+              <TextSearch className="w-6 h-6 flex-shrink-0" />
             </LoadingLink>
             <LoadingLink href="/cart" className="header_tab relative">
               <ShoppingCart className="w-6 h-6 flex-shrink-0" />
@@ -432,7 +432,7 @@ export default function Header() {
             <nav className="flex flex-col">
               {renderCategoryTree(0, () => setOpenHamburguerMenu(false))}
               <LoadingLink href="/bulk-filter" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-2 header_tab flex items-center gap-2">
-                <ClipboardList className="w-6 h-6 flex-shrink-0" />
+                <TextSearch className="w-6 h-6 flex-shrink-0" />
                 Filtrar en bulk
               </LoadingLink>
               <LoadingLink href="/cart" onClick={() => setOpenHamburguerMenu(false)} className="px-5 py-2 header_tab flex items-center gap-2 relative">

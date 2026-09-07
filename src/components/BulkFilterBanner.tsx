@@ -1,12 +1,12 @@
 import LoadingLink from '@/src/components/navigation/LoadingLink';
-import { ClipboardList } from 'lucide-react';
+import { TextSearch } from 'lucide-react';
 
 export default function BulkFilterBanner() {
   return (
     <div className="bulk_filter_banner">
       <div className="flex items-center gap-4">
         <div className="bulk_filter_banner_icon_wrap">
-          <ClipboardList className="w-8 h-8 text-white flex-shrink-0" />
+          <TextSearch className="w-8 h-8 text-white flex-shrink-0" />
         </div>
         <div>
           <p className="subtitle_text text-white font-bold drop-shadow">
