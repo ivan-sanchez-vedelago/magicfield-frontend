@@ -336,9 +336,8 @@ export default function Header() {
                 </nav>
               </div>
             </div>
-            <LoadingLink href="/bulk-filter" className="header_tab flex items-center gap-2">
+            <LoadingLink href="/bulk-filter" className="header_tab flex items-center">
               <ClipboardList className="w-6 h-6 flex-shrink-0" />
-              Filtrar en bulk
             </LoadingLink>
             <LoadingLink href="/cart" className="header_tab relative">
               <ShoppingCart className="w-6 h-6 flex-shrink-0" />
