@@ -72,8 +72,9 @@ export default function BulkFilterPage() {
           <h1 className="main_title_text mb-6">Filtrar en bulk</h1>
 
           <p className="normal_text secondary_text_color mb-4">
-            Pegá tu lista de cartas, una por línea, con el formato <strong>cantidad nombre</strong> (ej. &quot;4 Lightning Bolt&quot;).
-            Vamos a buscar todos los productos del catálogo cuyo nombre coincida total o parcialmente con cada línea.
+            Pegá tu lista de cartas, una por línea, con el formato <strong>cantidad nombre</strong> (ej. &quot;4 Lightning Bolt&quot; o &quot;4x Lightning Bolt&quot;).
+            La cantidad es opcional -- también podés pegar solo los nombres, uno por línea o separados por &quot;.&quot;.
+            Vamos a buscar todos los productos del catálogo cuyo nombre coincida total o parcialmente con cada uno.
           </p>
 
           <div className="box_border mb-6">
