@@ -530,6 +530,36 @@ hr {
   overflow: hidden;
 }
 
+/* Distinto degradé (verde-azulado en vez del verde oscuro de Novedades) para que la sección
+   se distinga a simple vista de la de arriba en vez de fundirse con ella. */
+.bulk_filter_banner {
+  width: 100%;
+  background: linear-gradient(135deg, #145214 0%, #1b5e20 40%, #0f766e 100%);
+  border-radius: 0.75rem;
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+@media (min-width: 768px) {
+  .bulk_filter_banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}
+
+.bulk_filter_banner_icon_wrap {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.75rem;
+  flex-shrink: 0;
+}
+
 .new_products_divider {
   margin-top: 1rem;
   height: 1px;

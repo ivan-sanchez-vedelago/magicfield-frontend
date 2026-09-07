@@ -3,6 +3,7 @@
 import LoadingLink from '@/src/components/navigation/LoadingLink';
 import BannerSlider from '@/src/components/BannerSlider';
 import NewProductsSection from '@/src/components/product/NewProductsSection';
+import BulkFilterBanner from '@/src/components/BulkFilterBanner';
 
 export default function Home() {
   return (
@@ -18,8 +19,9 @@ export default function Home() {
           <NewProductsSection />
         </section>
 
-        <section className="mx-auto w-full py-8 px-6 text-center mb-8">
-
+        {/* Promociona "Filtrar en bulk" -- debajo de Novedades, para que el usuario la note */}
+        <section className="mx-auto w-full py-8 px-6">
+          <BulkFilterBanner />
         </section>
       </main>
     </div>
