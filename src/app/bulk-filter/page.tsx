@@ -67,42 +67,44 @@ export default function BulkFilterPage() {
 
   return (
     <div className="flex-1">
-      <main className="mx-auto py-12 px-6 max-w-4xl">
-        <h1 className="main_title_text mb-6">Filtrar en bulk</h1>
+      <main className="mx-auto py-12 px-6">
+        <div className="max-w-4xl">
+          <h1 className="main_title_text mb-6">Filtrar en bulk</h1>
 
-        <p className="normal_text secondary_text_color mb-4">
-          Pegá tu lista de cartas, una por línea, con el formato <strong>cantidad nombre</strong> (ej. &quot;4 Lightning Bolt&quot;).
-          Vamos a buscar todos los productos del catálogo cuyo nombre coincida total o parcialmente con cada línea.
-        </p>
+          <p className="normal_text secondary_text_color mb-4">
+            Pegá tu lista de cartas, una por línea, con el formato <strong>cantidad nombre</strong> (ej. &quot;4 Lightning Bolt&quot;).
+            Vamos a buscar todos los productos del catálogo cuyo nombre coincida total o parcialmente con cada línea.
+          </p>
 
-        <div className="box_border mb-6">
-          <p className="small_text secondary_text_color mb-2">Ejemplo:</p>
-          <pre className="normal_text mb-3 whitespace-pre-wrap">{EXAMPLE_LIST}</pre>
+          <div className="box_border mb-6">
+            <p className="small_text secondary_text_color mb-2">Ejemplo:</p>
+            <pre className="normal_text mb-3 whitespace-pre-wrap">{EXAMPLE_LIST}</pre>
+            <button
+              type="button"
+              className="button_secondary small_button"
+              onClick={() => setText(EXAMPLE_LIST)}
+            >
+              Usar este ejemplo
+            </button>
+          </div>
+
+          <textarea
+            className="input_field mb-4"
+            rows={8}
+            placeholder={EXAMPLE_LIST}
+            value={text}
+            onChange={e => setText(e.target.value)}
+          />
+
           <button
             type="button"
-            className="button_secondary small_button"
-            onClick={() => setText(EXAMPLE_LIST)}
+            className="button_primary medium_button mb-8"
+            onClick={handleSearch}
+            disabled={loading || parseBulkList(text).length === 0}
           >
-            Usar este ejemplo
+            {loading ? 'Buscando...' : 'Buscar'}
           </button>
         </div>
-
-        <textarea
-          className="input_field mb-4"
-          rows={8}
-          placeholder={EXAMPLE_LIST}
-          value={text}
-          onChange={e => setText(e.target.value)}
-        />
-
-        <button
-          type="button"
-          className="button_primary medium_button mb-8"
-          onClick={handleSearch}
-          disabled={loading || parseBulkList(text).length === 0}
-        >
-          {loading ? 'Buscando...' : 'Buscar'}
-        </button>
 
         {loading && <ResultsSkeleton />}
 
