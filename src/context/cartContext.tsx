@@ -40,8 +40,9 @@ type CartContextType = {
   total: number;
   dispatch: React.Dispatch<CartAction>;
   clearCart: () => void;
-  setProductQuantity: (product: any, qty: number) => void;
-  removeProduct: (productId: string) => void;
+  setProductQuantity: (product: any, qty: number, notify?: boolean) => void;
+  removeProduct: (productId: string, notify?: boolean) => void;
+  showFeedback: (message: string, duration?: number) => void;
   toastMessage: string | null;
   /**
    * Revalida contra el backend el stock/existencia de los items del carrito.
@@ -175,14 +176,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   /* HELPERS DE ALTO NIVEL */
 
-  const setProductQuantity = (product: any, desiredQty: number) => {
+  const setProductQuantity = (product: any, desiredQty: number, notify = true) => {
     const existing = state.items.find(i => i.productId === product.id);
     const currentQty = existing?.quantity ?? 0;
 
     // eliminar si queda en 0
     if (desiredQty === 0 && currentQty > 0) {
       dispatch({ type: 'REMOVE_ITEM', productId: product.id });
-      showFeedback('Producto eliminado del carrito');
+      if (notify) showFeedback('Producto eliminado del carrito');
       return;
     }
 
@@ -205,7 +206,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           finishName: product.finishName,
         },
       });
-      showFeedback('Producto añadido al carrito');
+      if (notify) showFeedback('Producto añadido al carrito');
       return;
     }
 
@@ -237,20 +238,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       for (let i = 0; i < diff; i++) {
         dispatch({ type: 'INCREASE', productId: product.id });
       }
-      showFeedback('Cantidad actualizada');
+      if (notify) showFeedback('Cantidad actualizada');
     }
 
     if (diff < 0) {
       for (let i = 0; i < Math.abs(diff); i++) {
         dispatch({ type: 'DECREASE', productId: product.id });
       }
-      showFeedback('Cantidad actualizada');
+      if (notify) showFeedback('Cantidad actualizada');
     }
   };
 
-  const removeProduct = (productId: string) => {
+  const removeProduct = (productId: string, notify = true) => {
     dispatch({ type: 'REMOVE_ITEM', productId });
-    showFeedback('Producto eliminado del carrito');
+    if (notify) showFeedback('Producto eliminado del carrito');
   };
 
   function clearCart() {
@@ -345,6 +346,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         setProductQuantity,
         removeProduct,
+        showFeedback,
         toastMessage,
         verifyAvailability,
       }}

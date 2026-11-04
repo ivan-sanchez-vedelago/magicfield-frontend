@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/src/components/navigation/NavigationContext';
 
 export default function CartPage() {
-  const { items, dispatch, total, verifyAvailability } = useCart();
+  const { items, dispatch, clearCart, total, verifyAvailability } = useCart();
   const router = useRouter();
   const { startNavigation } = useNavigation();
   const [checkingAvailability, setCheckingAvailability] = useState(false);
@@ -32,7 +32,18 @@ export default function CartPage() {
   return (
     <div className="flex-1">
       <main className="mx-auto py-12 px-6">
-        <h1 className="main_title_text mb-6">Mi Carrito</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <h1 className="main_title_text">Mi Carrito</h1>
+          {items.length > 0 && (
+            <button
+              type="button"
+              onClick={clearCart}
+              className="button_secondary medium_button"
+            >
+              Limpiar carrito
+            </button>
+          )}
+        </div>
 
         {/* CARRITO VACÍO */}
         {items.length === 0 ? (
@@ -63,7 +74,7 @@ export default function CartPage() {
                   )}
                 </div>
 
-                <div className="flex-grow">
+                <div className="min-w-0 flex-grow">
                   <h2
                     className="product_title_text text_clickable"
                     onClick={() => {
@@ -80,47 +91,49 @@ export default function CartPage() {
                   <p className="product_price_big_text">ARS$ {formatPrice(item.price)}</p>
                 </div>
 
-                <div className="text-center">
-                  <div className="flex justify-center items-center gap-2">
-                    <button
-                      onClick={() =>
-                        dispatch({ type: 'DECREASE', productId: item.productId })
-                      }
-                      className="px-3 py-1 border"
-                    >
-                      -
-                    </button>
+                <div className="flex flex-shrink-0 items-center gap-4">
+                  <div className="text-center">
+                    <div className="flex justify-center items-center gap-2">
+                      <button
+                        onClick={() =>
+                          dispatch({ type: 'DECREASE', productId: item.productId })
+                        }
+                        className="px-3 py-1 border"
+                      >
+                        -
+                      </button>
 
-                    <span className="cantidad_stock_input">
-                      {item.quantity}
-                    </span>
+                      <span className="cantidad_stock_input">
+                        {item.quantity}
+                      </span>
 
-                    <button
-                      onClick={() =>
-                        dispatch({ type: 'INCREASE', productId: item.productId })
-                      }
-                      className="px-3 py-1 border disabled:opacity-50"
-                      disabled={item.quantity >= item.stock}
-                    >
-                      +
-                    </button>
+                      <button
+                        onClick={() =>
+                          dispatch({ type: 'INCREASE', productId: item.productId })
+                        }
+                        className="px-3 py-1 border disabled:opacity-50"
+                        disabled={item.quantity >= item.stock}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Disponible {item.stock}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Disponible {item.stock}
-                  </p>
-                </div>
 
-                <button
-                  onClick={() =>
-                    dispatch({
-                      type: 'REMOVE_ITEM',
-                      productId: item.productId,
-                    })
-                  }
-                  className="text-red-600 hover:underline"
-                >
-                  Eliminar
-                </button>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: 'REMOVE_ITEM',
+                        productId: item.productId,
+                      })
+                    }
+                    className="text-red-600 hover:underline"
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
             ))}
           </div>

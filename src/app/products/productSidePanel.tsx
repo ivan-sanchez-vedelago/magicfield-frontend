@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function ProductSidePanel({ product, onClose }: Props) {
-  const { items, setProductQuantity, removeProduct } = useCart();
+  const { items, setProductQuantity, removeProduct, showFeedback } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { startNavigation } = useNavigation();
@@ -108,9 +108,16 @@ export default function ProductSidePanel({ product, onClose }: Props) {
         const desired = quantities[v.id] ?? 0;
         const current = items.find(i => i.productId === v.id)?.quantity ?? 0;
         if (desired === current) return;
-        if (desired === 0) removeProduct(v.id);
-        else setProductQuantity(v, desired);
+        if (desired === 0) removeProduct(v.id, false);
+        else setProductQuantity(v, desired, false);
       });
+      showFeedback(
+        multiVariantLabel === 'Actualizar carrito'
+          ? 'Carrito actualizado'
+          : multiVariantLabel === 'Remover del carrito'
+            ? 'Productos eliminados del carrito'
+            : 'Productos añadidos al carrito'
+      );
     } else if (qty === 0) {
       removeProduct(singleVariant.id);
     } else {

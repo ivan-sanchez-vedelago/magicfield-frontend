@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import type { Product } from '@/src/types';
 import { formatPrice } from '@/src/utils/formatPrice';
@@ -10,6 +11,7 @@ import { getProductSubtitle } from '@/src/utils/productSubtitle';
 type Props = {
   product: Product;
   onClick: () => void;
+  children?: ReactNode;
 };
 
 function isNewProduct(product: Product): boolean {
@@ -19,7 +21,7 @@ function isNewProduct(product: Product): boolean {
   return created >= oneWeekAgo;
 }
 
-export default function ProductCard({ product, onClick }: Props) {
+export default function ProductCard({ product, onClick, children }: Props) {
   const images = product.imageUrls ?? [];
   const [current, setCurrent] = useState(0);
   // Qué índices ya reportaron onLoad -- a diferencia de antes, todas las imágenes se montan
@@ -49,7 +51,7 @@ export default function ProductCard({ product, onClick }: Props) {
   };
 
   return (
-    <article onClick={onClick} className="product_box box_border">
+    <article onClick={onClick} className="product_box box_border h-full">
       <div className="product_image">
         {finishLabel && <span className="ribbon ribbon_foil">{finishLabel.toUpperCase()}</span>}
         {isNew && <span className="ribbon ribbon_new">NEW</span>}
@@ -124,6 +126,7 @@ export default function ProductCard({ product, onClick }: Props) {
       <div className='small_text text-center' style={{alignSelf: 'center'}}>
         {product.stock} en stock
       </div>
+      {children}
     </article>
   );
 }
