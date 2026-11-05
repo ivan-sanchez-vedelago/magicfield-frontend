@@ -279,7 +279,14 @@ export default function CheckoutPage() {
         {/* Campos de envío — solo si es envío a domicilio o Andreani */}
         {isShipping && (
           <div className="mb-6">
-            <p className="subtitle_text mb-3">Datos de envío</p>
+            <p className="subtitle_text mb-3">
+              Datos de envío
+              {deliveryOption === 'ENVIO_ANDREANI' && (
+                <span className="text-sm text-gray-400 block">
+                  (Ingresá la dirección de la sucursal de Andreani, no la de tu domicilio)
+                </span>
+              )}
+            </p>
             <div className="flex flex-col gap-4">
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
