@@ -26,6 +26,8 @@ export default function CheckoutPage() {
   const [dni, setDni] = useState('');
   const [street, setStreet] = useState('');
   const [streetNumber, setStreetNumber] = useState('');
+  const [floor, setFloor] = useState('');
+  const [apartment, setApartment] = useState('');
   const [city, setCity] = useState('');
   const [province, setProvince] = useState('');
   const [postalCode, setPostalCode] = useState('');
@@ -141,6 +143,8 @@ export default function CheckoutPage() {
       customerDni: dni || null,
       shippingStreet: street || null,
       shippingStreetNumber: streetNumber || null,
+      shippingFloor: deliveryOption === 'ENVIO_DOMICILIO' ? floor.trim() || null : null,
+      shippingApartment: deliveryOption === 'ENVIO_DOMICILIO' ? apartment.trim() || null : null,
       shippingCity: city || null,
       shippingProvince: province || null,
       shippingPostalCode: postalCode || null,
@@ -332,7 +336,26 @@ export default function CheckoutPage() {
                     <p className="small_text text-red-500 pl-2 mt-1">{errors.streetNumber}</p>
                   )}
                 </div>
-
+                {deliveryOption === 'ENVIO_DOMICILIO' && (
+                  <>
+                    <div>
+                      <input
+                        placeholder="Piso (Opcional)"
+                        className="input_field"
+                        value={floor}
+                        onChange={e => setFloor(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <input
+                        placeholder="Departamento (Opcional)"
+                        className="input_field"
+                        value={apartment}
+                        onChange={e => setApartment(e.target.value)}
+                      />
+                    </div>
+                  </>
+                )}
                 <div>
                   <input
                     placeholder="Localidad"

@@ -20,6 +20,14 @@ interface Order {
   quantity: number;
   subtotal: number;
   customerName: string;
+  deliveryType: string | null;
+  shippingStreet: string | null;
+  shippingStreetNumber: string | null;
+  shippingFloor: string | null;
+  shippingApartment: string | null;
+  shippingCity: string | null;
+  shippingProvince: string | null;
+  shippingPostalCode: string | null;
   saleDate: string;
   status: string;
   unitPrice: number;
@@ -30,6 +38,14 @@ interface GroupedOrder {
   saleDate: string;
   total: number;
   status: string;
+  deliveryType: string | null;
+  shippingStreet: string | null;
+  shippingStreetNumber: string | null;
+  shippingFloor: string | null;
+  shippingApartment: string | null;
+  shippingCity: string | null;
+  shippingProvince: string | null;
+  shippingPostalCode: string | null;
   items: Order[];
 }
 
@@ -104,6 +120,14 @@ export function ProfileContent() {
       saleDate: items[0].saleDate,
       total: items.reduce((sum, item) => sum + item.subtotal, 0),
       status: items[0].status,
+      deliveryType: items[0].deliveryType ?? null,
+      shippingStreet: items[0].shippingStreet ?? null,
+      shippingStreetNumber: items[0].shippingStreetNumber ?? null,
+      shippingFloor: items[0].shippingFloor ?? null,
+      shippingApartment: items[0].shippingApartment ?? null,
+      shippingCity: items[0].shippingCity ?? null,
+      shippingProvince: items[0].shippingProvince ?? null,
+      shippingPostalCode: items[0].shippingPostalCode ?? null,
       items,
     }));
   };
@@ -372,6 +396,56 @@ export function ProfileContent() {
                                 </div>
                               ))}
                             </div>
+                            {groupedOrder.deliveryType && (
+                              <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4">
+                                <p className="small_text mb-2 font-semibold text-gray-600">
+                                  Datos de entrega
+                                </p>
+                                <p className="normal_text">
+                                  {groupedOrder.deliveryType === 'RETIRO_RAMOS'
+                                    ? 'Retiro en Ramos Mejía'
+                                    : groupedOrder.deliveryType === 'RETIRO_FRANCISCO'
+                                    ? 'Retiro en Francisco Álvarez'
+                                    : groupedOrder.deliveryType === 'ENVIO_DOMICILIO'
+                                    ? 'Envío a domicilio'
+                                    : groupedOrder.deliveryType === 'ENVIO_ANDREANI'
+                                    ? 'Envío a sucursal de Andreani'
+                                    : groupedOrder.deliveryType}
+                                </p>
+                                {(groupedOrder.shippingStreet || groupedOrder.shippingStreetNumber) && (
+                                  <p className="small_text text-gray-600">
+                                    {[groupedOrder.shippingStreet, groupedOrder.shippingStreetNumber]
+                                      .filter(Boolean)
+                                      .join(' ')}
+                                  </p>
+                                )}
+                                {groupedOrder.deliveryType === 'ENVIO_DOMICILIO'
+                                  && (groupedOrder.shippingFloor || groupedOrder.shippingApartment) && (
+                                  <p className="small_text text-gray-600">
+                                    {[
+                                      groupedOrder.shippingFloor
+                                        ? `Piso ${groupedOrder.shippingFloor}`
+                                        : null,
+                                      groupedOrder.shippingApartment
+                                        ? `Departamento ${groupedOrder.shippingApartment}`
+                                        : null,
+                                    ].filter(Boolean).join(' · ')}
+                                  </p>
+                                )}
+                                {(groupedOrder.shippingCity || groupedOrder.shippingProvince) && (
+                                  <p className="small_text text-gray-600">
+                                    {[groupedOrder.shippingCity, groupedOrder.shippingProvince]
+                                      .filter(Boolean)
+                                      .join(', ')}
+                                  </p>
+                                )}
+                                {groupedOrder.shippingPostalCode && (
+                                  <p className="small_text text-gray-600">
+                                    Código Postal: {groupedOrder.shippingPostalCode}
+                                  </p>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                         {/* Botón cancelar (solo PENDING) */}
